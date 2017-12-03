@@ -1,0 +1,301 @@
+<resources>
+    <string name="app_name">المحراب</string>
+    <string name="stopathan">أوقف التنبيه</string>
+    <string name="retry">حاول مرة أخرى</string>
+    <string name="no_internet">تأكد من اتصالك بالانترنت</string>
+    <!--<string name="error">حدث خطأ, حاول مرة أخرى...</string>-->
+    <string name="error">حدث خطأ,تأكد من اتصالك بالانترنت ثم حاول مرة أخرى</string>
+
+    <string-array name="drawerItems">
+        <item>أوقات الصلاة</item>
+        <item>تذكير</item>
+        <item>عرض الركعة</item>
+        <item>أذكار</item>
+    </string-array>
+    <array name="nav_drawer_icons">
+        <item>@drawable/forma</item>
+        <item>@drawable/forma</item>
+        <item>@drawable/forma</item>
+        <item>@drawable/forma</item>
+    </array>
+    <array name="nav_drawer_icons_on">
+        <item>@drawable/forma</item>
+        <item>@drawable/forma</item>
+        <item>@drawable/forma</item>
+        <item>@drawable/forma</item>
+    </array>
+
+    <string name="sat">السبت</string>
+    <string name="sun">الأحد</string>
+    <string name="mon">الإثنين</string>
+    <string name="tus">الثلاثاء</string>
+    <string name="wes">الأربعاء</string>
+    <string name="ths">الخميس</string>
+    <string name="fri">الجمعة</string>
+    <string name="notification_body">حان موعد آذان  %s </string>
+    <string name="notification_body1">حان موعد   %s </string>
+
+    <string name="am1"> محرم</string>
+    <string name="am2"> صفر</string>
+    <string name="am3"> ربيع الأول</string>
+    <string name="am4"> ربيع الثاني</string>
+    <string name="am5"> جمادى الأولى</string>
+    <string name="am6"> جمادى الآخرة</string>
+    <string name="am7"> رجب</string>
+    <string name="am8"> شعبان</string>
+    <string name="am9"> رمضان</string>
+    <string name="am10"> شوال</string>
+    <string name="am11"> ذو القعدة</string>
+    <string name="am12"> ذو الحجة</string>
+
+    <string name="em1">يناير</string>
+    <string name="em2">فبراير</string>
+    <string name="em3">مارس</string>
+    <string name="em4">أبريل</string>
+    <string name="em5">مابو</string>
+    <string name="em6">يونيو</string>
+    <string name="em7">يوليو</string>
+    <string name="em8">أغسطس</string>
+    <string name="em9">سبتمبر</string>
+    <string name="em10">أكتوبر</string>
+    <string name="em11">نوفمبر</string>
+    <string name="em12">ديسمبر</string>
+
+    <string name="mt">هـ</string>
+
+
+    <string name="p1">صلاة الفجر</string>
+    <string name="p2">صلاة الظهر</string>
+    <string name="p6">صلاة الشروق</string>
+    <string name="p3">صلاة العصر</string>
+    <string name="p4">صلاة المغرب</string>
+    <string name="p5">صلاة العشاء</string>
+    <string name="isAthanTime" formatted="false">حان وقت رفع أذان %s</string>
+
+    <string name="pn1">الفجر</string>
+    <string name="pn2">الشروق</string>
+    <string name="pn3">الظهر</string>
+    <string name="pn4">العصر</string>
+    <string name="pn5">المغرب</string>
+    <string name="pn6">العشاء</string>
+
+    <string name="t1">موعد الأذان</string>
+    <string name="t2">موعد الإقامة</string>
+
+    <string name="qn1"> إقامة صلاة الفجر</string>
+    <string name="qn2"> إقامة صلاة الشروق</string>
+    <string name="qn3"> إقامة صلاة الظهر</string>
+    <string name="qn4"> إقامة صلاة العصر</string>
+    <string name="qn5"> إقامة صلاة المغرب</string>
+    <string name="qn6"> إقامة صلاة العشاء</string>
+    <string name="pa">تنبيه الهاتف</string>
+    <string name="pa1">تذكر إغلاق الهاتف</string>
+
+
+    <string name="action_settings">Settings</string>
+    <string name="drawer_open">Slider Menu Opened</string>
+    <string name="drawer_close">Slider Menu Closed</string>
+
+    <string name="Arabic">العربية</string>
+    <string name="English">الانجليزية</string>
+    <string name="Swedish">السويدية</string>
+
+
+    <string name="theme1">قالب 1</string>
+    <string name="theme2">قالب 2</string>
+
+    <string name="PM">م </string>
+    <string name="AM">ص </string>
+    <string name="h"> ساعة</string>
+    <string name="m">دقيقة</string>
+    <string name="s">ثانية</string>
+    <string name="percent">نسبي</string>
+    <string name="contstant">وقت ثابت</string>
+    <string name="det_iqama"> تحديد الإقامة</string>
+
+    <string name="settings">الإعدادات</string>
+    <string name="eqama_settings">أوقات الإقامة</string>
+    <string name="notification_settings">التنبيهات</string>
+    <string name="hint_eqama">تحديد مدة الإقامة لكل صلاة</string>
+    <string name="hint_notifTextPeriod">تحديد نص التنبيه ومدته</string>
+    <string name="choose_theme">اختر قالب</string>
+    <string name="hint_choose_theme">اختر قالب التصميم</string>
+    <string name="language_settings"> اللغة</string>
+    <string name="choose_language">اختر لغة العرض</string>
+    <string name="choose_lang">اختر لغة:</string>
+    <string name="alarm_interrupted">تم إيقاف الأذان</string>
+    <string name="alarm_interrupted_body">تم إيقاف الأذان عن طريق تطبيق آخر أو إتصال</string>
+    <string name="prayer_name_time">أذان %s</string>
+    <string name="praytimes">أوقات الصلاة</string>
+    <string name="stop">ايقاف</string>
+    <string name="alarm_timed_out">%s يتوقف التنبيه بعد دقيقة</string>
+    <string name="alarm_timed_out_only">يتوقف التنبيه بعد دقيقة</string>
+    <string name="adv">شريط الأخبار</string>
+    <string name="azkar"> الأذكار والأدعية</string>
+    <string name="adv_settings">إضافة ,تعديل, حذف الأخبار</string>
+    <string name="azkar_settings">إضافة ,تعديل, حذف الأذكار</string>
+    <string name="location_settings">تغيير المدينة</string>
+    <string name="Tones_settings">تغيير الأصوات</string>
+    <string name="location_hints"> اختر مدينة </string>
+    <string name="Tones_hints">تغيير أصوات تنبيهات الأذان والإقامة </string>
+    <string name="search">بحث</string>
+    <string name="save">حفظ</string>
+    <string name="choose_audio_limit">يجب أن يكون طول المقطع الصوتي اقل او يساوي  60ثانية</string>
+    <string name="wait">يرجى الانتظار...</string>
+    <string name="saved">تم الحفظ بنجاح</string>
+
+
+    <string name="set_iqama">تحديد مدة الإقامة لكل صلاة</string>
+    <string name="igamaPeriod">زمن الإقامة (دقيقة)</string>
+    <string name="igamaPeriod1">وقت الإقامة </string>
+    <string name="azkarPeriod">ظهور الأذكار بعد الإقامة (دقيقة)</string>
+    <string name="azkarAppearPeriod">فترة ظهور الأذكار (دقيقة)</string>
+    <string name="arNotif">نص التنبيه باللغة العربية </string>
+    <string name="enNotif">نص التنبيه باللغة الانجليزية </string>
+    <string name="urNotif">نص التنبيه باللغة الأوردو </string>
+    <string name="fajer_igama">صلاة الفجر </string>
+    <string name="sh_igama">صلاة الشروق/الضحى </string>
+    <string name="duhr_igama">صلاة الظهر </string>
+    <string name="aser_igama">صلاة العصر </string>
+    <string name="magrib_igama">صلاة المغرب </string>
+    <string name="isha_igama">صلاة العشاء </string>
+
+
+    <string name="m_adv">إعلانات المسجد</string>
+    <string name="m_adv_text1">نلبلا محي سيبمرس يس </string>
+    <string name="m_adv_text2">اااا لللل بببب يييييي ففففف </string>
+    <string name="m_adv_text">مسجد بلال بن رباح يهنئى الشبل محمد أحمد لحفظه القران
+الكريـم ونسـأل الله الكريـم أن ينفـع بـه الإسـلام والمسلميــن</string>
+    <string name="azkar_t">أَصْـبَحْنا وَأَصْـبَحَ المُـلْكُ لله وَالحَمدُ لله ، لا إلهَ إلاّ اللّهُ وَحدَهُ لا شَريكَ لهُ، لهُ المُـلكُ ولهُ الحَمْـد، وهُوَ على كلّ شَيءٍ قدير ، رَبِّ أسْـأَلُـكَ خَـيرَ ما في هـذا اليوم وَخَـيرَ ما بَعْـدَه ، وَأَعـوذُ بِكَ مِنْ شَـرِّ ما في هـذا اليوم وَشَرِّ ما بَعْـدَه، رَبِّ أَعـوذُبِكَ مِنَ الْكَسَـلِ وَسـوءِ الْكِـبَر ، رَبِّ أَعـوذُ بِكَ مِنْ عَـذابٍ في النّـارِ وَعَـذابٍ في القَـبْر.</string>
+    <string name="cancel_delete">إلغاء</string>
+    <string name="ok">موافق</string>
+    <string name="confirm_logout">هل أنت متأكد أنك تريج تسجيل الخروج؟ </string>
+    <string name="confirm_delete">حذف</string>
+    <string name="tv_delTitle">حذف خبر</string>
+    <string name="tv_delAttention">هل أنت متأكد أنك تريد حذف هذا الخبر؟</string>
+    <string name="tv_delAttention1">هل أنت متأكد أنك تريد حذف هذا الذكر؟</string>
+    <string name="success_delete">تم الحذف بنجاح</string>
+
+    <string name="add_azkar">إضافة أذكار جديدة</string>
+    <string name="add_adv">إضافة خبر جديد</string>
+    <string name="edit_adv">تعديل </string>
+    <string name="deleting">جاري الحذف...</string>
+    <string name="adding">جاري الإضافة...</string>
+    <string name="add">إضافة</string>
+    <string name="edit">تعديل</string>
+    <string name="success_add">تم الإضافة بنجاح</string>
+    <string name="success_edit">تم التعديل</string>
+    <string name="text">أدخل نص الخبر</string>
+    <string name="text_azkar">أدخل نص الذكر</string>
+    <string name="end">أدخل تاريخ النهاية</string>
+    <string name="start">أدخل تاريخ البداية</string>
+    <string name="error_date">يجب أن يكون تاريخ النهاية أكبر من تاريخ البداية</string>
+    <string name="sort">أدخل الترتيب للخبر</string>
+    <string name="count">أدخل عدد مرات التكرار </string>
+    <string name="newstext"> نص الخبر</string>
+    <string name="azkartext"> الأذكار </string>
+
+    <string name="adan_fajer">حان موعد آذان الفجر</string>
+    <string name="adan_duhor">حان موعد آذان الظهر</string>
+    <string name="adan_aser">حان موعد آذان العصر</string>
+    <string name="adan_magrib">حان موعد آذان المغرب</string>
+    <string name="adan_isha">حان موعد آذان العشاء</string>
+    <string name="aboutApp"> هو تطبيق يستخدم في المساجد لمساعدة المصلين وتنبيههم بمواعيد الصلاة. </string>
+    <string name="corpyright">جميع الحقوق محفوظة© رقم الايداع المحلي3087</string>
+    <string name="version">Version 1.0</string>
+    <string name="website">www.enjaz-systems.com</string>
+    <string name="developBy">تطوير شركة إنجاز لنظم التحكم</string>
+    <string name="about"> عن التطبيق  </string>
+    <string name="aboutText"> هذا التطبيق تطوير شركة إنجاز </string>
+    <string name="logout"> تسجيل خروج </string>
+    <string name="warnning">اختر مدينتك </string>
+    <string name="alert">تنبيه</string>
+    <string name="scanSensor">استكشاف مستشعرات الحرارة</string>
+    <string name="permission_rationale">يحتاج التطبيق  إلى الإذن للدخول الى الصور وملفات الصوت على جهازك؟</string>
+    <string name="alert_msg">يجب ضبط إعدادات الحساب بوجود اتصال انترنت</string>
+    <string name="tvOtherSet">إعدادات أخرى</string>
+    <string name="tvTemp">رقم جهاز مستشعر الحرارة الداخلي</string>
+    <string name="tvTempOut">رقم جهاز مستشعر الحرارة الخارجي</string>
+    <string name="hijriSet"> الفرق في التاريخ الهجري</string>
+    <string name="batteryIn">مستوى البطارية للمستشعر الداخلي</string>
+    <string name="batteryOut">مستوى البطارية للمستشعر الخارجي</string>
+    <string name="setTitle1">تحديد زمن الإقامات والأذكار</string>
+    <string name="setTitle2">إعدادات تنبيهات إغلاق الهاتف</string>
+    <string name="setTitle3">إعدادات الحساب</string>
+    <string name="setTitle6">تحديد أولوية الاعدادات</string>
+    <string name="setTitle5">اسم المستخدم</string>
+    <string name="setTitle4">تغيير الشعار</string>
+    <string name="changePassword">تغيير كلمة المرور</string>
+    <string name="oldHintAccountName">كلمة السر القديمة</string>
+    <string name="newHintAccountName">كلمة السر الجديدة</string>
+    <string name="confirmHintAccountName">تأكيد كلمة السر الجديدة</string>
+
+
+    <string name="closeNotifSound">حالة التنبيهات الصوتية لإغلاق الهاتف</string>
+    <string name="closeNotifScreen">حالة التنبيهات المرئية لإغلاق الهاتف</string>
+    <string name="hintSoundNotif">تشغيل التنبيه الصوتي</string>
+    <string name="hintScreenNotif">تشغيل التنبيه المرئي</string>
+    <string name="notifTextPeriod">نص التنبيه </string>
+    <string name="notifTimer">إظهار التنبيهات قبل إقامة الصلاة ب  </string>
+    <string name="sec">ثانية</string>
+    <string name="notification">الصوت و الإشعارات</string>
+    <string name="adan_sound">التنبيه الصوتي للآذان</string>
+    <string name="iqama_sound">التنبيه الصوتي للإقامة</string>
+    <string name="voice">عداد الركعات </string>
+    <string name="adan_notifications">اشعارات الآذان</string>
+    <string name="hint_adan">تنبيه المستخدم في موعد الصلاة</string>
+    <string name="hint_sound_adan">تشغيل صوت الاذان</string>
+    <string name="hint_sound_iqama">تشغيل تنبيه الإقامة </string>
+    <string name="change_sound">تغيير صوت الأذان</string>
+    <string name="change_sound_hint">اختر صوت للأذان من القائمة</string>
+    <string name="lan_7">Native Bluetooth hardware or driver was not found!</string>
+    <string name="lan_143">Temperature</string>
+    <string name="lan_144">Humidity</string>
+    <string name="lan_145">Model</string>
+    <string name="lan_146">Default</string>
+    <string name="lan_147">Distance</string>
+    <string name="lan_148">RSSI</string>
+    <string name="lan_149">Battery</string>
+    <string name="lan_6">4.0 BLE detects that the device does not support Bluetooth</string>
+    <string name="lan_24">SN</string>
+    <string name="lan_2">Message</string>
+    <string name="lan_134">Print complete!</string>
+    <string name="lan_135">Can not print! Please check whether the printer is online.</string>
+    <string name="lan_136">Data record is empty or setting is error!</string>
+    <string name="lan_137">Fetching data...</string>
+    <string name="lan_138">Extract the data has been canceled!</string>
+    <string name="lan_139">Extract data during abnormal!</string>
+    <string name="lan_14">History Recorder</string>
+    <string name="lan_140">Report is being generated, please wait...</string>
+    <string name="lan_141">Generate reports error!</string>
+    <string name="lan_79">Confirm</string>
+    <string name="lan_99">جاري البحث عن الأجهزة... </string>
+    <string name="lan_101">Connecting...</string>
+    <string name="lan_102">Unable to connect the device!</string>
+    <string name="lan_226">Whether to try again ?</string>
+    <string name="lan_198">Yes</string>
+    <string name="lan_151">Disconnected!</string>
+    <string name="lan_103">Reading device parameters...</string>
+    <string name="lan_104">Can not read the device parameters!</string>
+    <string name="lan_105">Reading device parameters failed!</string>
+    <string name="lan_168">Password is error</string>
+    <string name="lan_45">Battery</string>
+    <string name="lan_150">Scan Device</string>
+
+    <string name="lan_199">No</string>
+    <string name="lan_100">لم يتم العثور على جهاز المستشعر!</string>
+    <string name="lan_194">Please notification permissions to open</string>
+    <string name="lan_10">Have not found a storage medium or does not have read permission!</string>
+    <string name="lan_8">Bluetooth is open</string>
+    <string name="lan_9">Bluetooth is not allowed to open</string>
+    <string name="lan_232">Please select the extraction period?</string>
+    <string name="lan_233">All</string>
+    <string name="lan_234">1 day</string>
+    <string name="lan_235">3 day</string>
+    <string name="lan_236">7 day</string>
+    <string name="lan_180">Set the time range</string>
+    <string name="lan_237">30 day</string>
+    <string name="makki">آذان الحرم المكي </string>
+    <string name="madani">آذان المدينة المنورة</string>
+    <string name="afasi">آذان بصوت الشيخ العفاسي</string>
+</resources>

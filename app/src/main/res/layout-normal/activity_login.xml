@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parentPanel"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:layoutDirection="rtl"
+    android:orientation="vertical"
+    android:textDirection="rtl"
+    tools:context="com.newsolution.almhrab.Activity.Login">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:src="@drawable/logo" />
+
+        <TextView
+            android:id="@+id/tvuserName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="اسم المستخدم:"
+            android:textColor="@color/backLogo"
+            android:layout_marginTop="30dp"
+            android:textSize="16dp" />
+
+        <EditText
+            android:id="@+id/edUserName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right|center_vertical"
+            android:hint="اسم المستخدم"
+            android:imeOptions="actionNext"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textColor="@color/backLogo"
+            android:textDirection="rtl"
+            android:textSize="15dp" />
+
+        <TextView
+            android:id="@+id/tvPW"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="كلمة المرور :"
+            android:textColor="@color/backLogo"
+            android:textSize="16dp" />
+
+        <EditText
+            android:id="@+id/edPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right|center_vertical"
+            android:hint="كلمة المرور "
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textColor="@color/backLogo"
+            android:textSize="15dp" />
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:background="@color/back_text"
+            android:padding="5dp"
+            android:text="دخول"
+            android:textColor="@color/white"
+            android:textSize="16dp"
+
+            />
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:visibility="gone"
+            android:id="@+id/progress"/>
+    </LinearLayout>
+
+</LinearLayout>

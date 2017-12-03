@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parentPanel"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:layoutDirection="rtl"
+    android:orientation="vertical"
+    android:textDirection="rtl"
+    tools:context="com.newsolution.almhrab.Activity.Login">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/logo" />
+
+        <TextView
+            android:id="@+id/tvًPriority"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="تحديد أولوية الاعدادات"
+            android:textColor="@color/backLogo"
+            android:layout_marginTop="40dp"
+            android:padding="5dp"
+            android:textSize="22dp" />
+        <TextView
+            android:id="@+id/tvًWith"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="اتصال انترنت"
+            android:padding="15dp"
+            android:gravity="center"
+            android:background="@color/back_text"
+            android:textColor="@color/white"
+            android:layout_marginTop="40dp"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/tvًWithout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:padding="15dp"
+            android:gravity="center"
+            android:text="بدون اتصال انترنت"
+            android:background="@color/back_text"
+            android:textColor="@color/white"
+            android:textSize="20dp" />
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/progress"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

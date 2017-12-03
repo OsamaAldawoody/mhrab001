@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.newsolution.almhrab">
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:name=".GlobalVars"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:ignore="MissingTvBanner">
+        <activity
+            android:name=".Activity.Splash"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <!--<category android:name="android.intent.category.HOME" />-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <receiver
+            android:name=".StartAtBootReceiver"
+            android:label="StartAtBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".Activity.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.ClosePhone"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.Read"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.ShowPray"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.Advertisments"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeAct" />
+        <activity
+            android:name=".Activity.AzkarAct"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeAct" />
+        <activity
+            android:name=".Activity.SettingsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeAct"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".Activity.ChoosePriority"
+            android:screenOrientation="portrait" />
+
+        <receiver android:name=".scheduler.SalaatAlarmReceiver" />
+        <receiver
+            android:name=".scheduler.SalaatBootReceiver"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".scheduler.SalaatSchedulingService" />
+
+        <activity
+            android:name=".Activity.Login"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.IqamaSettings"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeAct"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".Activity.NotificationSettings"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeAct"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".Activity.RingAlarmActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.AccountSetting"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeAct"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".Activity.AboutApp"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.ChangeTones"
+            android:theme="@style/AppThemeAct"
+            android:screenOrientation="portrait" ></activity>
+        <activity
+            android:name=".Activity.ScanDeviceActivity"
+            android:theme="@style/AppThemeAct"
+            android:screenOrientation="portrait" ></activity>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="3ee3bbe22ea5a5a974f94d5e8e909c87875dbee2" />
+    </application>
+
+</manifest>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parentPanel"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:layoutDirection="rtl"
+    android:orientation="vertical"
+    android:textDirection="rtl">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@color/back_text"
+        android:layout_alignParentTop="true"
+        android:contentInsetEnd="0dp"
+        android:contentInsetLeft="0dp"
+        android:contentInsetRight="0dp"
+        android:contentInsetStart="0dp"
+        app:contentInsetEnd="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetRight="0dp"
+        app:contentInsetStart="0dp">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/iv_back"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:padding="15dp"
+                android:src="@drawable/arrowforward_white" />
+
+            <TextView
+                android:id="@+id/tv_tittle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/iv_back"
+                android:text="@string/Tones_settings"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textSize" />
+        </RelativeLayout>
+    </android.support.v7.widget.Toolbar>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+      android:layout_below="@+id/tool_bar"  >
+    <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="@dimen/padding">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvChooseAthanSound"
+        android:layout_toRightOf="@+id/ivPlayAthan"
+        android:textColor="@color/black"
+        android:padding="@dimen/padding"
+        android:textSize="@dimen/textSize"
+        android:layout_alignParentRight="true"
+        android:text="تغيير صوت الأذان"/>
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_width="@dimen/height"
+            android:layout_height="@dimen/height"
+            android:id="@+id/ivPlayAthan"
+            android:padding="10dp"
+            android:layout_toRightOf="@+id/btnChAthanSound"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:background="@color/back_text"
+            app:srcCompat="@drawable/ic_play"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/padding"
+            android:id="@+id/btnChAthanSound"
+            android:background="@color/back_text"
+            android:text="اختر"
+            android:textSize="@dimen/textSize"
+            android:textColor="@color/white"/>
+</RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#dadada" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvChooseIqamaSound"
+            android:textColor="@color/black"
+            android:layout_toRightOf="@+id/ivPlayIqama"
+            android:padding="@dimen/padding"
+            android:textSize="@dimen/textSize"
+            android:layout_alignParentRight="true"
+            android:text="تغيير صوت اللإقامة"/>
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_width="@dimen/height"
+            android:layout_height="@dimen/height"
+            android:id="@+id/ivPlayIqama"
+            android:padding="10dp"
+            android:layout_toRightOf="@+id/btnChIqamaSound"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:background="@color/back_text"
+            app:srcCompat="@drawable/ic_play"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/padding"
+            android:id="@+id/btnChIqamaSound"
+            android:textSize="@dimen/textSize"
+            android:background="@color/back_text"
+            android:text="اختر"
+            android:textColor="@color/white"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#dadada" />
+</LinearLayout>
+    <Button
+        android:id="@+id/btnSaveEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center"
+        android:background="@color/back_text"
+        android:gravity="center"
+        android:text="@string/save"
+        android:textColor="@color/white"
+        android:padding="@dimen/padding"
+        android:textSize="@dimen/textSize" />
+</RelativeLayout>

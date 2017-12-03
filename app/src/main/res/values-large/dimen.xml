@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="l_font_size">45dp</dimen>
+    <dimen name="font_size">45dp</dimen>
+    <!--40dp-->
+    <dimen name="no_l_font_size">60dp</dimen>
+    <!--40dp-->
+    <dimen name="no_font_size">30dp</dimen>
+    <dimen name="shro_font_size">40dp</dimen>
+    <!--38dp-->
+    <dimen name="layout_marginTop">130dp</dimen>
+    <dimen name="height">70dp</dimen>
+    <dimen name="small_font_size">18dp</dimen>
+    <dimen name="textSize">18dp</dimen>
+    <dimen name="padding">20dp</dimen>
+
+</resources>
