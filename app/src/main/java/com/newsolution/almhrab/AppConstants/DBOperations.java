@@ -247,9 +247,9 @@ public class DBOperations {
     public ArrayList<Azkar> getAzkar() {
         azkars = new ArrayList<>();
         String selectQuery = "SELECT * FROM azkar ORDER BY sort ASC ";
-        Log.i("Quert", selectQuery);
+//        Log.i("Quert", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
-        Log.i("dataBase", "" + cursor.getCount());
+//        Log.i("dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
             do {
                 Azkar object = new Azkar();
