@@ -157,7 +157,10 @@ public class Read extends Activity {
     private Typeface fontComfort;
     private LinearLayout llAzkar;
     TextView azkarDisc1, azkarDisc2, azkarDisc3;
-
+    private RelativeLayout rlNews;
+    private LinearLayout rlTitle;
+    private AppCompatImageView ivLogo;
+    private TextView tvName;
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -230,23 +233,6 @@ public class Read extends Activity {
         spedit.putString("imagrib", settings.getMagribEkama() + "").commit();
         spedit.putString("iisha", settings.getIshaEkama() + "").commit();
 
-        ivMenu = (ImageView) findViewById(R.id.ivMenu);
-        ivMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dispMenu(view);
-            }
-        });
-        ivMasjedLogo = (AppCompatImageView) findViewById(R.id.ivMasjedLogo);
-        tvMasjedName = (TextView) findViewById(R.id.tvMasjedName);
-        tvIn = (TextView) findViewById(R.id.tvIn);
-        tvOut = (TextView) findViewById(R.id.tvOut);
-        tvHum = (TextView) findViewById(R.id.tvHum);
-        tvHum.setText("الرطوبة الخارجية");
-        tvMasjedName.setTypeface(fontDroidkufi);
-        tvIn.setTypeface(fontDroidkufi);
-        tvOut.setTypeface(fontDroidkufi);
-        tvHum.setTypeface(fontDroidkufi);
 
 //        prayTimes=  gv.getPrayTimes();
         cfajr = sp.getString("suh", "");
@@ -275,7 +261,7 @@ public class Read extends Activity {
        }catch(Exception e){}
 
         buildUI();
-        animAdvs();
+        showNews();
         if (TextUtils.isEmpty(sp.getString("TempIn",""))) {
             getWeather(0);
         }else {
@@ -380,28 +366,39 @@ public class Read extends Activity {
         llAsr = (LinearLayout) findViewById(R.id.llAsr);
         llMagrib = (LinearLayout) findViewById(R.id.llMagrib);
         llIsha = (LinearLayout) findViewById(R.id.llIsha);
+        tvMasjedName = (TextView) findViewById(R.id.tvMasjedName);
         ivMasjedLogo = (AppCompatImageView) findViewById(R.id.ivMasjedLogo);
+        rlNews = (RelativeLayout) findViewById(R.id.rlNews);
+        rlTitle = (LinearLayout) findViewById(R.id.rlTitle);
+        ivLogo = (AppCompatImageView) findViewById(R.id.ivLogo);
+        tvName = (TextView) findViewById(R.id.tvName);
         tvHumidity = (TextView) findViewById(R.id.tvHumidity);
         out_masgedTemp = (TextView) findViewById(R.id.outMasgedasged);
         in_masgedTemp = (TextView) findViewById(R.id.in_masged);
-        tvMasjedName.setText(sp.getString("masjedName", ""));
-        if (!TextUtils.isEmpty(sp.getString("masjedImg", ""))){
-            Glide.with(activity).load(Uri.parse(sp.getString("masjedImg", "")))
-                    .override(100, 100).listener(new RequestListener<Uri, GlideDrawable>() {
-                @Override
-                public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
-//                    Log.i("exce: ", e.getMessage());
-                    ivMasjedLogo.setImageResource(R.drawable.ic_mosque);
-                    return false;
-                }
+        ivMenu = (ImageView) findViewById(R.id.ivMenu);
+        ivMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dispMenu(view);
+            }
+        });
+        tvIn = (TextView) findViewById(R.id.tvIn);
+        tvOut = (TextView) findViewById(R.id.tvOut);
+        tvHum = (TextView) findViewById(R.id.tvHum);
+        tvHum.setText("الرطوبة الخارجية");
+        tvMasjedName.setTypeface(fontDroidkufi);
+        tvIn.setTypeface(fontDroidkufi);
+        tvOut.setTypeface(fontDroidkufi);
+        tvHum.setTypeface(fontDroidkufi);
 
-                @Override
-                public boolean onResourceReady(GlideDrawable resource, Uri model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                    return false;
-                }
-            }).into(ivMasjedLogo);
+        tvMasjedName.setText(sp.getString("masjedName", ""));
+        tvName.setText(sp.getString("masjedName", ""));
+        if (!TextUtils.isEmpty(sp.getString("masjedImg", ""))) {
+            setImage(sp.getString("masjedImg", ""), ivLogo);
+            setImage(sp.getString("masjedImg", ""), ivMasjedLogo);
         } else {
             ivMasjedLogo.setImageResource(R.drawable.ic_mosque);
+            ivLogo.setImageResource(R.drawable.ic_mosque);
         }
         fajrTitle = (TextView) findViewById(R.id.fajrTitle);
         fajrTime = (TextView) findViewById(R.id.fajrTime);
@@ -1340,5 +1337,35 @@ public class Read extends Activity {
 //            }
 //        });
     }
+    private void showNews() {
+        if (sp.getBoolean("news", true)) {
+            if (advs.size() > 0) {
+                rlTitle.setVisibility(View.GONE);
+                rlNews.setVisibility(View.VISIBLE);
+                animAdvs();
+            } else {
+                rlTitle.setVisibility(View.VISIBLE);
+                rlNews.setVisibility(View.GONE);
+            }
+        } else {
+            rlTitle.setVisibility(View.VISIBLE);
+            rlNews.setVisibility(View.GONE);
+        }
+    }
+    private void setImage(String masjedImg, final AppCompatImageView imageView) {
+        Glide.with(activity).load(Uri.parse(masjedImg))
+                .override(100, 100).listener(new RequestListener<Uri, GlideDrawable>() {
+            @Override
+            public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
+//                    Log.i("exce: ", e.getMessage());
+                imageView.setImageResource(R.drawable.ic_mosque);
+                return false;
+            }
 
+            @Override
+            public boolean onResourceReady(GlideDrawable resource, Uri model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                return false;
+            }
+        }).into(imageView);
+    }
 }

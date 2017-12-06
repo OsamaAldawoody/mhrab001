@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -90,6 +91,12 @@ public class SettingsActivity extends Activity {
     private LinearLayout llbatteryOut, llbatteryIn;
     private TextView tvScanSensors, tvLocationHint;
     private City city;
+    private CheckBox cb_sleep, cb_news, cb_friday;
+    private LinearLayout layout, llSleep, llNews, llFriday;
+    private Dialog fridayDialog;
+    private Dialog sleepDialog;
+    private EditText edAppearTimer, edRecordTimer, ed_play, ed_stop;
+    private Button btn_cancel, btn_add;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -120,6 +127,13 @@ public class SettingsActivity extends Activity {
 
         iv_back = (ImageView) findViewById(R.id.iv_back);
         parentPanel = (LinearLayout) findViewById(R.id.parentPanel);
+        layout = (LinearLayout) findViewById(R.id.layout);
+        llSleep = (LinearLayout) findViewById(R.id.llSleep);
+        cb_sleep = (CheckBox) findViewById(R.id.cb_sleep);
+        llNews = (LinearLayout) findViewById(R.id.llNews);
+        cb_news = (CheckBox) findViewById(R.id.cb_news);
+        llFriday = (LinearLayout) findViewById(R.id.llFriday);
+        cb_friday = (CheckBox) findViewById(R.id.cb_friday);
         edTempIn = (EditText) findViewById(R.id.edTemp);
         edTempOut = (EditText) findViewById(R.id.edTempOut);
         btnSaveTempIn = (Button) findViewById(R.id.btnSaveTemp);
@@ -139,10 +153,27 @@ public class SettingsActivity extends Activity {
         tvSettingAccount = (TextView) findViewById(R.id.tvSettingAccount);
         cb_voiceRec = (CheckBox) findViewById(R.id.cb_voiceRec);
         ll_voiceRec = (LinearLayout) findViewById(R.id.ll_voiceRec);
+        cb_voiceRec.setChecked(true);
         if (sp.getBoolean("voiceRec", true)) {
             cb_voiceRec.setChecked(true);
         } else {
             cb_voiceRec.setChecked(false);
+        }
+
+        if (sp.getBoolean("news", true)) {
+            cb_news.setChecked(true);
+        } else {
+            cb_news.setChecked(false);
+        }
+        if (sp.getBoolean("friday", false)) {
+            cb_friday.setChecked(true);
+        } else {
+            cb_friday.setChecked(false);
+        }
+        if (sp.getBoolean("sleep", false)) {
+            cb_sleep.setChecked(true);
+        } else {
+            cb_sleep.setChecked(false);
         }
         //ll_eqama_settings.setVisibility(View.GONE);
 
@@ -194,6 +225,79 @@ public class SettingsActivity extends Activity {
                     spedit.putBoolean("voiceRec", true).commit();
                 } else {
                     spedit.putBoolean("voiceRec", false).commit();
+                }
+            }
+        });
+        llNews.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cb_news.isChecked()) {
+                    spedit.putBoolean("news", false).commit();
+                    cb_news.setChecked(false);
+                } else {
+                    cb_news.setChecked(true);
+                    spedit.putBoolean("news", true).commit();
+                }
+            }
+        });
+        cb_news.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (cb_news.isChecked()) {
+                    spedit.putBoolean("news", true).commit();
+                } else {
+                    spedit.putBoolean("news", false).commit();
+                }
+            }
+        });
+        llSleep.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cb_sleep.isChecked()) {
+                    spedit.putBoolean("sleep", false).commit();
+                    cb_sleep.setChecked(false);
+                    Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, ( 24 * 60 * 60 * 1000));
+                } else {
+                    cb_sleep.setChecked(true);
+                    spedit.putBoolean("sleep", true).commit();
+//                    showSleepDialog();c
+                }
+            }
+        });
+        cb_sleep.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (cb_sleep.isChecked()) {
+                    spedit.putBoolean("sleep", true).commit();
+                    showSleepDialog();
+                } else {
+                    Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, ( 24 * 60 * 60 * 1000));
+                    spedit.putBoolean("sleep", false).commit();
+                }
+
+            }
+        });
+        llFriday.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cb_friday.isChecked()) {
+                    spedit.putBoolean("friday", false).commit();
+                    cb_friday.setChecked(false);
+                } else {
+                    cb_friday.setChecked(true);
+                    spedit.putBoolean("friday", true).commit();
+//                    showFridayDialog();
+                }
+            }
+        });
+        cb_friday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (cb_friday.isChecked()) {
+                    spedit.putBoolean("friday", true).commit();
+                    showFridayDialog();
+                } else {
+                    spedit.putBoolean("friday", false).commit();
                 }
             }
         });
@@ -361,6 +465,112 @@ public class SettingsActivity extends Activity {
                 startActivity(new Intent(activity, AccountSetting.class));
             }
         });
+    }
+
+    private void showFridayDialog() {
+        View view = getLayoutInflater().inflate(R.layout.friday_dialog, null);
+        edRecordTimer = (EditText) view.findViewById(R.id.edRecordTimer);
+        edAppearTimer = (EditText) view.findViewById(R.id.edAppearTimer);
+        btn_add = (Button) view.findViewById(R.id.btn_add);
+        btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
+        fridayDialog = new Dialog(this);
+        btn_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (TextUtils.isEmpty(edRecordTimer.getText().toString())) {
+                    edRecordTimer.setError("هذا الحقل مطلوب");
+                    return;
+                }
+                if (TextUtils.isEmpty(edAppearTimer.getText().toString())) {
+                    edAppearTimer.setError("هذا الحقل مطلوب");
+                    return;
+                }
+                spedit.putInt("recordPeriod", Integer.parseInt(edRecordTimer.getText().toString().trim())).commit();
+                spedit.putInt("appearPeriod", Integer.parseInt(edAppearTimer.getText().toString().trim())).commit();
+                Utils.showCustomToast(activity, getString(R.string.saved));
+                if (fridayDialog.isShowing()) fridayDialog.dismiss();
+            }
+        });
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (sp.getInt("recordPeriod", -1) == -1 && sp.getInt("appearPeriod", -1) == -1)
+                    cb_friday.setChecked(false);
+                if (fridayDialog.isShowing()) fridayDialog.dismiss();
+            }
+        });
+        edRecordTimer.setText(sp.getInt("recordPeriod", -1) != -1 ? sp.getInt("recordPeriod", -1) + "" : "");
+        edAppearTimer.setText(sp.getInt("appearPeriod", -1) != -1 ? sp.getInt("appearPeriod", -1) + "" : "");
+        fridayDialog.setContentView(view);
+        fridayDialog.show();
+        fridayDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                if (sp.getInt("recordPeriod", -1) == -1 && sp.getInt("appearPeriod", -1) == -1)
+                    cb_friday.setChecked(false);
+            }
+        });
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        Window window = fridayDialog.getWindow();
+        lp.copyFrom(window.getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        window.setAttributes(lp);
+    }
+
+    private void showSleepDialog() {
+        View view = getLayoutInflater().inflate(R.layout.sleep_dialog, null);
+        ed_play = (EditText) view.findViewById(R.id.ed_play);
+        ed_stop = (EditText) view.findViewById(R.id.ed_stop);
+        btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
+        btn_add = (Button) view.findViewById(R.id.btn_add);
+        sleepDialog = new Dialog(this);
+        btn_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (TextUtils.isEmpty(ed_play.getText().toString())) {
+                    ed_play.setError("هذا الحقل مطلوب");
+                    return;
+                }
+                if (TextUtils.isEmpty(ed_stop.getText().toString())) {
+                    ed_stop.setError("هذا الحقل مطلوب");
+                    return;
+                }
+                if (sleepDialog.isShowing()) sleepDialog.dismiss();
+                spedit.putInt("sleepOn", Integer.parseInt(ed_play.getText().toString().trim())).commit();
+                spedit.putInt("sleepOff", Integer.parseInt(ed_stop.getText().toString().trim())).commit();
+//                String sleepOnTime= Utils.addToTime(sp.getString("isha",""),sp.getInt("sleepOn",0)+"");
+//                String sleepOffTime= Utils.diffFromTime(sp.getString("suh",""),sp.getInt("sleepOff",0)+"");
+//                spedit.putString("sleepOnTime", sleepOnTime).commit();
+//                spedit.putString("sleepOffTime", sleepOffTime).commit();
+                Utils.showCustomToast(activity, getString(R.string.saved));
+            }
+        });
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (sp.getInt("sleepOff", -1) == -1 && sp.getInt("sleepOff", -1) == -1)
+                    cb_sleep.setChecked(false);
+                if (sleepDialog.isShowing()) sleepDialog.dismiss();
+            }
+        });
+        ed_play.setText(sp.getInt("sleepOn", -1) != -1 ? sp.getInt("sleepOn", -1) + "" : "");
+        ed_stop.setText(sp.getInt("sleepOff", -1) != -1 ? sp.getInt("sleepOff", -1) + "" : "");
+        sleepDialog.setContentView(view);
+        sleepDialog.show();
+        sleepDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                if (sp.getInt("sleepOff", -1) == -1 && sp.getInt("sleepOff", -1) == -1)
+                    cb_sleep.setChecked(false);
+            }
+        });
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        Window window = sleepDialog.getWindow();
+        lp.copyFrom(window.getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        window.setAttributes(lp);
     }
 
     private void initiat(final ArrayList<String> list) {

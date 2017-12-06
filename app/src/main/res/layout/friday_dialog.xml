@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:layoutDirection="rtl"
+    android:orientation="vertical"
+    android:padding="@dimen/padding"
+    android:textDirection="rtl">
+
+    <TextView
+        android:id="@+id/tv_tittle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+        android:text="@string/fridayTxt"
+        android:textColor="@color/black"
+        android:textSize="@dimen/textSize"
+        android:visibility="visible" />
+
+    <EditText
+        android:id="@+id/edRecordTimer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:gravity="top"
+        android:hint="@string/fridayTxt1"
+        android:imeOptions="actionNext"
+        android:inputType="number"
+        android:padding="@dimen/padding"
+        android:textColor="@color/black_light"
+        android:textColorHint="@color/lb_grey"
+        android:textSize="@dimen/textSize" />
+
+    <EditText
+        android:id="@+id/edAppearTimer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:gravity="top"
+        android:hint="@string/fridayTxt2"
+        android:imeOptions="actionDone"
+        android:inputType="number"
+        android:padding="@dimen/padding"
+        android:textColor="@color/black_light"
+        android:textColorHint="@color/lb_grey"
+        android:textSize="@dimen/textSize" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_add"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_weight="0.5"
+            android:background="@color/back_text"
+            android:paddingBottom="@dimen/padding"
+            android:paddingTop="@dimen/padding"
+            android:text="@string/save"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textSize" />
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_weight="0.5"
+            android:background="@color/back_text"
+            android:paddingBottom="@dimen/padding"
+            android:paddingTop="@dimen/padding"
+            android:text="@string/cancel_delete"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textSize" />
+    </LinearLayout>
+</LinearLayout>

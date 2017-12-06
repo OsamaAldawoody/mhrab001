@@ -193,7 +193,13 @@
     <string name="sort">أدخل الترتيب للخبر</string>
     <string name="count">أدخل عدد مرات التكرار </string>
     <string name="newstext"> نص الخبر</string>
+    <string name="fridayTxt"> خطبة الجمعة </string>
+    <string name="fridayTxt1">مدة تسجيل الخطبة (دقيقة)</string>
+    <string name="fridayTxt2">مدة ظهور الخطبة المترجمة (دقيقة)</string>
     <string name="azkartext"> الأذكار </string>
+    <string name="sleepTxt"> وضع الإسبات </string>
+    <string name="sleepTxt1">تشغيل بعد العشاء بمدة(دقيقة)</string>
+    <string name="sleepTxt2">إيقاف قبل الفجر بمدة(دقيقة)</string>
 
     <string name="adan_fajer">حان موعد آذان الفجر</string>
     <string name="adan_duhor">حان موعد آذان الظهر</string>
@@ -242,6 +248,9 @@
     <string name="adan_sound">التنبيه الصوتي للآذان</string>
     <string name="iqama_sound">التنبيه الصوتي للإقامة</string>
     <string name="voice">عداد الركعات </string>
+    <string name="sleep">وضع الإسبات </string>
+    <string name="news">إظهار شريط الأخبار </string>
+    <string name="friday">إظهار خطبة الجمعة </string>
     <string name="adan_notifications">اشعارات الآذان</string>
     <string name="hint_adan">تنبيه المستخدم في موعد الصلاة</string>
     <string name="hint_sound_adan">تشغيل صوت الاذان</string>

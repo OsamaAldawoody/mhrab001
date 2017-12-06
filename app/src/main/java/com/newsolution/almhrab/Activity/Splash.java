@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
@@ -112,17 +113,47 @@ public class Splash extends Activity {
         spedit.putString(AppConst.DeviceNo, deviceId).commit();
 //        Log.i("/////* DeviceNo", deviceId);
 //        startApp();
-        askForPermissions(new String[]{
+        settingPermission();
+//        askForPermissions(new String[]{
+//                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
+//                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
+//                        android.Manifest.permission.READ_PHONE_STATE,
+//                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+////                        android.Manifest.permission.WRITE_SETTINGS,
+////                        android.Manifest.permission.DISABLE_KEYGUARD,
+//                        android.Manifest.permission.READ_EXTERNAL_STORAGE
+//                },
+//                REQUEST_PERMISSIONS);
+
+    }
+    public void settingPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.System.canWrite(getApplicationContext())) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, 200);
+
+            }else  askForPermissions(new String[]{
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                            android.Manifest.permission.READ_PHONE_STATE,
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                        android.Manifest.permission.WRITE_SETTINGS,
+//                        android.Manifest.permission.DISABLE_KEYGUARD,
+                            android.Manifest.permission.READ_EXTERNAL_STORAGE
+                    },
+                    REQUEST_PERMISSIONS);
+        }else  askForPermissions(new String[]{
                         android.Manifest.permission.ACCESS_COARSE_LOCATION,
                         android.Manifest.permission.ACCESS_COARSE_LOCATION,
                         android.Manifest.permission.READ_PHONE_STATE,
                         android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                        android.Manifest.permission.WRITE_SETTINGS,
+//                        android.Manifest.permission.DISABLE_KEYGUARD,
                         android.Manifest.permission.READ_EXTERNAL_STORAGE
                 },
                 REQUEST_PERMISSIONS);
 
     }
-
     protected final void askForPermissions(String[] permissions, int requestCode) {
         List<String> permissionsToRequest = new ArrayList<>();
         for (String permission : permissions) {
@@ -156,6 +187,8 @@ public class Splash extends Activity {
                                                 android.Manifest.permission.ACCESS_FINE_LOCATION,
                                                 android.Manifest.permission.READ_PHONE_STATE,
                                                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                                                android.Manifest.permission.WRITE_SETTINGS,
+//                                                android.Manifest.permission.DISABLE_KEYGUARD,
                                                 android.Manifest.permission.READ_EXTERNAL_STORAGE
                                         },
                                         REQUEST_PERMISSIONS);
@@ -200,8 +233,21 @@ public class Splash extends Activity {
         } else if (resultCode == 0) {
             Toast.makeText(this, getString(R.string.lan_9), 0).show();
             finish();
+         } else if (requestCode == 200&&resultCode==RESULT_OK) {
+            askForPermissions(new String[]{
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                            android.Manifest.permission.READ_PHONE_STATE,
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                        android.Manifest.permission.WRITE_SETTINGS,
+//                        android.Manifest.permission.DISABLE_KEYGUARD,
+                            android.Manifest.permission.READ_EXTERNAL_STORAGE
+                    },
+                    REQUEST_PERMISSIONS);
+        } else if (requestCode == 200&&resultCode==RESULT_CANCELED) {
+            finish();
         }
-    }
+        }
 
     public void isNotificationEnabled() {
         boolean result = false;

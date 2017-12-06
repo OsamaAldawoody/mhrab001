@@ -536,86 +536,120 @@
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
-            android:background="@color/back_text"
             android:gravity="center"
             android:layoutDirection="rtl"
             android:orientation="horizontal">
-
             <RelativeLayout
-                android:id="@+id/rlMasjedTitle"
-                android:layout_width="220dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentRight="true"
-                android:layout_gravity="center"
+                android:id="@+id/rlNews"
+                android:layout_width="match_parent"
                 android:background="@color/back_text"
-                android:gravity="center_vertical">
+                android:layout_height="match_parent"
+                android:visibility="visible">
+                <RelativeLayout
+                    android:id="@+id/rlMasjedTitle"
+                    android:layout_width="220dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_gravity="center"
+                    android:background="@color/back_text"
+                    android:gravity="center_vertical">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:id="@+id/ivMasjedLogo"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="3dp"
+                        android:gravity="center"
+                        android:padding="3dp"
+                        app:srcCompat="@drawable/ic_mosque" />
+
+                    <TextView
+                        android:id="@+id/tvMasjedName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginRight="2dp"
+                        android:layout_toLeftOf="@+id/ivMasjedLogo"
+                        android:background="@color/back_text"
+                        android:lineSpacingMultiplier="0.75"
+                        android:gravity="center"
+                        android:text="مسجد عائشة أم المؤمنين"
+                        android:textColor="@color/white"
+                        android:textSize="15dp" />
+                </RelativeLayout>
+                <View
+                    android:id="@+id/view"
+                    android:layout_width="3dp"
+                    android:layout_height="60dp"
+                    android:layout_toLeftOf="@+id/rlMasjedTitle"
+                    android:background="@color/span" />
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/view"
+                    android:layout_toRightOf="@+id/view1"
+                    android:background="@color/back_span"
+                    android:gravity="center">
+                    <TextView
+                        android:id="@+id/advText"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_gravity="bottom"
+                        android:ellipsize="marquee"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:gravity="center_vertical|right"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="مسجد بلال بن رباح يهنئى الشبل محمد أحمد لحفظه القران الكريـم ونسـأل الله الكريـم أن ينفـع بـه الإسـلام والمسلميــن"
+                        android:textColor="@color/white"
+                        android:textDirection="rtl"
+                        android:textSize="28dp" />
+                </LinearLayout>
+                <View
+                    android:id="@+id/view1"
+                    android:layout_width="7dp"
+                    android:layout_height="60dp"
+                    android:layout_alignParentLeft="true"
+                    android:background="@color/span" />
+            </RelativeLayout>
+            <LinearLayout
+                android:id="@+id/rlTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:gravity="center">
 
                 <android.support.v7.widget.AppCompatImageView
-                    android:id="@+id/ivMasjedLogo"
+                    android:id="@+id/ivLogo"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="3dp"
                     android:gravity="center"
-                    android:padding="3dp"
+                    android:layout_gravity="center"
                     app:srcCompat="@drawable/ic_mosque" />
 
                 <TextView
-                    android:id="@+id/tvMasjedName"
+                    android:id="@+id/tvName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="2dp"
-                    android:layout_marginRight="2dp"
-                    android:layout_toLeftOf="@+id/ivMasjedLogo"
-                    android:background="@color/back_text"
-                    android:lineSpacingMultiplier="0.75"
-                    android:gravity="center"
-                    android:text="مسجد عائشة أم المؤمنين"
-                    android:textColor="@color/white"
-                    android:textSize="15dp" />
-            </RelativeLayout>
-
-            <View
-                android:id="@+id/view"
-                android:layout_width="3dp"
-                android:layout_height="60dp"
-                android:layout_toLeftOf="@+id/rlMasjedTitle"
-                android:background="@color/span" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/view"
-                android:layout_toRightOf="@+id/view1"
-                android:background="@color/back_span"
-                android:gravity="center">
-                <TextView
-                    android:id="@+id/advText"
-                    android:layout_width="match_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_gravity="bottom"
-                    android:ellipsize="marquee"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:gravity="center_vertical|right"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:scrollHorizontally="true"
+                    android:layout_marginRight="10dp"
                     android:singleLine="true"
-                    android:text="مسجد بلال بن رباح يهنئى الشبل محمد أحمد لحفظه القران الكريـم ونسـأل الله الكريـم أن ينفـع بـه الإسـلام والمسلميــن"
-                    android:textColor="@color/white"
-                    android:textDirection="rtl"
-                    android:textSize="28dp" />
+                    android:layout_gravity="center"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:text="بلال بن رباح"
+                    android:textColor="@color/span"
+                    android:textSize="17dp" />
             </LinearLayout>
 
-            <View
-                android:id="@+id/view1"
-                android:layout_width="7dp"
-                android:layout_height="60dp"
-                android:layout_alignParentLeft="true"
-                android:background="@color/span" />
         </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>

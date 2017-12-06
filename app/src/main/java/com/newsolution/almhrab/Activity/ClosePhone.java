@@ -137,7 +137,10 @@ public class ClosePhone extends Activity {
     private Typeface fontRoboto;
     public static String comfort = "fonts/comfort.ttf";
     private Typeface fontComfort;
-
+    private RelativeLayout rlNews;
+    private LinearLayout rlTitle;
+    private AppCompatImageView ivLogo;
+    private TextView tvName;
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -189,18 +192,12 @@ public class ClosePhone extends Activity {
                 dispMenu(view);
             }
         });
-        ivMasjedLogo = (AppCompatImageView) findViewById(R.id.ivMasjedLogo);
-        tvMasjedName = (TextView) findViewById(R.id.tvMasjedName);
         tvJmaaPray = (TextView) findViewById(R.id.tvJmaaPray);
         tvIqama = (TextView) findViewById(R.id.tvIqama);
         tvIn = (TextView) findViewById(R.id.tvIn);
         tvOut = (TextView) findViewById(R.id.tvOut);
         tvHum = (TextView) findViewById(R.id.tvHum);
-        tvHum.setText("الرطوبة الخارجية");
-        tvMasjedName.setTypeface(fontDroidkufi);
-        tvIn.setTypeface(fontDroidkufi);
-        tvOut.setTypeface(fontDroidkufi);
-        tvHum.setTypeface(fontDroidkufi);
+
         remainTime1 = (TextView) findViewById(R.id.t1);
          regular = Typeface.createFromAsset(getAssets(), "fonts/neosansarabic.ttf");
          digital = Typeface.createFromAsset(getAssets(), "fonts/digital.ttf");
@@ -231,7 +228,8 @@ public class ClosePhone extends Activity {
 //        ///// start service /////
 
         buildUI();
-        animAdvs();
+        showNews();
+
        if (TextUtils.isEmpty(sp.getString("TempIn",""))) {
            getWeather(0);
        }else {
@@ -263,24 +261,24 @@ public class ClosePhone extends Activity {
         out_masgedTemp = (TextView) findViewById(R.id.outMasgedasged);
         in_masgedTemp = (TextView) findViewById(R.id.in_masged);
         tvMasjedName = (TextView) findViewById(R.id.tvMasjedName);
+        rlNews = (RelativeLayout) findViewById(R.id.rlNews);
+        rlTitle = (LinearLayout) findViewById(R.id.rlTitle);
+        ivLogo = (AppCompatImageView) findViewById(R.id.ivLogo);
+        tvName = (TextView) findViewById(R.id.tvName);
+        tvHum.setText("الرطوبة الخارجية");
+        tvMasjedName.setTypeface(fontDroidkufi);
+        tvName.setTypeface(fontDroidkufi);
+        tvIn.setTypeface(fontDroidkufi);
+        tvOut.setTypeface(fontDroidkufi);
+        tvHum.setTypeface(fontDroidkufi);
         tvMasjedName.setText(sp.getString("masjedName", ""));
-        if (!TextUtils.isEmpty(sp.getString("masjedImg", ""))){
-            Glide.with(activity).load(Uri.parse(sp.getString("masjedImg", "")))
-                    .override(100,100).listener(new RequestListener<Uri, GlideDrawable>() {
-                @Override
-                public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
-//                    Log.i("exce: ",e.getMessage());
-                    ivMasjedLogo.setImageResource(R.drawable.ic_mosque);
-                    return false;
-                }
-
-                @Override
-                public boolean onResourceReady(GlideDrawable resource, Uri model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                    return false;
-                }
-            }).into(ivMasjedLogo);
+        tvName.setText(sp.getString("masjedName", ""));
+        if (!TextUtils.isEmpty(sp.getString("masjedImg", ""))) {
+            setImage(sp.getString("masjedImg", ""), ivLogo);
+            setImage(sp.getString("masjedImg", ""), ivMasjedLogo);
         } else {
             ivMasjedLogo.setImageResource(R.drawable.ic_mosque);
+            ivLogo.setImageResource(R.drawable.ic_mosque);
         }
         fajrTitle = (TextView) findViewById(R.id.fajrTitle);
         fajrTime = (TextView) findViewById(R.id.fajrTime);
@@ -1309,4 +1307,36 @@ public class ClosePhone extends Activity {
 //        }
 
     }
+    private void showNews() {
+        if (sp.getBoolean("news", true)) {
+            if (advs.size() > 0) {
+                rlTitle.setVisibility(View.GONE);
+                rlNews.setVisibility(View.VISIBLE);
+                animAdvs();
+            } else {
+                rlTitle.setVisibility(View.VISIBLE);
+                rlNews.setVisibility(View.GONE);
+            }
+        } else {
+            rlTitle.setVisibility(View.VISIBLE);
+            rlNews.setVisibility(View.GONE);
+        }
+    }
+    private void setImage(String masjedImg, final AppCompatImageView imageView) {
+        Glide.with(activity).load(Uri.parse(masjedImg))
+                .override(100, 100).listener(new RequestListener<Uri, GlideDrawable>() {
+            @Override
+            public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
+//                    Log.i("exce: ", e.getMessage());
+                imageView.setImageResource(R.drawable.ic_mosque);
+                return false;
+            }
+
+            @Override
+            public boolean onResourceReady(GlideDrawable resource, Uri model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                return false;
+            }
+        }).into(imageView);
+    }
+
 }

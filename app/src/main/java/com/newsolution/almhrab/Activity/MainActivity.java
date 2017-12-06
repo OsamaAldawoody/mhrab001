@@ -49,6 +49,8 @@ import android.text.style.TypefaceSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -172,6 +174,10 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     private String TempIn = "";
     private String TempOut = "";
     public ILocalBluetoothCallBack _LocalBluetoothCallBack = new C05785();
+    private RelativeLayout rlNews;
+    private LinearLayout rlTitle;
+    private AppCompatImageView ivLogo;
+    private TextView tvName;
 
     class C05785 implements ILocalBluetoothCallBack {
         C05785() {
@@ -306,7 +312,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     private SharedPreferences sp;
     private GlobalVars gv;
     private SharedPreferences.Editor spedit;
-    private ImageView ivMasjedLogo, ivMenu;
+    private AppCompatImageView ivMasjedLogo, ivMenu;
     private TextView tvIqama, tvJmaaPray;
     private TextView tvIn, tvOut, tvHum;
     TextView date1, time, amPm, fajrIqama, IqamaTitle, salaTitle, AthanTitle,
@@ -449,26 +455,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         spedit.putString("imagrib", settings.getMagribEkama() + "").commit();
         spedit.putString("iisha", settings.getIshaEkama() + "").commit();
 
-        ivMenu = (ImageView) findViewById(R.id.ivMenu);
-        ivMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dispMenu(view);
-            }
-        });
-        ivMasjedLogo = (ImageView) findViewById(R.id.ivMasjedLogo);
-        tvMasjedName = (TextView) findViewById(R.id.tvMasjedName);
-        tvJmaaPray = (TextView) findViewById(R.id.tvJmaaPray);
-        tvIqama = (TextView) findViewById(R.id.tvIqama);
-        tvIn = (TextView) findViewById(R.id.tvIn);
-        tvOut = (TextView) findViewById(R.id.tvOut);
-        tvHum = (TextView) findViewById(R.id.tvHum);
-        tvHum.setText("الرطوبة الخارجية");
-        tvJmaaPray.setTypeface(fontArial);
-        tvMasjedName.setTypeface(fontDroidkufi);
-        tvIn.setTypeface(fontDroidkufi);
-        tvOut.setTypeface(fontDroidkufi);
-        tvHum.setTypeface(fontDroidkufi);
+
 //        prayTimes=  gv.getPrayTimes();
         cfajr = sp.getString("suh", "");
         csunrise = sp.getString("sun", "");
@@ -551,10 +538,27 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     }
 
     public void buildUI() {
+
+        ivMenu = (AppCompatImageView) findViewById(R.id.ivMenu);
+        ivMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dispMenu(view);
+            }
+        });
+        tvJmaaPray = (TextView) findViewById(R.id.tvJmaaPray);
+        tvIqama = (TextView) findViewById(R.id.tvIqama);
+        tvIn = (TextView) findViewById(R.id.tvIn);
+        tvOut = (TextView) findViewById(R.id.tvOut);
+        tvHum = (TextView) findViewById(R.id.tvHum);
         llTitles = (LinearLayout) findViewById(R.id.llTitles);
         llIqamaTime = (LinearLayout) findViewById(R.id.llIqamaTime);
         Utils.applyFont(activity, llTitles);
-        ivMasjedLogo = (ImageView) findViewById(R.id.ivMasjedLogo);
+        rlNews = (RelativeLayout) findViewById(R.id.rlNews);
+        rlTitle = (LinearLayout) findViewById(R.id.rlTitle);
+        ivLogo = (AppCompatImageView) findViewById(R.id.ivLogo);
+        tvName = (TextView) findViewById(R.id.tvName);
+        ivMasjedLogo = (AppCompatImageView) findViewById(R.id.ivMasjedLogo);
         tvHumidity = (TextView) findViewById(R.id.tvHumidity);
         out_masgedTemp = (TextView) findViewById(R.id.outMasgedasged);
         in_masgedTemp = (TextView) findViewById(R.id.in_masged);
@@ -568,7 +572,13 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 //        out_masgedTemp.setText("0");
 //        in_masgedTemp.setText("0");
 //        tvHumidity.setText("0%");
-
+        tvHum.setText("الرطوبة الخارجية");
+        tvJmaaPray.setTypeface(fontArial);
+        tvMasjedName.setTypeface(fontDroidkufi);
+        tvName.setTypeface(fontDroidkufi);
+        tvIn.setTypeface(fontDroidkufi);
+        tvOut.setTypeface(fontDroidkufi);
+        tvHum.setTypeface(fontDroidkufi);
         fajrTitle = (AppCompatImageView) findViewById(R.id.fajrTitle);
         fajrTime = (TextView) findViewById(R.id.fajrTime);
         fajrIqama = (TextView) findViewById(R.id.fajrIqama);
@@ -659,23 +669,13 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         Scan();
 //        AutoScan();
         tvMasjedName.setText(sp.getString("masjedName", ""));
+        tvName.setText(sp.getString("masjedName", ""));
         if (!TextUtils.isEmpty(sp.getString("masjedImg", ""))) {
-            Glide.with(activity).load(Uri.parse(sp.getString("masjedImg", "")))
-                    .override(100, 100).listener(new RequestListener<Uri, GlideDrawable>() {
-                @Override
-                public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
-//                    Log.i("exce: ", e.getMessage());
-                    ivMasjedLogo.setImageResource(R.drawable.ic_mosque);
-                    return false;
-                }
-
-                @Override
-                public boolean onResourceReady(GlideDrawable resource, Uri model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                    return false;
-                }
-            }).into(ivMasjedLogo);
+            setImage(sp.getString("masjedImg", ""), ivLogo);
+            setImage(sp.getString("masjedImg", ""), ivMasjedLogo);
         } else {
             ivMasjedLogo.setImageResource(R.drawable.ic_mosque);
+            ivLogo.setImageResource(R.drawable.ic_mosque);
         }
         DBO.open();
         advs = DBO.getNews(Utils.getFormattedCurrentDate());
@@ -683,7 +683,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         DBO.close();
         getPrayerTimes();
 
-        animAdvs();
+        showNews();
 
         buildTheme();
         if (sp.getInt("priority", 0) == 1) {
@@ -709,12 +709,47 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         stopTimer = false;
     }
 
+    private void setImage(String masjedImg, final AppCompatImageView imageView) {
+        Glide.with(activity).load(Uri.parse(masjedImg))
+                .override(100, 100).listener(new RequestListener<Uri, GlideDrawable>() {
+            @Override
+            public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
+//                    Log.i("exce: ", e.getMessage());
+                imageView.setImageResource(R.drawable.ic_mosque);
+                return false;
+            }
+
+            @Override
+            public boolean onResourceReady(GlideDrawable resource, Uri model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                return false;
+            }
+        }).into(imageView);
+    }
+
     public void setAlarm() {
         ///// start service /////
         SalaatAlarmReceiver sar = new SalaatAlarmReceiver();
         sar.cancelAlarm(this);
         sar.setAlarm(this);
         ///// start service /////
+    }
+
+    public void lockScreen() {
+//        Window window = this.getWindow();
+//        window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+//        window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+//        window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+        params.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+        params.screenBrightness = 0;
+        getWindow().setAttributes(params);
+    }
+
+    public void unlockScreen() {
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+        params.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+        params.screenBrightness = -1f;
+        getWindow().setAttributes(params);
     }
 
     private void changeSettings() {
@@ -2335,26 +2370,35 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 advs = DBO.getNews(Utils.getFormattedCurrentDate());
                 settings = DBO.getSettings();
                 DBO.close();
-                animAdvs();
+                showNews();
                 tvMasjedName.setText(sp.getString("masjedName", ""));
-                if (!TextUtils.isEmpty(sp.getString("masjedImg", "")))
-                    Glide.with(activity).load(Uri.parse(sp.getString("masjedImg", "")))
-                            .override(100, 100).listener(new RequestListener<Uri, GlideDrawable>() {
-                        @Override
-                        public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
-                            Log.i("exce: ", e.getMessage());
-                            ivMasjedLogo.setImageResource(R.drawable.ic_mosque);
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(GlideDrawable resource, Uri model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            return false;
-                        }
-                    }).into(ivMasjedLogo);
+                tvName.setText(sp.getString("masjedName", ""));
+                if (!TextUtils.isEmpty(sp.getString("masjedImg", ""))) {
+                    setImage(sp.getString("masjedImg", ""), ivLogo);
+                    setImage(sp.getString("masjedImg", ""), ivMasjedLogo);
+                } else {
+                    ivMasjedLogo.setImageResource(R.drawable.ic_mosque);
+                    ivLogo.setImageResource(R.drawable.ic_mosque);
+                }
             }
         }
 
+    }
+
+    private void showNews() {
+        if (sp.getBoolean("news", true)) {
+            if (advs.size() > 0) {
+                rlTitle.setVisibility(View.GONE);
+                rlNews.setVisibility(View.VISIBLE);
+                animAdvs();
+            } else {
+                rlTitle.setVisibility(View.VISIBLE);
+                rlNews.setVisibility(View.GONE);
+            }
+        } else {
+            rlTitle.setVisibility(View.VISIBLE);
+            rlNews.setVisibility(View.GONE);
+        }
     }
 
     /**

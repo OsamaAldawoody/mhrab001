@@ -1,6 +1,8 @@
 package com.newsolution.almhrab.scheduler;
 
+import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,9 +11,12 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 
@@ -23,16 +28,19 @@ import com.newsolution.almhrab.Activity.Splash;
 import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.Constants;
 import com.newsolution.almhrab.Helpar.Utils;
+import com.newsolution.almhrab.Helpar.WakeLocker;
 import com.newsolution.almhrab.Hijri_Cal_Tools;
 import com.newsolution.almhrab.Model.City;
 import com.newsolution.almhrab.Model.OptionSiteClass;
 import com.newsolution.almhrab.R;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -137,7 +145,47 @@ public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Con
 
         Calendar then = Calendar.getInstance(TimeZone.getDefault());
         then.setTimeInMillis(System.currentTimeMillis());
+        KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Activity.KEYGUARD_SERVICE);
+        KeyguardManager.KeyguardLock lock = keyguardManager.newKeyguardLock(context.KEYGUARD_SERVICE);
+        if (sp.getBoolean("sleep", false)) {
+            String sleepOn = Utils.addToTime(sp.getString("isha", ""), sp.getInt("sleepOn", 0) + "");
+            String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), sp.getInt("sleepOff", 0) + "");
+            try {
+                Date mToday = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                String curTime = sdf.format(mToday);
+                Date start = sdf.parse(sleepOn);
+                Date end = sdf.parse(sleepOff);
+                Date userDate = sdf.parse(curTime);
+                if (end.before(start)) {
+                    Calendar mCal = Calendar.getInstance();
+                    mCal.setTime(end);
+                    mCal.add(Calendar.DAY_OF_YEAR, 1);
+                    end.setTime(mCal.getTimeInMillis());
+                }
 
+                Log.d("**curTime", userDate.toString());
+                Log.d("**start", start.toString());
+                Log.d("**end", end.toString());
+                if (userDate.after(start) && userDate.before(end)) {
+                    Log.d("**result", "falls between start and end , go to screen 1 ");
+                    lock.reenableKeyguard();
+                    Settings.System.putInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, 1000);
+                    return;
+                }
+                else {
+                    WakeLocker.acquire(context);
+                    WakeLocker.release();
+                    lock.disableKeyguard();
+                    Settings.System.putInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, (3 * 24 * 60 * 60 * 1000));
+                    Log.d("**result", "does not fall between start and end , go to screen 2 ");
+                }
+            } catch (ParseException e) {
+            }
+        }
+        WakeLocker.acquire(context);
+        WakeLocker.release();
+        lock.disableKeyguard();
 
 //    LinkedHashMap<String, String> prayerTimes = PrayTime.getPrayerTimes(context, alarmIndex, lat, lng, PrayTime.TIME_24);
         Map<String, String> prayerTimes = new HashMap<>();
@@ -167,20 +215,17 @@ public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Con
             if (!isAlarmEnabledForPrayer(context, prayer)) {
                 continue;
             }
-//            Log.i("999", isAlarmEnabledForPrayer(context, prayer) + "");
-
+//           Log.i("999", isAlarmEnabledForPrayer(context, prayer) + "");
             then = getCalendarFromPrayerTime(then, prayerTimes.get(prayer));
 
-            if (then.after(now)) {
+            if (then.after(now)) {//وقت الصلاة بعد الان
                 // this is the alarm to set
                 nameOfPrayerFound = prayer;
                 Log.i("999", nameOfPrayerFound);
                 nextAlarmFound = true;
                 break;
             }
-
         }
-        Log.i("999", " 88" + nameOfPrayerFound);
 
         if (!nextAlarmFound) {
             for (String prayer : prayerNames) {
@@ -190,9 +235,10 @@ public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Con
 
                 then = getCalendarFromPrayerTime(then, prayerTimes.get(prayer));
 
-                if (then.before(now)) {
+                if (then.before(now)) {//وقت الصلاة قبل الان
                     // this is the next day.
                     nameOfPrayerFound = prayer;
+                    Log.i("999", " 88" + nameOfPrayerFound);
                     nextAlarmFound = true;
                     then.add(Calendar.DAY_OF_YEAR, 1);
 //                    updatePrayTimes(then.YEAR, then.MONTH, then.DAY_OF_MONTH);
