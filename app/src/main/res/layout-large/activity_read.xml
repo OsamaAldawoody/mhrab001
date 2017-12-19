@@ -620,12 +620,13 @@
             </RelativeLayout>
             <LinearLayout
                 android:id="@+id/rlTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="400dp"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:orientation="horizontal"
                 android:visibility="gone"
+                android:background="@drawable/name_back"
                 android:gravity="center">
 
                 <android.support.v7.widget.AppCompatImageView
@@ -634,6 +635,7 @@
                     android:layout_height="50dp"
                     android:gravity="center"
                     android:layout_gravity="center"
+                    android:visibility="gone"
                     app:srcCompat="@drawable/ic_mosque" />
 
                 <TextView
@@ -647,7 +649,7 @@
                     android:gravity="center"
                     android:text="بلال بن رباح"
                     android:textColor="@color/span"
-                    android:textSize="17dp" />
+                    android:textSize="28dp" />
             </LinearLayout>
 
         </RelativeLayout>

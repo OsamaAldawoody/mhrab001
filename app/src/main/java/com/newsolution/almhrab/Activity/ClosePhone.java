@@ -66,6 +66,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class ClosePhone extends Activity {
     LinearLayout llText, llFajer, llSun, llDuhr, llAsr, llMagrib, llIsha;
+    private RelativeLayout rlMasjedTitle;
 
     private double lat;
     private double lon;
@@ -256,6 +257,8 @@ public class ClosePhone extends Activity {
         llAsr = (LinearLayout) findViewById(R.id.llAsr);
         llMagrib = (LinearLayout) findViewById(R.id.llMagrib);
         llIsha = (LinearLayout) findViewById(R.id.llIsha);
+        rlMasjedTitle = (RelativeLayout) findViewById(R.id.rlMasjedTitle);
+        rlMasjedTitle.setVisibility(View.GONE);
         ivMasjedLogo = (AppCompatImageView) findViewById(R.id.ivMasjedLogo);
         tvHumidity = (TextView) findViewById(R.id.tvHumidity);
         out_masgedTemp = (TextView) findViewById(R.id.outMasgedasged);
@@ -264,6 +267,7 @@ public class ClosePhone extends Activity {
         rlNews = (RelativeLayout) findViewById(R.id.rlNews);
         rlTitle = (LinearLayout) findViewById(R.id.rlTitle);
         ivLogo = (AppCompatImageView) findViewById(R.id.ivLogo);
+        ivLogo.setVisibility(View.GONE);
         tvName = (TextView) findViewById(R.id.tvName);
         tvHum.setText("الرطوبة الخارجية");
         tvMasjedName.setTypeface(fontDroidkufi);
@@ -515,6 +519,7 @@ public class ClosePhone extends Activity {
                 }else {
                     tvIqama.setText("صلاة الجمعة");
                     remainTime1.setText("");
+                    playSermon();
                 }
                 if (iqamatime.equals("00:00:00")) {
                     remainTime1.setText("");
@@ -527,6 +532,7 @@ public class ClosePhone extends Activity {
             }
             if ((c3.getTime().before(now) || c3.getTime().equals(now))
                     && ((c33.getTime().after(now)) || c33.getTime().equals(now))) {
+                MainActivity.isOpenSermon=false;
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t33));
                 setBackground(llAsr);
                 setTextColor(asrTime);
@@ -609,6 +615,7 @@ public class ClosePhone extends Activity {
                 setTextColor(dhuhrTime);
 //                //setLargeTextSize(dhuhrTime);
             } else if (now.after(c2.getTime()) && now.before(c3.getTime())) {
+                MainActivity.isOpenSermon=false;
                 nextPray = "asr";
                 globalVariable.setNextPray("asr");
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t3)));
@@ -672,6 +679,15 @@ public class ClosePhone extends Activity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+    private void playSermon() {
+        stopTimer = true;
+        timer.cancel();
+        timer.purge();
+        iqamatime = "";
+        Intent cp = new Intent(activity, FridayActivity.class);
+        startActivity(cp);
+        finish();
     }
     private void runVoiceRecognition(final String currentPray) {
         if (currentPray.equals("fajr")) {

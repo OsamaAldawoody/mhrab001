@@ -359,6 +359,8 @@ public class Read extends Activity {
         azkarDisc2.setTypeface(fontDroidkufi);
         azkarDisc3.setTypeface(fontDroidkufi);
 
+        rlMasjedTitle = (RelativeLayout) findViewById(R.id.rlMasjedTitle);
+        rlMasjedTitle.setVisibility(View.GONE);
         llText = (LinearLayout) findViewById(R.id.llText);
         llFajer = (LinearLayout) findViewById(R.id.llFajer);
         llSun = (LinearLayout) findViewById(R.id.llSunrise);
@@ -371,6 +373,7 @@ public class Read extends Activity {
         rlNews = (RelativeLayout) findViewById(R.id.rlNews);
         rlTitle = (LinearLayout) findViewById(R.id.rlTitle);
         ivLogo = (AppCompatImageView) findViewById(R.id.ivLogo);
+        ivLogo.setVisibility(View.GONE);
         tvName = (TextView) findViewById(R.id.tvName);
         tvHumidity = (TextView) findViewById(R.id.tvHumidity);
         out_masgedTemp = (TextView) findViewById(R.id.outMasgedasged);

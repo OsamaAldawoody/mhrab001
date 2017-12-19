@@ -136,6 +136,8 @@ public class Splash extends Activity {
                             android.Manifest.permission.ACCESS_COARSE_LOCATION,
                             android.Manifest.permission.ACCESS_COARSE_LOCATION,
                             android.Manifest.permission.READ_PHONE_STATE,
+                            android.Manifest.permission.CAMERA,
+                            android.Manifest.permission.RECORD_AUDIO,
                             android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
 //                        android.Manifest.permission.WRITE_SETTINGS,
 //                        android.Manifest.permission.DISABLE_KEYGUARD,
@@ -147,6 +149,8 @@ public class Splash extends Activity {
                         android.Manifest.permission.ACCESS_COARSE_LOCATION,
                         android.Manifest.permission.READ_PHONE_STATE,
                         android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        android.Manifest.permission.CAMERA,
+                        android.Manifest.permission.RECORD_AUDIO,
 //                        android.Manifest.permission.WRITE_SETTINGS,
 //                        android.Manifest.permission.DISABLE_KEYGUARD,
                         android.Manifest.permission.READ_EXTERNAL_STORAGE
@@ -187,6 +191,8 @@ public class Splash extends Activity {
                                                 android.Manifest.permission.ACCESS_FINE_LOCATION,
                                                 android.Manifest.permission.READ_PHONE_STATE,
                                                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                android.Manifest.permission.CAMERA,
+                                                android.Manifest.permission.RECORD_AUDIO,
 //                                                android.Manifest.permission.WRITE_SETTINGS,
 //                                                android.Manifest.permission.DISABLE_KEYGUARD,
                                                 android.Manifest.permission.READ_EXTERNAL_STORAGE
@@ -239,6 +245,8 @@ public class Splash extends Activity {
                             android.Manifest.permission.ACCESS_COARSE_LOCATION,
                             android.Manifest.permission.READ_PHONE_STATE,
                             android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            android.Manifest.permission.CAMERA,
+                            android.Manifest.permission.RECORD_AUDIO,
 //                        android.Manifest.permission.WRITE_SETTINGS,
 //                        android.Manifest.permission.DISABLE_KEYGUARD,
                             android.Manifest.permission.READ_EXTERNAL_STORAGE

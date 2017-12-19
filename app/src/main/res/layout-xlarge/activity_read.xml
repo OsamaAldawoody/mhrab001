@@ -661,11 +661,12 @@
 
             <LinearLayout
                 android:id="@+id/rlTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="500dp"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:gravity="center"
+                android:background="@drawable/name_back"
                 android:orientation="horizontal"
                 android:visibility="gone">
 
@@ -675,6 +676,7 @@
                     android:layout_height="55dp"
                     android:layout_gravity="center"
                     android:gravity="center"
+                    android:visibility="gone"
                     app:srcCompat="@drawable/ic_mosque" />
 
                 <TextView
@@ -688,8 +690,9 @@
                     android:singleLine="true"
                     android:text="بلال بن رباح"
                     android:textColor="@color/span"
-                    android:textSize="20dp" />
+                    android:textSize="30dp" />
             </LinearLayout>
+
         </RelativeLayout>
     </RelativeLayout>
 

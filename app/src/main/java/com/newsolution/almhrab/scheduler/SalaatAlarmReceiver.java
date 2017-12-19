@@ -34,6 +34,7 @@ import com.newsolution.almhrab.Model.City;
 import com.newsolution.almhrab.Model.OptionSiteClass;
 import com.newsolution.almhrab.R;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -154,16 +155,18 @@ public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Con
                 Date mToday = new Date();
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
                 String curTime = sdf.format(mToday);
-                Date start = sdf.parse(sleepOn);
-                Date end = sdf.parse(sleepOff);
+//                Date start = sdf.parse(sleepOn);
+//                Date end = sdf.parse(sleepOff);
                 Date userDate = sdf.parse(curTime);
-                if (end.before(start)) {
-                    Calendar mCal = Calendar.getInstance();
-                    mCal.setTime(end);
-                    mCal.add(Calendar.DAY_OF_YEAR, 1);
-                    end.setTime(mCal.getTimeInMillis());
-                }
-
+//                if (end.before(start)) {
+//                    Calendar mCal = Calendar.getInstance();
+//                    mCal.setTime(end);
+//                    mCal.add(Calendar.DAY_OF_YEAR, 1);
+//                    end.setTime(mCal.getTimeInMillis());
+//                }
+                DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                Date start = df.parse(sp.getString("startTime",userDate+""));
+                Date end = df.parse(sp.getString("endTime",userDate+""));
                 Log.d("**curTime", userDate.toString());
                 Log.d("**start", start.toString());
                 Log.d("**end", end.toString());

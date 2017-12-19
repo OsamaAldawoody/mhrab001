@@ -5,6 +5,7 @@
     <color name="colorAccent">#FFD996</color>
     <color name="backLogo">#674426</color>
     <color name="buttom_corner">#e19a37</color>
+    <color name="textTitle">#e6a02d</color>
     <color name="white">#fff</color>
     <color name="mineTransport">#33674426</color>
     <color name="transparent">#99000000</color>
@@ -16,6 +17,9 @@
     <color name="span">#ffcc40</color>
     <color name="textClose">#fdb331</color>
     <color name="textLightColor">#965F2C</color>
+    <color name="googleB">#3369E8</color>
+    <color name="googleR">#D50F25</color>
+    <color name="background">#f6f8fc</color>
 
 
     <color name="background_gradient_start">#000000</color>
