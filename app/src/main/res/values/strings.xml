@@ -129,11 +129,14 @@
     <string name="praytimes">أوقات الصلاة</string>
     <string name="stop">ايقاف</string>
     <string name="alarm_timed_out">%s يتوقف التنبيه بعد دقيقة</string>
+    <string name="description">Media Controls</string>
     <string name="alarm_timed_out_only">يتوقف التنبيه بعد دقيقة</string>
     <string name="adv">شريط الأخبار</string>
     <string name="azkar"> الأذكار والأدعية</string>
+    <string name="ads"> إضافة إعلان</string>
     <string name="adv_settings">إضافة ,تعديل, حذف الأخبار</string>
     <string name="azkar_settings">إضافة ,تعديل, حذف الأذكار</string>
+    <string name="NewAds_settings">إضافة إعلان يظهر في وقت محددة</string>
     <string name="location_settings">تغيير المدينة</string>
     <string name="Tones_settings">تغيير الأصوات</string>
     <string name="location_hints"> اختر مدينة </string>
@@ -193,6 +196,10 @@
     <string name="sort">أدخل الترتيب للخبر</string>
     <string name="count">أدخل عدد مرات التكرار </string>
     <string name="newstext"> نص الخبر</string>
+    <string name="adsTitle">عنوان الإعلان</string>
+    <string name="adsPeriod">فترة ظهور الإعلان</string>
+    <string name="enter_adsTitle">أدخل عنوان الإعلان</string>
+    <string name="adsText">نص الإعلان</string>
     <string name="fridayTxt"> خطبة الجمعة </string>
     <string name="fridayTxt1">مدة تسجيل الخطبة (دقيقة)</string>
     <string name="fridayTxt2">مدة ظهور الخطبة المترجمة (دقيقة)</string>
@@ -215,6 +222,7 @@
     <string name="aboutText"> هذا التطبيق تطوير شركة إنجاز </string>
     <string name="logout"> تسجيل خروج </string>
     <string name="warnning">اختر مدينتك </string>
+    <string name="required">هذا الحقل مطلوب</string>
     <string name="alert">تنبيه</string>
     <string name="scanSensor">استكشاف مستشعرات الحرارة</string>
     <string name="permission_rationale">يحتاج التطبيق  إلى الإذن للدخول الى الصور وملفات الصوت على جهازك؟</string>

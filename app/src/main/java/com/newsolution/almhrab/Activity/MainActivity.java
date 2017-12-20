@@ -52,6 +52,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -181,7 +182,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     private LinearLayout rlTitle;
     private AppCompatImageView ivLogo;
     private TextView tvName;
-    public static  boolean isOpenSermon=false;
+    public static boolean isOpenSermon = false;
 
     class C05785 implements ILocalBluetoothCallBack {
         C05785() {
@@ -693,13 +694,13 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 //        AutoScan();
         tvMasjedName.setText(sp.getString("masjedName", ""));
         tvName.setText(sp.getString("masjedName", ""));
-        if (!TextUtils.isEmpty(sp.getString("masjedImg", ""))) {
-            setImage(sp.getString("masjedImg", ""), ivLogo);
-            setImage(sp.getString("masjedImg", ""), ivMasjedLogo);
-        } else {
-            ivMasjedLogo.setImageResource(R.drawable.ic_mosque);
-            ivLogo.setImageResource(R.drawable.ic_mosque);
-        }
+//        if (!TextUtils.isEmpty(sp.getString("masjedImg", ""))) {
+//            setImage(sp.getString("masjedImg", ""), ivLogo);
+//            setImage(sp.getString("masjedImg", ""), ivMasjedLogo);
+//        } else {
+//            ivMasjedLogo.setImageResource(R.drawable.ic_mosque);
+//            ivLogo.setImageResource(R.drawable.ic_mosque);
+//        }
         DBO.open();
         advs = DBO.getNews(Utils.getFormattedCurrentDate());
         settings = DBO.getSettings();
@@ -733,20 +734,23 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     }
 
     private void setImage(String masjedImg, final AppCompatImageView imageView) {
-        Glide.with(activity).load(Uri.parse(masjedImg))
-                .override(100, 100).listener(new RequestListener<Uri, GlideDrawable>() {
-            @Override
-            public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
+        try {
+            Glide.with(activity).load(Uri.parse(masjedImg))
+                    .override(100, 100).listener(new RequestListener<Uri, GlideDrawable>() {
+                @Override
+                public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
 //                    Log.i("exce: ", e.getMessage());
-                imageView.setImageResource(R.drawable.ic_mosque);
-                return false;
-            }
+                    imageView.setImageResource(R.drawable.ic_mosque);
+                    return false;
+                }
 
-            @Override
-            public boolean onResourceReady(GlideDrawable resource, Uri model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                return false;
-            }
-        }).into(imageView);
+                @Override
+                public boolean onResourceReady(GlideDrawable resource, Uri model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                    return false;
+                }
+            }).into(imageView);
+        } catch (Exception e) {
+        }
     }
 
     public void setAlarm() {
@@ -1079,12 +1083,12 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                     tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "إقامة الصلاة بعد");
                     setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (t22));
                     spedit.putString("phoneAlert", Utils.setPhoneAlert(icdhohr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
-                    isOpenSermon=false;
+                    isOpenSermon = false;
                 } else {
                     spedit.putString("phoneAlert", "").commit();
                     tvIqama.setText("صلاة الجمعة");
                     llRemainingTime.setVisibility(View.GONE);
-                   if (!isOpenSermon) playSermon();
+                    if (!isOpenSermon) playSermon();
                 }
                 if (iqamatime.equals("00:00:00")) {
                     llRemainingTime.setVisibility(View.GONE);
@@ -1098,7 +1102,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             }
             if ((c3.getTime().before(now) || c3.getTime().equals(now))
                     && ((c33.getTime().after(now)) || c33.getTime().equals(now))) {
-                isOpenSermon=false;
+                isOpenSermon = false;
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t33));
                 setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (t33));
                 iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t33));
@@ -1216,7 +1220,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 setPrayTextColor(dhuhrTime);
                 setNoLargeTextSize(dhuhrTime);
             } else if (now.after(c2.getTime()) && now.before(c3.getTime())) {
-                isOpenSermon=false;
+                isOpenSermon = false;
                 nextPray = "asr";
                 globalVariable.setNextPray("asr");
                 spedit.putString("phoneAlert", Utils.setPhoneAlert(icasr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
@@ -1310,7 +1314,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         iqamatime = "";
         Intent cp = new Intent(activity, FridayActivity.class);
         startActivity(cp);
-        isOpenSermon=true;
+        isOpenSermon = true;
     }
 
 
@@ -1541,7 +1545,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 tText2.setVisibility(View.VISIBLE);
                 time1.setText(" " + fh + " ");
                 time2.setText(" " + fm + " ");
-                tText1.setText(getString(R.string.h)+ " و");
+                tText1.setText(getString(R.string.h) + " و");
                 tText2.setText(getString(R.string.m));
             } else {
                 val = fh + "" + getString(R.string.h);
@@ -1560,7 +1564,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             tText2.setVisibility(View.VISIBLE);
             time1.setText(" " + fm + " ");
             time2.setText(" " + fs + " ");
-            tText1.setText(getString(R.string.m)+ " و");
+            tText1.setText(getString(R.string.m) + " و");
             tText2.setText(getString(R.string.s));
         } else if (diffSeconds > 0) {
             val = fs + "" + getString(R.string.s);
@@ -1984,39 +1988,58 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     private void setTextColor(TextView textView) {
         textView.setTextColor(getResources().getColor(R.color.back_text));
     }
- private void setIqamaTextColor(TextView textView) {
+
+    private void setIqamaTextColor(TextView textView) {
         textView.setTextColor(getResources().getColor(R.color.googleR));
     }
+
     private void setPrayTextColor(TextView textView) {
         textView.setTextColor(getResources().getColor(R.color.googleB));
     }
 
     public void dispMenu(View view) {
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
-            LayoutInflater inflater = activity.getLayoutInflater();
-            View dialogView = inflater.inflate(R.layout.confirm_user, null);
-            dialogBuilder.setView(dialogView);
-            final AlertDialog alertDialog = dialogBuilder.create();
-            alertDialog.show();
-            final EditText ed_caption = (EditText) dialogView.findViewById(R.id.ed_caption);
+//        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
+//        LayoutInflater inflater = activity.getLayoutInflater();
+//        View dialogView = inflater.inflate(R.layout.confirm_user, null);
+//        dialogBuilder.setView(dialogView);
+//        dialogBuilder.setCancelable(false);
+//        final AlertDialog alertDialog = dialogBuilder.create();
+//        alertDialog.setCanceledOnTouchOutside(false);
+//        alertDialog.setCancelable(false);
+//        alertDialog.show();
+//        final EditText ed_caption = (EditText) dialogView.findViewById(R.id.ed_caption);
+//        ed_caption.requestFocus();
+//        InputMethodManager in = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+//        in.showSoftInput(ed_caption, InputMethodManager.SHOW_IMPLICIT);
+//
+////
+//        Button save = (Button) dialogView.findViewById(R.id.save);
+//        Button cancel = (Button) dialogView.findViewById(R.id.cancel);
+//
+//        save.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Utils.hideSoftKeyboard(activity);
+//                if (TextUtils.isEmpty(ed_caption.getText().toString().trim())) {
+//                    ed_caption.setError("أدخل كلمة المرور للحساب");
+//                    return;
+//                }
+//                if (!(ed_caption.getText().toString().trim()).equals(sp.getString("masjedPW", ""))) {
+//                    ed_caption.setError("كلمة المرور غير صحيحة");
+//                    return;
+//                }
+////                startActivity(new Intent(activity, SettingsActivity.class));//SettingsActivity ClosePhone
+//                alertDialog.dismiss();
+//            }
+//        });
+//        cancel.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                alertDialog.dismiss();
+//            }
+//        });
+        startActivity(new Intent(activity, SettingsActivity.class));//SettingsActivity ClosePhone
 
-            Button save = (Button) dialogView.findViewById(R.id.save);
-            save.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Utils.hideSoftKeyboard(activity);
-                    if (TextUtils.isEmpty(ed_caption.getText().toString().trim())) {
-                        ed_caption.setError("أدخل كلمة المرور للحساب");
-                        return;
-                    }
-                    if (!(ed_caption.getText().toString().trim()).equals(sp.getString("masjedPW", ""))) {
-                        ed_caption.setError("كلمة المرور غير صحيحة");
-                        return;
-                    }
-                    startActivity(new Intent(activity, SettingsActivity.class));//SettingsActivity ClosePhone
-                    alertDialog.dismiss();
-                }
-            });
     }
 
     private String[] calculate() {
@@ -2155,11 +2178,11 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
             String startDate = df.format(start);
             String endDate = df.format(end);
-            spedit.putString("startTime",startDate).commit();
-            spedit.putString("endTime",endDate).commit();
-        }catch (Exception e){
+            spedit.putString("startTime", startDate).commit();
+            spedit.putString("endTime", endDate).commit();
+        } catch (Exception e) {
         }
-        }
+    }
 
     public void checkNextPray() {
         Calendar today = Calendar.getInstance();
@@ -2457,13 +2480,13 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 showNews();
                 tvMasjedName.setText(sp.getString("masjedName", ""));
                 tvName.setText(sp.getString("masjedName", ""));
-                if (!TextUtils.isEmpty(sp.getString("masjedImg", ""))) {
-                    setImage(sp.getString("masjedImg", ""), ivLogo);
-                    setImage(sp.getString("masjedImg", ""), ivMasjedLogo);
-                } else {
-                    ivMasjedLogo.setImageResource(R.drawable.ic_mosque);
-                    ivLogo.setImageResource(R.drawable.ic_mosque);
-                }
+//                if (!TextUtils.isEmpty(sp.getString("masjedImg", ""))) {
+//                    setImage(sp.getString("masjedImg", ""), ivLogo);
+//                    setImage(sp.getString("masjedImg", ""), ivMasjedLogo);
+//                } else {
+//                    ivMasjedLogo.setImageResource(R.drawable.ic_mosque);
+//                    ivLogo.setImageResource(R.drawable.ic_mosque);
+//                }
             }
         }
 

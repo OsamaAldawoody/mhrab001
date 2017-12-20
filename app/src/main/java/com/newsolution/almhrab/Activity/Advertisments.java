@@ -33,7 +33,6 @@ import com.newsolution.almhrab.AppConstants.DBOperations;
 import com.newsolution.almhrab.DateTimePicker.CustomDateTimePicker;
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Interface.OnLoadedFinished;
-import com.newsolution.almhrab.Model.Ads;
 import com.newsolution.almhrab.Model.News;
 import com.newsolution.almhrab.R;
 import com.newsolution.almhrab.WebServices.WS;

@@ -79,8 +79,8 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
     private EditText tvOldPW, tvNewPW, tvConfirmPW;
     private Button btnSaveEdit;
     private int REQUEST_PERMISSIONS = 100;
-    private byte[] byte_arr=null;
-    private Bitmap yourbitmap=null;
+    private byte[] byte_arr = null;
+    private Bitmap yourbitmap = null;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -115,7 +115,7 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
                 @Override
                 public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
                     Log.i("exce: ", e.getMessage());
-                  progress.setVisibility(View.GONE);
+                    progress.setVisibility(View.GONE);
                     ivMasjedLogo.setImageResource(R.drawable.ic_mosque);
                     return false;
                 }
@@ -132,6 +132,13 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
         ll_changePassword = (LinearLayout) findViewById(R.id.ll_changePassword);
 //        ll_changePassword.setVisibility(View.VISIBLE);
 //        showHide.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
+        if (sp.getInt("priority", 0) == 1) {
+            ll_password.setVisibility(View.VISIBLE);
+        } else {
+            ll_password.setVisibility(View.GONE);
+            ll_changePassword.setVisibility(View.GONE);
+            showHide.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+        }
         ll_accountImage = (LinearLayout) findViewById(R.id.ll_accountImage);
         ll_accountImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -248,15 +255,15 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
     private void selectImage() {
 //        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 //        startActivityForResult(intent, RESULT_LOAD_IMAGE);
-       try {
-           Intent i = new Intent();
-           i.setType("image/*");
-           i.setAction(Intent.ACTION_PICK);
-           startActivityForResult(Intent.createChooser(i, "اختر صورة"), RESULT_LOAD_IMAGE);
-       }catch (Exception r){
-           r.printStackTrace();
-           Utils.showCustomToast(activity," لا يوجد مجلد صور على الجهاز");
-       }
+        try {
+            Intent i = new Intent();
+            i.setType("image/*");
+            i.setAction(Intent.ACTION_PICK);
+            startActivityForResult(Intent.createChooser(i, "اختر صورة"), RESULT_LOAD_IMAGE);
+        } catch (Exception r) {
+            r.printStackTrace();
+            Utils.showCustomToast(activity, " لا يوجد مجلد صور على الجهاز");
+        }
     }
 
     public void updateAccount() {
@@ -306,19 +313,20 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
-           try {
-               selectedImage = data.getData();
-               Glide.with(activity).load(selectedImage + "").into(ivMasjedLogo);
-               String selectedImagePath = getRealPathFromURI(selectedImage);
+            try {
+                selectedImage = data.getData();
+                Glide.with(activity).load(selectedImage + "").into(ivMasjedLogo);
+                String selectedImagePath = getRealPathFromURI(selectedImage);
 //               Log.i("////// path", selectedImagePath);
-               image_str = makePictureToBase64(checkImg(selectedImagePath), ivMasjedLogo);
-               generateNoteOnSD(activity, "imgstr", image_str);
-           }catch (Exception e){
-               Utils.showCustomToast(activity,"حدث خطأ اختر صورة أخرى");
-               e.printStackTrace();
-           }
+                image_str = makePictureToBase64(checkImg(selectedImagePath), ivMasjedLogo);
+               // generateNoteOnSD(activity, "imgstr", image_str);
+            } catch (Exception e) {
+                Utils.showCustomToast(activity, "حدث خطأ اختر صورة أخرى");
+                e.printStackTrace();
+            }
         }
     }
+
     private String checkImg(String path) {
         String newPath = path;
         if (!TextUtils.isEmpty(path)) {
@@ -337,6 +345,7 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
 
         return newPath;
     }
+
     public Bitmap getResizedBitmap(String path, float widthRatio, float heightRatio) {
         float scale = 1;
 
@@ -397,6 +406,7 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
         }
         return path;
     }
+
     public static File getTempStoreDirectory(Context context) {
         File root = new File(Environment.getExternalStorageDirectory(), "Notes");
         return context.getExternalFilesDir("temp").getAbsoluteFile();
@@ -438,16 +448,18 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
             e.printStackTrace();
         }
     }
+
     public static Bitmap rotateImage(Bitmap source, float angle) {
         Matrix matrix = new Matrix();
         matrix.postRotate(angle);
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
                 matrix, true);
     }
+
     private String getRealPathFromURI(Uri contentURI) {
         String result = null;
 
-        Cursor cursor =getContentResolver().query(contentURI, null, null, null, null);
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
 
         if (cursor == null) { // Source is Dropbox or other similar local file path
             result = contentURI.getPath();
@@ -502,8 +514,9 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(ContextCompat.getColor(activity, R.color.back_text));
-        }catch (NoSuchMethodError ex){
+        } catch (NoSuchMethodError ex) {
             ex.printStackTrace();
-        } }
+        }
+    }
 
 }

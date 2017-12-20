@@ -4,8 +4,8 @@ package com.newsolution.almhrab.Model;
  * Created by hp on 8/4/2016.
  */
 public class Ads {
-    int id;
-    String text;
+    public Ads() {
+    }
 
     public int getId() {
         return id;
@@ -15,16 +15,78 @@ public class Ads {
         this.id = id;
     }
 
+    public int getMasjedID() {
+        return MasjedID;
+    }
+
+    public void setMasjedID(int masjedID) {
+        MasjedID = masjedID;
+    }
+
+    public int getType() {
+        return Type;
+    }
+
+    public void setType(int type) {
+        Type = type;
+    }
+
+    public String getTitle() {
+        return Title;
+    }
+
+    public void setTitle(String title) {
+        Title = title;
+    }
+
     public String getText() {
-        return text;
+        return Text;
     }
 
     public void setText(String text) {
-        this.text = text;
+        Text = text;
     }
 
-    public Ads(int id,String text){
-        this.id=id;
-        this.text=text;
+    public String getImage() {
+        return Image;
     }
+
+    public void setImage(String image) {
+        Image = image;
+    }
+
+    public String getVideo() {
+        return Video;
+    }
+
+    public void setVideo(String video) {
+        Video = video;
+    }
+
+    public String getStart() {
+        return Start;
+    }
+
+    public void setStart(String start) {
+        Start = start;
+    }
+
+    public String getEnd() {
+        return End;
+    }
+
+    public void setEnd(String end) {
+        End = end;
+    }
+
+    int id;
+    int MasjedID;
+    int Type;
+    String Title;
+    String Text;
+    String Image;
+    String Video;
+    String Start;
+    String End;
+
 }

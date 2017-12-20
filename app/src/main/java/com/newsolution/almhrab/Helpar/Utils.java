@@ -1010,9 +1010,8 @@ public class Utils {
                 .getInt("hijriDiff", 0), dayTest);
         int iDayN = hd.date1();
         // String outputIslamicDate = wdNames[(int) iDate[4]] + " " + (int)day + " " +MonthNames[(int) month] + " " + (int)year + " م " + (int)iDate[5] + " "+ iMonthNames[(int) iDate[6]] + " " + (int)iDate[7] + " هـ ";
-        String outputIslamicDate =  (int) iDate[5] + " " + iMonthNames[(int) iDate[6]] + " " +
-                (int) iDate[7] + " " + act.getString(R.string.mt) + " - " +  (int) day + " " + MonthNames[(int) month] + " " + (int) year
-               ;
+        String outputIslamicDate = (int) iDate[5] + " " + iMonthNames[(int) iDate[6]] + " " +
+                (int) iDate[7] + " " + act.getString(R.string.mt) + " - " +  (int) day + " " + MonthNames[(int) month] + " " + (int) year;
 
         return outputIslamicDate;
     }

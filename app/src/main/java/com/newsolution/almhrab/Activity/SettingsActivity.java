@@ -16,9 +16,11 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -51,7 +53,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class SettingsActivity extends Activity {
     ImageView iv_back;
     private LinearLayout ll_location,
-            llTones, ll_adv, parentPanel, ll_azkar;
+            llTones, ll_adv, parentPanel, ll_NewAds, ll_azkar;
     private SharedPreferences sp;
     Activity activity;
     private SharedPreferences.Editor spedit;
@@ -117,7 +119,7 @@ public class SettingsActivity extends Activity {
         spedit = sp.edit();
 
         setContentView(R.layout.activity_settings);
-
+        checkLogin();
         DBO = new DBOperations(this);
         gv = (GlobalVars) getApplicationContext();
         DBO.open();
@@ -186,6 +188,7 @@ public class SettingsActivity extends Activity {
         llTones = (LinearLayout) findViewById(R.id.llTones);
         ll_adv = (LinearLayout) findViewById(R.id.ll_adv);
         ll_azkar = (LinearLayout) findViewById(R.id.ll_azkar);
+        ll_NewAds = (LinearLayout) findViewById(R.id.ll_NewAds);
         hijriDiff = settings.getDateHijri();
         if (hijriDiff == 0)
             edHijriSet.setText("لا يوجد فرق");
@@ -257,7 +260,7 @@ public class SettingsActivity extends Activity {
                 if (cb_sleep.isChecked()) {
                     spedit.putBoolean("sleep", false).commit();
                     cb_sleep.setChecked(false);
-                    Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, ( 24 * 60 * 60 * 1000));
+                    Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, (24 * 60 * 60 * 1000));
                 } else {
                     cb_sleep.setChecked(true);
                     spedit.putBoolean("sleep", true).commit();
@@ -272,7 +275,7 @@ public class SettingsActivity extends Activity {
                     spedit.putBoolean("sleep", true).commit();
                     showSleepDialog();
                 } else {
-                    Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, ( 24 * 60 * 60 * 1000));
+                    Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, (24 * 60 * 60 * 1000));
                     spedit.putBoolean("sleep", false).commit();
                 }
 
@@ -437,6 +440,12 @@ public class SettingsActivity extends Activity {
                 startActivity(new Intent(SettingsActivity.this, AzkarAct.class));
             }
         });
+        ll_NewAds.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SettingsActivity.this, AddAdsActivity.class));
+            }
+        });
         tvIqamaSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -464,6 +473,47 @@ public class SettingsActivity extends Activity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(activity, AccountSetting.class));
+            }
+        });
+    }
+
+    private void checkLogin() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
+        LayoutInflater inflater = activity.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.confirm_user, null);
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.setCancelable(false);
+        final AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.setCancelable(false);
+        alertDialog.show();
+        final EditText ed_caption = (EditText) dialogView.findViewById(R.id.ed_caption);
+        ed_caption.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(ed_caption, InputMethodManager.SHOW_IMPLICIT);
+
+        Button save = (Button) dialogView.findViewById(R.id.save);
+        Button cancel = (Button) dialogView.findViewById(R.id.cancel);
+
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.hideSoftKeyboard(activity);
+                if (TextUtils.isEmpty(ed_caption.getText().toString().trim())) {
+                    ed_caption.setError("أدخل كلمة المرور للحساب");
+                    return;
+                }
+                if (!(ed_caption.getText().toString().trim()).equals(sp.getString("masjedPW", ""))) {
+                    ed_caption.setError("كلمة المرور غير صحيحة");
+                    return;
+                }
+                alertDialog.dismiss();
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
             }
         });
     }

@@ -46,7 +46,7 @@
         android:layout_marginRight="20dp"
         android:layout_marginTop="20dp"
         android:gravity="top"
-        android:hint="@string/sleepTxt1"
+        android:hint="@string/sleepTxt2"
         android:imeOptions="actionDone"
         android:inputType="number"
         android:padding="@dimen/padding"

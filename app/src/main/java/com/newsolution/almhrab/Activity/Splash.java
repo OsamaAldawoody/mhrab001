@@ -113,7 +113,7 @@ public class Splash extends Activity {
         spedit.putString(AppConst.DeviceNo, deviceId).commit();
 //        Log.i("/////* DeviceNo", deviceId);
 //        startApp();
-        settingPermission();
+//        settingPermission();
 //        askForPermissions(new String[]{
 //                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
 //                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -170,6 +170,12 @@ public class Splash extends Activity {
             ActivityCompat.requestPermissions(activity,
                     permissionsToRequest.toArray(new String[permissionsToRequest.size()]), requestCode);
         } else isBluetooth4();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        settingPermission();
     }
 
     @Override

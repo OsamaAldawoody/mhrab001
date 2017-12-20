@@ -110,7 +110,6 @@ public class DBOperations {
             }
         }
         Log.d("Sync service", "# of News inserted : " + count);
-
         db.setTransactionSuccessful();
         db.endTransaction();
         db.close();
@@ -207,7 +206,6 @@ public class DBOperations {
 
     }
 
-
     public Cursor getPrayTimes(Activity s, DBOperations db, int day, int month, int cityId) {
         Log.d("DBOperations", "table PrayTimes data reader");
         open();
@@ -236,8 +234,8 @@ public class DBOperations {
         Log.i("dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
             do {
-                String text = cursor.getString(cursor.getColumnIndex("TextAzakar")) ;
-                        //+ " (" + cursor.getInt(cursor.getColumnIndex("Count")) + ")";
+                String text = cursor.getString(cursor.getColumnIndex("TextAzakar"));
+                //+ " (" + cursor.getInt(cursor.getColumnIndex("Count")) + ")";
                 azkars.add(text);
             } while (cursor.moveToNext());
         }
@@ -649,5 +647,51 @@ public class DBOperations {
         return isExist;
     }
 
+    public void insertAds(Ads object) {
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        db.enableWriteAheadLogging();
+        db.beginTransaction();
+        int count = 0;
+        db.delete("Ads", "", null);
+        ContentValues values = new ContentValues();
+
+//        values.put("id", object.getId());
+        values.put("MasjedID", object.getMasjedID());
+        values.put("Type", object.getType());
+        values.put("Title", object.getTitle());
+        values.put("Text", object.getText());
+        values.put("Image", object.getImage());
+        values.put("Video", object.getVideo());
+        values.put("Start", object.getStart());
+        values.put("End", object.getEnd());
+
+        db.insert("Ads", null, values);
+        Log.d("Sync service", "# of set inserted : " + count);
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
+    }
+    public Ads getAds(int masjedID) {
+        Ads object = new Ads();
+        String selectQuery = "SELECT * FROM Ads WHERE MasjedID="+masjedID+" LIMIT 1";
+        Log.i("Quert", selectQuery);
+        Cursor cursor = mDb.rawQuery(selectQuery, null);
+        Log.i("Qu dataBase", "" + cursor.getCount());
+        if (cursor.moveToFirst()) {
+            do {
+                object.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                object.setMasjedID(cursor.getInt(cursor.getColumnIndex("MasjedID")));
+                object.setType(cursor.getInt(cursor.getColumnIndex("Type")));
+                object.setTitle(cursor.getString(cursor.getColumnIndex("Title")));
+                object.setText(cursor.getString(cursor.getColumnIndex("Text")));
+                object.setImage(cursor.getString(cursor.getColumnIndex("Image")));
+                object.setVideo(cursor.getString(cursor.getColumnIndex("Video")));
+                object.setStart(cursor.getString(cursor.getColumnIndex("Start")));
+                object.setEnd(cursor.getString(cursor.getColumnIndex("End")));
+            } while (cursor.moveToNext());
+        }
+        return object;
+    }
 
 }

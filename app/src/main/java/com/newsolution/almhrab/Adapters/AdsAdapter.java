@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.DBOperations;
-import com.newsolution.almhrab.Model.Ads;
 import com.newsolution.almhrab.Model.News;
 import com.newsolution.almhrab.R;
 

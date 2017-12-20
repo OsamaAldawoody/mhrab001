@@ -35,7 +35,6 @@
                 android:layout_height="?actionBarSize"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="15dp"
                 android:padding="15dp"
                 android:src="@drawable/arrowforward_white" />
 
@@ -44,7 +43,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
                 android:layout_toLeftOf="@+id/iv_back"
                 android:text="@string/settings"
                 android:textColor="@color/white"
@@ -303,6 +301,43 @@
                     android:text="@string/azkar_settings"
                     android:textColor="#c0c0c0"
                     android:textSize="10dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#dadada" />
+
+            <LinearLayout
+                android:id="@+id/ll_NewAds"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/setting_row"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/tvNewAds"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:text="@string/ads"
+                    android:textColor="@color/light_black"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:id="@+id/tvNewAdsHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:text="@string/NewAds_settings"
+                    android:textColor="#c0c0c0"
+                    android:textSize="10dp" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -776,11 +811,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#dadada" />
+
             <LinearLayout
+                android:id="@+id/layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/layout">
+                android:orientation="vertical">
+
                 <LinearLayout
                     android:id="@+id/llNews"
                     android:layout_width="match_parent"
@@ -788,6 +825,7 @@
                     android:clickable="true"
                     android:orientation="vertical"
                     android:visibility="visible">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -813,11 +851,13 @@
                             android:layout_marginLeft="20dp"
                             android:gravity="center_vertical|right" />
                     </LinearLayout>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#dadada" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/llSleep"
                     android:layout_width="match_parent"
@@ -825,6 +865,7 @@
                     android:clickable="true"
                     android:orientation="vertical"
                     android:visibility="visible">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -850,11 +891,13 @@
                             android:layout_marginLeft="20dp"
                             android:gravity="center_vertical|right" />
                     </LinearLayout>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#dadada" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/llFriday"
                     android:layout_width="match_parent"
@@ -862,6 +905,7 @@
                     android:clickable="true"
                     android:orientation="vertical"
                     android:visibility="visible">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -887,6 +931,7 @@
                             android:layout_marginLeft="20dp"
                             android:gravity="center_vertical|right" />
                     </LinearLayout>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="1dp"

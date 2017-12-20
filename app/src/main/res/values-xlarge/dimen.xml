@@ -8,6 +8,7 @@
     <dimen name="layout_marginTop">130dp</dimen>
     <dimen name="small_font_size">20dp</dimen>
     <dimen name="height">70dp</dimen>
+    <dimen name="height_media">400dp</dimen>
     <dimen name="padding">30dp</dimen>
     <dimen name="textSize">20dp</dimen>
 

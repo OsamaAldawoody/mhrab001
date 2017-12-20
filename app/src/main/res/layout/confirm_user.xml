@@ -31,27 +31,54 @@
             android:id="@+id/ed_caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="كلمة المرور"
             android:layout_marginBottom="@dimen/padding"
-            android:padding="@dimen/padding"
+            android:hint="كلمة المرور"
             android:imeOptions="actionDone"
             android:inputType="textPassword"
+            android:padding="@dimen/padding"
+            android:gravity="center_vertical|right"
             android:textColor="@color/black"
             android:textColorHint="@color/lb_grey"
-            android:textSize="@dimen/textSize" />
+            android:textSize="@dimen/textSize">
+
+            <requestFocus />
+        </EditText>
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/save"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/padding"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/back_text"
-        android:gravity="center"
-        android:padding="@dimen/padding"
-        android:text="@string/save"
-        android:textColor="@color/white"
-        android:textSize="@dimen/textSize" />
+        android:layout_marginTop="@dimen/padding"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="@color/back_text"
+            android:gravity="center"
+            android:padding="@dimen/padding"
+            android:text="@string/cancel_delete"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textSize" />
+
+        <Space
+            android:layout_width="3dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/save"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="@color/back_text"
+            android:gravity="center"
+            android:padding="@dimen/padding"
+            android:text="@string/ok"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textSize" />
+    </LinearLayout>
 </LinearLayout>

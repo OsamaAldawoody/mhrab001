@@ -3,6 +3,7 @@ package com.newsolution.almhrab.Activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
@@ -21,7 +22,9 @@ import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
+import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.DateHigri;
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.R;
@@ -84,6 +87,8 @@ public class FridayActivity extends  AppCompatActivity implements RtmpHandler.Rt
     TextView date1, time, amPm;
     private static  String recPath ;//= Environment.getExternalStorageDirectory().getPath() + "/" +Utils.getDateTime()+".mp4";
     private File saveDir;
+    private SharedPreferences sp;
+    private VideoView vvVideo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,12 +112,15 @@ public class FridayActivity extends  AppCompatActivity implements RtmpHandler.Rt
 
         setStreamerDefaultValues();
 
+
+        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
         font = Typeface.createFromAsset(getAssets(), droidkufiBold);
         fontArial = Typeface.createFromAsset(getAssets(), arial);
         fontRoboto = Typeface.createFromAsset(getAssets(), roboto);
         fontDroidkufi = Typeface.createFromAsset(getAssets(), droidkufi);
         fontBangla_mn_bold = Typeface.createFromAsset(getAssets(), bangla_mn_bold);
 
+        vvVideo = (VideoView) findViewById(R.id.vvAdsVideo);
         tvUrdText = (TextView) findViewById(R.id.tvUrdText);
         tvEngText = (TextView) findViewById(R.id.tvEngText);
         tvTitle = (TextView) findViewById(R.id.tvTitle);
@@ -127,6 +135,7 @@ public class FridayActivity extends  AppCompatActivity implements RtmpHandler.Rt
         tvUrdText.setTypeface(fontBangla_mn_bold);
         tvEngText.setSelected(true);
         tvUrdText.setSelected(true);
+        tvName.setText(sp.getString("masjedName", ""));
 //        tvEngText.setTypeface(fontBangla_mn_bold);
 //        tvName.setTypeface(fontDroidkufi);
 
@@ -145,6 +154,7 @@ public class FridayActivity extends  AppCompatActivity implements RtmpHandler.Rt
             mPublisher.setVideoBitRate(144);
             mPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
             mPublisher.startRecord(recPath);
+
         } else {
           finish();
             Toast.makeText(this, "You need to grant persmissions in order to begin streaming.", Toast.LENGTH_LONG).show();

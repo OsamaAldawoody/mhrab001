@@ -23,16 +23,15 @@
         android:gravity="center"
         android:text="السبت | 5 ديسمبر 2015 | 24 صفر1437 هـ"
         android:textColor="@color/white"
-        android:textDirection="ltr"
+        android:layoutDirection="rtl"
         android:textSize="15dp" />
 
     <LinearLayout
         android:id="@+id/clock"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/dateToday"
+        android:layout_height="65dp"
         android:layout_centerHorizontal="true"
-        >
+        android:layout_below="@+id/dateToday">
 
         <TextView
             android:id="@+id/Time"
@@ -40,8 +39,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/imageView"
             android:text="11:25"
+            android:layout_gravity="center_vertical"
             android:textColor="@color/white"
-            android:textSize="30dp" />
+            android:textSize="60dp" />
 
         <TextView
             android:id="@+id/amPm"
@@ -50,10 +50,10 @@
             android:layout_centerHorizontal="true"
             android:layout_marginLeft="5dp"
             android:text="ص"
+            android:layout_gravity="bottom"
             android:textColor="@color/white"
-            android:textSize="28dp"
+            android:textSize="18dp"
             android:visibility="visible" />
-
     </LinearLayout>
 
     <TextView
@@ -76,11 +76,11 @@
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:paddingRight="15dp"
-        android:paddingLeft="15dp"
         android:layout_marginTop="5dp"
         android:background="@drawable/title_back"
         android:gravity="center"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         android:text="ميلاد خير البشر - اچھے لوگوں کی پیدائش - ভালো মানুষদের জন্ম"
         android:textColor="@color/white"
         android:textSize="12dp" />
@@ -113,10 +113,11 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:keepScreenOn="true"/>
+            android:keepScreenOn="true" />
+
         <Chronometer
             android:id="@+id/chronometer"
-            android:layout_width="100dp"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
@@ -126,7 +127,20 @@
             android:padding="10dp"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="15sp"/>
+            android:textSize="14sp" />
+
+        <VideoView
+            android:id="@+id/vvAdsVideo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/back"
+            android:visibility="visible" />
     </RelativeLayout>
 
     <LinearLayout
@@ -147,15 +161,15 @@
             android:id="@+id/tvEngText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="ایک اچھا آدمی محمد بن عبداللہ
- کی پیدائش اس پر ہے"
             android:ellipsize="marquee"
             android:focusable="true"
             android:focusableInTouchMode="true"
+            android:gravity="center"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
             android:singleLine="true"
+            android:text="ایک اچھا آدمی محمد بن عبداللہ
+ کی پیدائش اس پر ہے"
             android:textColor="@color/white"
             android:textSize="24dp" />
 
@@ -164,16 +178,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:gravity="center"
-            android:text="একজন ভাল মানুষ মুহাম্মদ ইবনে
- আবদুল্লাহ এটা জন্ম হয় এটা একজন ভাল মানুষ মুহাম্মদ ইবনে
- আবদুল্লাহ এটা জন্ম হয় এটা"
             android:ellipsize="marquee"
             android:focusable="true"
             android:focusableInTouchMode="true"
+            android:gravity="center"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
             android:singleLine="true"
+            android:text="একজন ভাল মানুষ মুহাম্মদ ইবনে
+ আবদুল্লাহ এটা জন্ম হয় এটা একজন ভাল মানুষ মুহাম্মদ ইবনে
+ আবদুল্লাহ এটা জন্ম হয় এটা"
             android:textColor="@color/white"
             android:textSize="24dp" />
 

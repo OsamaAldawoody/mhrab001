@@ -19,7 +19,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="40dp"
         android:gravity="center"
         android:text="السبت | 5 ديسمبر 2015 | 24 صفر1437 هـ"
         android:textColor="@color/white"
@@ -74,7 +74,7 @@
         android:paddingRight="15dp"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="5dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="5dp"
@@ -115,7 +115,7 @@
             android:keepScreenOn="true"/>
         <Chronometer
             android:id="@+id/chronometer"
-            android:layout_width="100dp"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
@@ -126,6 +126,20 @@
             android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="15sp"/>
+
+        <VideoView
+            android:id="@+id/vvAdsVideo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/back"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:visibility="visible" />
+
     </RelativeLayout>
 
     <LinearLayout
@@ -181,16 +195,16 @@
         android:id="@+id/tvName"
         android:layout_width="500dp"
         android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="40dp"
         android:background="@drawable/name_back"
         android:ellipsize="end"
         android:gravity="center"
         android:singleLine="true"
         android:text="بلال بن رباح"
         android:textColor="@color/span"
-        android:textSize="32dp" />
+        android:textSize="32dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignEnd="@+id/tvTitle" />
 
 </RelativeLayout>
