@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,9 +18,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.VideoView;
 
+import com.bumptech.glide.Glide;
 import com.newsolution.almhrab.AppConstants.AppConst;
+import com.newsolution.almhrab.AppConstants.DBOperations;
 import com.newsolution.almhrab.AppConstants.DateHigri;
 import com.newsolution.almhrab.Helpar.Utils;
+import com.newsolution.almhrab.Model.Ads;
 import com.newsolution.almhrab.R;
 
 import java.text.DateFormat;
@@ -41,6 +45,9 @@ public class ShowAdsActivity extends AppCompatActivity {
     private Typeface font;
     public static String roboto = "fonts/roboto.ttf";
     private Typeface fontRoboto;
+    private DBOperations DBO;
+    private Ads ads;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -54,6 +61,11 @@ public class ShowAdsActivity extends AppCompatActivity {
         activity = this;
         setContentView(R.layout.activity_show_ads);
         sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
+        DBO = new DBOperations(this);
+        DBO.createDatabase();
+        DBO.open();
+        ads = DBO.getAds(sp.getInt("masjedId", -1));
+        DBO.close();
         font = Typeface.createFromAsset(getAssets(), droidkufiBold);
         fontRoboto = Typeface.createFromAsset(getAssets(), roboto);
         tvTitle = (TextView) findViewById(R.id.tvTitle);
@@ -67,27 +79,62 @@ public class ShowAdsActivity extends AppCompatActivity {
         amPm.setVisibility(View.VISIBLE);
         time.setTypeface(fontRoboto);
         date1.setTypeface(font);
-        tvName.setText(sp.getString("masjedName", ""));
         checkTime();
+        fillData();
 
     }
+
+    private void fillData() {
+        tvName.setText(sp.getString("masjedName", ""));
+        int type = ads.getType();
+        String title = ads.getTitle();
+        String start=ads.getStartTime();
+        String end=ads.getEndTime();
+        String text=ads.getText();
+        String image=ads.getImage();
+        String video=ads.getVideo();
+        tvTitle.setText(title);
+        if (type==1){
+            ivAdsImage.setVisibility(View.VISIBLE);
+            vvAdsVideo.setVisibility(View.GONE);
+            tvAdsText.setVisibility(View.GONE);
+            tvAdsText.setText(text);
+            Glide.with(activity).load(Uri.parse(image)).into(ivAdsImage) ;
+        }else
+        if (type==2){
+            ivAdsImage.setVisibility(View.GONE);
+            vvAdsVideo.setVisibility(View.VISIBLE);
+            tvAdsText.setVisibility(View.GONE);
+            tvAdsText.setText(text);
+            vvAdsVideo.setVideoURI(Uri.parse(video));
+            vvAdsVideo.start();
+        }else
+        if (type==3){
+            ivAdsImage.setVisibility(View.GONE);
+            vvAdsVideo.setVisibility(View.GONE);
+            tvAdsText.setText(text);
+            tvAdsText.setVisibility(View.VISIBLE);
+        }
+
+    }
+
     private void checkTime() {
-    DateHigri hd = new DateHigri();
+        DateHigri hd = new DateHigri();
         date1.setText(Utils.writeIslamicDate1(this, hd));
-    DateFormat timeNow = new SimpleDateFormat("hh:mmss", new Locale("en"));
-    DateFormat ampm = new SimpleDateFormat("a", new Locale("ar"));
+        DateFormat timeNow = new SimpleDateFormat("hh:mmss", new Locale("en"));
+        DateFormat ampm = new SimpleDateFormat("a", new Locale("ar"));
         amPm.setText(ampm.format(Calendar.getInstance().getTime()));
-    Calendar c = Calendar.getInstance();
-    String timeText = timeNow.format(c.getTime());
-    SpannableString string = new SpannableString(timeText);
+        Calendar c = Calendar.getInstance();
+        String timeText = timeNow.format(c.getTime());
+        SpannableString string = new SpannableString(timeText);
         string.setSpan(new RelativeSizeSpan((0.5f)), 5, 7, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         time.setText(string);
-    final Handler handler = new Handler();
+        final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
-        @Override
-        public void run() {
-            checkTime();
-        }
-    }, 1000);
-}
+            @Override
+            public void run() {
+                checkTime();
+            }
+        }, 1000);
+    }
 }

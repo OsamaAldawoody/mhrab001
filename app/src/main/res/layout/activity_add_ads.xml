@@ -195,14 +195,14 @@
                             android:scaleType="fitXY" />
 
                         <ImageView
+                            android:id="@+id/ivThumb"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
-                            android:id="@+id/ivThumb"
                             android:background="@drawable/ic_circle"
-                            android:visibility="gone"
                             android:padding="10dp"
-                            android:src="@android:drawable/ic_media_play" />
+                            android:src="@android:drawable/ic_media_play"
+                            android:visibility="gone" />
 
                     </RelativeLayout>
                 </RelativeLayout>
@@ -289,9 +289,141 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tittle2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/padding"
+                    android:text="@string/adsDay"
+                    android:paddingRight="@dimen/padding"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/textSize"
+                    android:visibility="visible" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layoutDirection="ltr"
+                    android:orientation="horizontal">
+                        <CheckBox
+                            android:id="@+id/cbFri"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_margin="1dp"
+                            android:button="@null"
+                            android:checked="false"
+                            android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
+                            android:gravity="center"
+                            android:text="الجمعة"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/small_font_size"
+                            android:textStyle="normal|bold" />
+                        <CheckBox
+                            android:id="@+id/cbThu"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:button="@null"
+                            android:checked="false"
+                            android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
+                            android:layout_margin="1dp"
+                            android:gravity="center"
+                            android:text="الخميس"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/small_font_size"
+                            android:textStyle="normal|bold" />
+
+
+                        <CheckBox
+                            android:id="@+id/cbWed"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:button="@null"
+                            android:checked="false"
+                            android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
+                            android:gravity="center"
+                            android:text="الاربعاء"
+                            android:textColor="@color/black"
+                            android:layout_margin="1dp"
+                            android:textSize="@dimen/small_font_size"
+                            android:textStyle="normal|bold" />
+
+
+                        <CheckBox
+                            android:id="@+id/cbTue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:button="@null"
+                            android:checked="false"
+                            android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
+                            android:gravity="center"
+                            android:text="الثلاثاء"
+                            android:textColor="@color/black"
+                            android:layout_margin="1dp"
+                            android:textSize="@dimen/small_font_size"
+                            android:textStyle="normal|bold" />
+
+
+                        <CheckBox
+                            android:id="@+id/cbMon"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:button="@null"
+                            android:checked="false"
+                            android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
+                            android:gravity="center"
+                            android:text="الاتنين"
+                            android:textColor="@color/black"
+                            android:layout_margin="1dp"
+                            android:textSize="@dimen/small_font_size"
+                            android:textStyle="normal|bold" />
+
+
+                        <CheckBox
+                            android:id="@+id/cbSun"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:button="@null"
+                            android:checked="false"
+                            android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
+                            android:gravity="center"
+                            android:text="الاحد"
+                            android:layout_margin="1dp"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/small_font_size"
+                            android:textStyle="normal|bold" />
+
+
+                        <CheckBox
+                            android:id="@+id/cbSat"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:button="@null"
+                            android:checked="false"
+                            android:layout_margin="1dp"
+                            android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
+                            android:gravity="center"
+                            android:text="السبت"
+                            android:textSize="@dimen/small_font_size"
+                            android:textStyle="normal|bold" />
+                </LinearLayout>
+            </LinearLayout>
+
             <View
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="60dp"
                 android:visibility="invisible" />
         </LinearLayout>
     </ScrollView>

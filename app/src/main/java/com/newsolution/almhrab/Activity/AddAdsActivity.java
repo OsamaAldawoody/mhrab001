@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -82,6 +83,7 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
     private String selectedVideoPath = "";
     private SharedPreferences sp;
     private DBOperations DBO;
+    private CheckBox cbSat,cbSun,cbMon,cbTue,cbWed,cbThu,cbFri;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -121,6 +123,13 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
         ed_start = (EditText) findViewById(R.id.ed_start);
         ed_end = (EditText) findViewById(R.id.ed_end);
         tvSave = (TextView) findViewById(R.id.tvSave);
+        cbSat = (CheckBox) findViewById(R.id.cbSat);
+        cbSun = (CheckBox) findViewById(R.id.cbSun);
+        cbMon = (CheckBox) findViewById(R.id.cbMon);
+        cbTue = (CheckBox) findViewById(R.id.cbTue);
+        cbWed = (CheckBox) findViewById(R.id.cbWed);
+        cbThu = (CheckBox) findViewById(R.id.cbThu);
+        cbFri = (CheckBox) findViewById(R.id.cbFri);
 
         iv_back.setOnClickListener(this);
         ivSelectImg.setOnClickListener(this);
@@ -206,9 +215,14 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
                 ed_end.setError("أدخل وقت نهاية ظهورالإعلان");
                 return;
             }
-            if (!Utils.compareDates(ed_start.getText().toString(), ed_end.getText().toString())) {
+            if (!Utils.compareTimes(ed_start.getText().toString(), ed_end.getText().toString())) {
                 Utils.showCustomToast(activity, getString(R.string.error_date));
                 ed_end.setError(getString(R.string.error_date));
+                return;
+            }
+            if (!cbSat.isChecked()&&!cbSun.isChecked()&&!cbMon.isChecked()&&!cbTue.isChecked()&&!cbWed.isChecked()
+                    &&!cbThu.isChecked()&&!cbFri.isChecked()){
+                Utils.showCustomToast(activity, "يجب إدخال أيام ظهور الإعلان");
                 return;
             }
             if (type == 1) {
@@ -232,12 +246,20 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
             ads.setImage(selectedImagePath);
             ads.setVideo(selectedVideoPath);
             ads.setText(edAdsText.getText().toString().trim());
-            ads.setStart(ed_start.getText().toString().trim());
-            ads.setEnd(ed_end.getText().toString().trim());
+            ads.setStartTime(ed_start.getText().toString().trim());
+            ads.setEndTime(ed_end.getText().toString().trim());
+            ads.setSaturday(cbSat.isChecked());
+            ads.setSunday(cbSun.isChecked());
+            ads.setMonday(cbMon.isChecked());
+            ads.setTuesday(cbTue.isChecked());
+            ads.setWednesday(cbWed.isChecked());
+            ads.setThursday(cbThu.isChecked());
+            ads.setFriday(cbFri.isChecked());
             DBO = new DBOperations(this);
-            DBO.open();
+            DBO.createDatabase();
             DBO.insertAds(ads);
-            DBO.close();
+            Utils.showCustomToast(activity, "تم إضافة الإعلان");
+
         } else if (view == ivSelectImg) {
             selectImage();
         } else if (view == ivSelectVideo) {

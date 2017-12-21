@@ -198,6 +198,7 @@
     <string name="newstext"> نص الخبر</string>
     <string name="adsTitle">عنوان الإعلان</string>
     <string name="adsPeriod">فترة ظهور الإعلان</string>
+    <string name="adsDay">أيام ظهور الإعلان</string>
     <string name="enter_adsTitle">أدخل عنوان الإعلان</string>
     <string name="adsText">نص الإعلان</string>
     <string name="fridayTxt"> خطبة الجمعة </string>

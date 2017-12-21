@@ -1,7 +1,9 @@
 package com.newsolution.almhrab.Activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -14,7 +16,9 @@ import android.widget.TextView;
 
 import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.DBOperations;
+import com.newsolution.almhrab.GlobalVars;
 import com.newsolution.almhrab.Helpar.Utils;
+import com.newsolution.almhrab.Hijri_Cal_Tools;
 import com.newsolution.almhrab.Model.City;
 import com.newsolution.almhrab.Model.OptionSiteClass;
 import com.newsolution.almhrab.R;
@@ -22,6 +26,7 @@ import com.newsolution.almhrab.WebServices.WS;
 
 import org.json.JSONObject;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -37,6 +42,18 @@ public class ChoosePriority extends Activity {
     private ProgressBar progress;
     public static String LOG_TAG = "//*mhrab";
     private String serverTime;
+    public String cfajr, csunrise, cdhohr, casr, cmaghrib, cisha;
+    public String nextPray;
+    public Calendar today = Calendar.getInstance();
+    double day = today.get(Calendar.DAY_OF_MONTH);
+    double month = today.get(Calendar.MONTH) + 1;
+    double year = today.get(Calendar.YEAR);
+    private double long1, long2;
+    private double lat1, lat2;
+    DBOperations DBO;
+    private int cityId;
+    GlobalVars globalVariable;
+    String[] prayTimes;
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -52,6 +69,7 @@ public class ChoosePriority extends Activity {
         activity = this;
         sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
         spedit = sp.edit();
+        DBO=new DBOperations(activity);
         findViews();
     }
 
@@ -134,7 +152,8 @@ public class ChoosePriority extends Activity {
                 spedit.putString(AppConst.LASTUPDATE, serverTime).commit();
                 spedit.putBoolean("isFirstLunch", false).commit();
                 Log.d(LOG_TAG, "End of Sync Service Successfuly");
-                go();
+//                go();
+                getPrayerTimes();
 
             } else if (sp.getBoolean("isFirstLunch", true)) {
                 Utils.showCustomToast(activity, getString(R.string.error));
@@ -144,7 +163,55 @@ public class ChoosePriority extends Activity {
         }
 
     }
+    private String[] calculate() {
+        DBO.open();
+        City city = DBO.getCityById(cityId);
+        DBO.close();
+        lat1 = sp.getInt("lat1", city.getLat1());
+        lat2 = sp.getInt("lat2", city.getLat2());
+        long1 = sp.getInt("long1", city.getLon1());
+        long2 = sp.getInt("long2", city.getLon2());
+        Hijri_Cal_Tools.calculation((double) lat1, (double) lat2, (double) long1, (double) long2,
+                year, month, day);
+//        Log.i("init()", lat1 + "," + lat2 + "," + long1 + "," + long2 + "," + year + "," +
+//                month + "," + day);
+        cfajr = Hijri_Cal_Tools.getFajer();
+        csunrise = Hijri_Cal_Tools.getSunRise();
+        cdhohr = Hijri_Cal_Tools.getDhuhur();
+        casr = Hijri_Cal_Tools.getAsar();
+        cmaghrib = Hijri_Cal_Tools.getMagrib();
+        cisha = Hijri_Cal_Tools.getIshaa();
+        String[] prayTimes = {cfajr, csunrise, cdhohr, casr, cmaghrib, cisha};
+        return prayTimes;
+    }
 
+    public void getPrayerTimes() {
+        Context context;
+        boolean isName = false;
+        try {
+            cityId = sp.getInt("cityId", 1);
+            prayTimes = calculate();
+            if (prayTimes.length > 0) {
+                isName = true;
+                cfajr = prayTimes[0];
+                csunrise = prayTimes[1];
+                cdhohr = prayTimes[2];
+                casr = prayTimes[3];
+                cmaghrib = prayTimes[4];
+                cisha = prayTimes[5];
+                spedit.putString("suh", cfajr).commit();
+                spedit.putString("sun", csunrise).commit();
+                spedit.putString("duh", cdhohr).commit();
+                spedit.putString("asr", casr).commit();
+                spedit.putString("magrib", cmaghrib).commit();
+                spedit.putString("isha", cisha).commit();
+            }
+            go();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     private void go() {
         Intent intent = new Intent(activity, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

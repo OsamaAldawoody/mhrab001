@@ -147,24 +147,26 @@ public class Utils {
     }
 
     public static String addToTime(String time, String increment) {
-        if (TextUtils.isEmpty(increment))
-            increment = "15";
-        String intime[] = time.split(":");
-        int hour = Integer.parseInt(intime[0]);
-        int minutes = Integer.parseInt(intime[1]);
-        int h = hour;
-        long m = minutes + Long.parseLong(increment);
-
-        if (m > 59) {
-            m = m - 60;
-            h++;
-        }
-
         String result = "";
-        if (h < 10)
-            result = "0" + h + ":" + m + ":00";
-        else
-            result = h + ":" + m + ":00";
+        if (TextUtils.isEmpty(time)) {
+            if (TextUtils.isEmpty(increment))
+                increment = "15";
+            String intime[] = time.split(":");
+            int hour = Integer.parseInt(intime[0]);
+            int minutes = Integer.parseInt(intime[1]);
+            int h = hour;
+            long m = minutes + Long.parseLong(increment);
+
+            if (m > 59) {
+                m = m - 60;
+                h++;
+            }
+
+            if (h < 10)
+                result = "0" + h + ":" + m + ":00";
+            else
+                result = h + ":" + m + ":00";
+        }
         return result;
     }
 
@@ -671,6 +673,30 @@ public class Utils {
     public static boolean compareDates(String d1, String d2) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd hh:mm");
+            Date date1 = sdf.parse(d1);
+            Date date2 = sdf.parse(d2);
+
+            System.out.println("Date1 " + sdf.format(date1));
+            System.out.println("Date2 " + sdf.format(date2));
+            System.out.println();
+            if (date1.after(date2)) {
+                System.out.println("Date1 is after Date2");
+                return false;
+            } else if (date1.before(date2)) {
+                System.out.println("Date1 is before Date2");
+                return true;
+            } else {// if(date1.equals(date2)){
+                System.out.println("Date1 is equal Date2");
+                return true;
+            }
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+            return true;
+        }
+    }
+    public static boolean compareTimes(String d1, String d2) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             Date date1 = sdf.parse(d1);
             Date date2 = sdf.parse(d2);
 
