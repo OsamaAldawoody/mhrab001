@@ -4,6 +4,7 @@
     <dimen name="font_size">45dp</dimen>
     <!--40dp-->
     <dimen name="no_l_font_size">60dp</dimen>
+    <dimen name="iqama_font_size">70dp</dimen>
     <!--40dp-->
     <dimen name="no_font_size">30dp</dimen>
     <dimen name="shro_font_size">40dp</dimen>

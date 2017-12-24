@@ -143,47 +143,47 @@ public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Con
         // Set the alarm's trigger time to 8:30 a.m.
 
         int alarmIndex = 0;
-
+//        Log.e("**//sleep", sp.getBoolean("sleep", false)+"");
         Calendar then = Calendar.getInstance(TimeZone.getDefault());
         then.setTimeInMillis(System.currentTimeMillis());
         KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Activity.KEYGUARD_SERVICE);
         KeyguardManager.KeyguardLock lock = keyguardManager.newKeyguardLock(context.KEYGUARD_SERVICE);
         if (sp.getBoolean("sleep", false)) {
-            String sleepOn = Utils.addToTime(sp.getString("isha", ""), sp.getInt("sleepOn", 0) + "");
-            String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), sp.getInt("sleepOff", 0) + "");
+//            String sleepOn = Utils.addToTime(sp.getString("isha", ""), sp.getInt("sleepOn", 0) + "");
+//            String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), sp.getInt("sleepOff", 0) + "");
             try {
                 Date mToday = new Date();
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                String curTime = sdf.format(mToday);
-//                Date start = sdf.parse(sleepOn);
-//                Date end = sdf.parse(sleepOff);
-                Date userDate = sdf.parse(curTime);
-//                if (end.before(start)) {
-//                    Calendar mCal = Calendar.getInstance();
-//                    mCal.setTime(end);
-//                    mCal.add(Calendar.DAY_OF_YEAR, 1);
-//                    end.setTime(mCal.getTimeInMillis());
-//                }
                 DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-                Date start = df.parse(sp.getString("startTime",userDate+""));
-                Date end = df.parse(sp.getString("endTime",userDate+""));
-                Log.d("**curTime", userDate.toString());
-                Log.d("**start", start.toString());
-                Log.d("**end", end.toString());
+
+                String curTime = sdf.format(mToday);
+                Date cur = sdf.parse(curTime);
+
+                String curTime1 = df.format(cur);
+                Date userDate = df.parse(curTime1);
+                Log.e("**//curTime", curTime);
+                Log.e("**//cur", cur.toString());
+
+                Date start = df.parse(sp.getString("startTime", userDate + ""));
+                Date end = df.parse(sp.getString("endTime", userDate + ""));
+                Log.e("**//curTime", userDate.toString());
+                Log.e("**//start", start.toString());
+                Log.e("**//end", end.toString());
                 if (userDate.after(start) && userDate.before(end)) {
-                    Log.d("**result", "falls between start and end , go to screen 1 ");
+                    Log.e("**//result", "falls between start and end , go to screen 1 ");
                     lock.reenableKeyguard();
                     Settings.System.putInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, 1000);
                     return;
-                }
-                else {
+                } else {
                     WakeLocker.acquire(context);
                     WakeLocker.release();
                     lock.disableKeyguard();
                     Settings.System.putInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, (3 * 24 * 60 * 60 * 1000));
-                    Log.d("**result", "does not fall between start and end , go to screen 2 ");
+                    Log.e("**//result", "does not fall between start and end , go to screen 2 ");
                 }
             } catch (ParseException e) {
+
+                e.printStackTrace();
             }
         }
         WakeLocker.acquire(context);

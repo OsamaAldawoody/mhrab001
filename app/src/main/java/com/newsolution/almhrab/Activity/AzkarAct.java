@@ -15,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -24,25 +23,19 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.newsolution.almhrab.Adapters.AzkarAdapter;
 import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.DBOperations;
-import com.newsolution.almhrab.Helpar.JsonHelper;
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Interface.OnLoadedFinished;
 import com.newsolution.almhrab.Model.Azkar;
 import com.newsolution.almhrab.R;
 import com.newsolution.almhrab.WebServices.WS;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -79,7 +72,7 @@ public class AzkarAct extends Activity {
                 .build());
         activity = this;
         setColor();
-        setContentView(R.layout.activity_advertisments);
+        setContentView(R.layout.activity_news);
         DBO = new DBOperations(this);
         DBO.createDatabase();
         sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);

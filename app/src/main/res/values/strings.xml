@@ -106,9 +106,9 @@
 
     <string name="PM">م </string>
     <string name="AM">ص </string>
-    <string name="h"> ساعة</string>
-    <string name="m">دقيقة</string>
-    <string name="s">ثانية</string>
+    <string name="h"> س</string>
+    <string name="m">د</string>
+    <string name="s">ث</string>
     <string name="percent">نسبي</string>
     <string name="contstant">وقت ثابت</string>
     <string name="det_iqama"> تحديد الإقامة</string>
@@ -133,6 +133,7 @@
     <string name="alarm_timed_out_only">يتوقف التنبيه بعد دقيقة</string>
     <string name="adv">شريط الأخبار</string>
     <string name="azkar"> الأذكار والأدعية</string>
+    <string name="advertisement"> الإعلانات</string>
     <string name="ads"> إضافة إعلان</string>
     <string name="adv_settings">إضافة ,تعديل, حذف الأخبار</string>
     <string name="azkar_settings">إضافة ,تعديل, حذف الأذكار</string>

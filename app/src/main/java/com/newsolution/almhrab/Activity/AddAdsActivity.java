@@ -54,10 +54,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -83,7 +86,7 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
     private String selectedVideoPath = "";
     private SharedPreferences sp;
     private DBOperations DBO;
-    private CheckBox cbSat,cbSun,cbMon,cbTue,cbWed,cbThu,cbFri;
+    private CheckBox cbSat, cbSun, cbMon, cbTue, cbWed, cbThu, cbFri;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -165,7 +168,7 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
             public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                 editText.setText(selectedHour + ":" + selectedMinute);
             }
-        }, hour, minute, true);//Yes 24 hour time
+        }, hour, minute, false);//Yes 24 hour time
         mTimePicker.setTitle("اختر وقت");
         mTimePicker.show();
     }
@@ -220,8 +223,8 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
                 ed_end.setError(getString(R.string.error_date));
                 return;
             }
-            if (!cbSat.isChecked()&&!cbSun.isChecked()&&!cbMon.isChecked()&&!cbTue.isChecked()&&!cbWed.isChecked()
-                    &&!cbThu.isChecked()&&!cbFri.isChecked()){
+            if (!cbSat.isChecked() && !cbSun.isChecked() && !cbMon.isChecked() && !cbTue.isChecked() && !cbWed.isChecked()
+                    && !cbThu.isChecked() && !cbFri.isChecked()) {
                 Utils.showCustomToast(activity, "يجب إدخال أيام ظهور الإعلان");
                 return;
             }
@@ -257,7 +260,34 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
             ads.setFriday(cbFri.isChecked());
             DBO = new DBOperations(this);
             DBO.createDatabase();
-            DBO.insertAds(ads);
+            DBO.open();
+            ArrayList<Ads> adsList = DBO.getAdsListByDay(sp.getInt("masjedId", -1),ads);
+            Log.i("+++ads", adsList.size() + "  ");
+            DBO.close();
+            if (adsList.size() > 0) {
+                for (int i = 0; i < adsList.size(); i++) {
+                    Ads adv = adsList.get(i);
+                    String oldAdvStart = adv.getStartTime();
+                    String oldAdvEnd = adv.getEndTime();
+                    SimpleDateFormat df = new SimpleDateFormat("HH:mm", new Locale("en"));
+                    Date date = new Date();
+                    String currentTime = df.format(date);
+                    try {
+                        Date oldAdvStartDate = df.parse(oldAdvStart);
+                        Date oldAdvEndDate = df.parse(oldAdvEnd);
+                        Date newAdvStartDate = df.parse(ads.getStartTime());
+                        Date newAdvEndDate = df.parse(ads.getEndTime());
+//                        if((From1 >= From2 && From1 < To2)  ||
+//                        (To1 > From2 && To1 <= To2) || (From2 > From1 && From2 < To1)
+//                         ||  (To2 > From1 && To2 < To1)){
+
+//                        }
+
+                    }catch (ParseException e){
+                    }
+                }
+            } else
+                DBO.insertAds(ads);
             Utils.showCustomToast(activity, "تم إضافة الإعلان");
 
         } else if (view == ivSelectImg) {

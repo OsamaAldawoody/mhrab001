@@ -75,6 +75,7 @@ import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Hijri_Cal_Tools;
 import com.newsolution.almhrab.Interface.OnLoadedFinished;
 import com.newsolution.almhrab.MarqueeViewSingle;
+import com.newsolution.almhrab.Model.Ads;
 import com.newsolution.almhrab.Model.City;
 import com.newsolution.almhrab.Model.News;
 import com.newsolution.almhrab.Model.OptionSiteClass;
@@ -183,6 +184,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     private AppCompatImageView ivLogo;
     private TextView tvName;
     public static boolean isOpenSermon = false;
+    private Runnable adsRunnable;
 
     class C05785 implements ILocalBluetoothCallBack {
         C05785() {
@@ -400,6 +402,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     public static String arial = "fonts/ariblk.ttf";//comfort
     private Typeface fontArial;
     private RelativeLayout rlMasjedTitle;
+    final Handler AdsHandler = new Handler();
 
 
     @Override
@@ -478,7 +481,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         icisha = sp.getString("iqisha", "");
 
         buildUI();
-        setSleepPeriod();
+//        setSleepPeriod();
         try {
             checkTime();
         } catch (Exception e) {
@@ -708,12 +711,14 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         getPrayerTimes();
 
         showNews();
-
+        checkAds();
         buildTheme();
         if (sp.getInt("priority", 0) == 1) {
             syncData();
         }
         changeSettings();
+        setSleepPeriod();
+
 //        else {
 //            DBO.open();
 //            advs = DBO.getNews(Utils.getFormattedCurrentDate());
@@ -1453,7 +1458,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_WEEK);
         if (day == Calendar.FRIDAY) {
-            Log.e("****/ friday/", " " + true);
+//            Log.e("****/ friday/", " " + true);
             return true;
         } else return false;
     }
@@ -1536,6 +1541,9 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         tText2.setTypeface(regular);
         time1.setTextColor(getResources().getColor(R.color.colorPrimary));//colorPrimary
         time2.setTextColor(getResources().getColor(R.color.colorPrimary));//colorPrimary
+        setIqamaTextSize(time1);
+        setIqamaTextSize(time2);
+
         if (diffHours > 0) {
             if (diffMinutes > 0) {
                 val = fh + "" + getString(R.string.h) + " و " + fm + "" + getString(R.string.m);
@@ -1843,6 +1851,42 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         timerPray.schedule(asyncPray, 0, 1800000);
     }
 
+    private void checkAds() {
+        DBO.open();
+        Ads ads = DBO.getAds(sp.getInt("masjedId", -1));
+        DBO.close();
+        if (ads != null) {
+            String adsStartTime = ads.getStartTime();
+            String adsEndTime = ads.getStartTime();
+            SimpleDateFormat df = new SimpleDateFormat("HH:mm", new Locale("en"));
+            Date date = new Date();
+            String currentTime = df.format(date);
+            try {
+                Date start = df.parse(adsStartTime);
+                Date end = df.parse(adsEndTime);
+                Date now = df.parse(currentTime);
+                if (start.equals(now)) {
+                    if ((Utils.isSaturday() && ads.isSaturday()) || (Utils.isSunday() && ads.isSunday())
+                            || (Utils.isMonday() && ads.isMonday()) || (Utils.isTuesday() && ads.isTuesday())
+                            || (Utils.isWednesday() && ads.isWednesday()) || (Utils.isThursday() && ads.isThursday())
+                            || (Utils.isFriday() && ads.isFriday())) {
+                        Intent intent = new Intent(activity, ShowAdsActivity.class);
+                        startActivity(intent);
+                    }
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        adsRunnable = new Runnable() {
+            @Override
+            public void run() {
+                checkAds();
+            }
+        };
+        AdsHandler.postDelayed(adsRunnable, 1000);
+    }
+
     private void checkTime() {
         DateHigri hd = new DateHigri();
         date1 = (TextView) findViewById(R.id.dateToday);
@@ -1978,6 +2022,11 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     private void setLargeTextSize(TextView textView) {
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getResources().getDimension(R.dimen.l_font_size));
+    }
+
+    private void setIqamaTextSize(TextView textView) {
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimension(R.dimen.iqama_font_size));
     }
 
     private void setNoLargeTextSize(TextView textView) {
@@ -2165,6 +2214,8 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     private void setSleepPeriod() {
         String sleepOn = Utils.addToTime(sp.getString("isha", ""), sp.getInt("sleepOn", 0) + "");
         String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), sp.getInt("sleepOff", 0) + "");
+        Log.e("**//sleepOn", sleepOn + "  **");
+        Log.e("**//sleepOff", sleepOff);
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             Date start = sdf.parse(sleepOn);
@@ -2181,6 +2232,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             spedit.putString("startTime", startDate).commit();
             spedit.putString("endTime", endDate).commit();
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -2305,6 +2357,8 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         timer.cancel();
         timer.purge();
         try {
+            AdsHandler.removeCallbacks(adsRunnable);
+
             if (this._Timer != null) this._Timer.cancel();
             if (this._BroadcastService != null) {
                 this._BroadcastService.StopScan();

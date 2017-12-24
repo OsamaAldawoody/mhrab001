@@ -78,7 +78,7 @@
             android:name=".Activity.ShowPray"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.Advertisments"
+            android:name=".Activity.NewsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeAct" />
         <activity
@@ -156,10 +156,14 @@
         <activity
             android:name=".Activity.AddAdsActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/AppThemeAct" />
+        <activity
+            android:name=".Activity.VideoViewActivity"
             android:theme="@style/AppThemeAct"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name=".Activity.VideoViewActivity"
+            android:name=".Activity.AdsActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppThemeAct"
             android:windowSoftInputMode="stateAlwaysHidden" />
     </application>

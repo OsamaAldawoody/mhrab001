@@ -644,7 +644,7 @@ public class DBOperations {
         db.enableWriteAheadLogging();
         db.beginTransaction();
         int count = 0;
-        db.delete("Advertisement", "", null);
+//        db.delete("Advertisement", "", null);
         ContentValues values = new ContentValues();
 
 //        values.put("id", object.getId());
@@ -697,8 +697,83 @@ public class DBOperations {
                 object.setThursday(cursor.getInt(cursor.getColumnIndex("Thursday")) == 1 ? true : false);
                 object.setFriday(cursor.getInt(cursor.getColumnIndex("Friday")) == 1 ? true : false);
             } while (cursor.moveToNext());
-        }
+        } else object = null;
         return object;
+    }
+
+    public ArrayList<Ads> getAdsList(int masjedID) {
+        ArrayList<Ads> adsList = new ArrayList<>();
+        String selectQuery = "SELECT * FROM Advertisement WHERE MasjedID=" + masjedID + "";
+        Log.i("Quert", selectQuery);
+        Cursor cursor = mDb.rawQuery(selectQuery, null);
+        Log.i("Qu dataBase", "" + cursor.getCount());
+        if (cursor.moveToFirst()) {
+            do {
+                Ads object = new Ads();
+                object.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                object.setMasjedID(cursor.getInt(cursor.getColumnIndex("MasjedID")));
+                object.setType(cursor.getInt(cursor.getColumnIndex("Type")));
+                object.setTitle(cursor.getString(cursor.getColumnIndex("Title")));
+                object.setText(cursor.getString(cursor.getColumnIndex("Text")));
+                object.setImage(cursor.getString(cursor.getColumnIndex("Image")));
+                object.setVideo(cursor.getString(cursor.getColumnIndex("Video")));
+                object.setStartTime(cursor.getString(cursor.getColumnIndex("StartTime")));
+                object.setEndTime(cursor.getString(cursor.getColumnIndex("EndTime")));
+                object.setSaturday(cursor.getInt(cursor.getColumnIndex("Saturday")) == 1 ? true : false);
+                object.setSunday(cursor.getInt(cursor.getColumnIndex("Sunday")) == 1 ? true : false);
+                object.setMonday(cursor.getInt(cursor.getColumnIndex("Monday")) == 1 ? true : false);
+                object.setTuesday(cursor.getInt(cursor.getColumnIndex("Tuesday")) == 1 ? true : false);
+                object.setWednesday(cursor.getInt(cursor.getColumnIndex("Wednesday")) == 1 ? true : false);
+                object.setThursday(cursor.getInt(cursor.getColumnIndex("Thursday")) == 1 ? true : false);
+                object.setFriday(cursor.getInt(cursor.getColumnIndex("Friday")) == 1 ? true : false);
+                adsList.add(object);
+            } while (cursor.moveToNext());
+        }
+        ;
+        return adsList;
+    }
+    public ArrayList<Ads> getAdsListByDay(int masjedID,Ads ads) {
+        ArrayList<Ads> adsList = new ArrayList<>();
+        String selectQuery = "SELECT * FROM Advertisement WHERE MasjedID=" + masjedID + " AND (" +
+                "Saturday="+(ads.isSaturday()?1:0)+" OR Sunday="+(ads.isSunday()?1:0)
+                +" OR Monday="+(ads.isSunday()?1:0)+" OR Tuesday="+(ads.isSunday()?1:0)
+                +" OR Wednesday="+(ads.isSunday()?1:0)
+                +" OR Thursday="+(ads.isSunday()?1:0)
+                +" OR Friday="+(ads.isSunday()?1:0)+")";
+        Log.i("Quert", selectQuery);
+        Cursor cursor = mDb.rawQuery(selectQuery, null);
+        Log.i("Qu dataBase", "" + cursor.getCount());
+        if (cursor.moveToFirst()) {
+            do {
+                Ads object = new Ads();
+                object.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                object.setMasjedID(cursor.getInt(cursor.getColumnIndex("MasjedID")));
+                object.setType(cursor.getInt(cursor.getColumnIndex("Type")));
+                object.setTitle(cursor.getString(cursor.getColumnIndex("Title")));
+                object.setText(cursor.getString(cursor.getColumnIndex("Text")));
+                object.setImage(cursor.getString(cursor.getColumnIndex("Image")));
+                object.setVideo(cursor.getString(cursor.getColumnIndex("Video")));
+                object.setStartTime(cursor.getString(cursor.getColumnIndex("StartTime")));
+                object.setEndTime(cursor.getString(cursor.getColumnIndex("EndTime")));
+                object.setSaturday(cursor.getInt(cursor.getColumnIndex("Saturday")) == 1 ? true : false);
+                object.setSunday(cursor.getInt(cursor.getColumnIndex("Sunday")) == 1 ? true : false);
+                object.setMonday(cursor.getInt(cursor.getColumnIndex("Monday")) == 1 ? true : false);
+                object.setTuesday(cursor.getInt(cursor.getColumnIndex("Tuesday")) == 1 ? true : false);
+                object.setWednesday(cursor.getInt(cursor.getColumnIndex("Wednesday")) == 1 ? true : false);
+                object.setThursday(cursor.getInt(cursor.getColumnIndex("Thursday")) == 1 ? true : false);
+                object.setFriday(cursor.getInt(cursor.getColumnIndex("Friday")) == 1 ? true : false);
+                adsList.add(object);
+            } while (cursor.moveToNext());
+        }
+        ;
+        return adsList;
+    }
+    public void delAdvertisement(int id,int MasjedID) {
+        Log.d("DBOperations", "table profile data eraser");
+        // open();
+        mDb.execSQL("DELETE  FROM Advertisement where id=" + id + " AND MasjedID="+MasjedID+"");
+        Log.i("DBOperations", "DELETE  FROM Advertisement where id=" + id + " AND MasjedID="+MasjedID+"");
+
     }
 
 }

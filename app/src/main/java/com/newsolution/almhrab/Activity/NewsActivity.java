@@ -15,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -23,11 +22,9 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.newsolution.almhrab.Adapters.AdsAdapter;
+import com.newsolution.almhrab.Adapters.NewsAdapter;
 import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.DBOperations;
 import com.newsolution.almhrab.DateTimePicker.CustomDateTimePicker;
@@ -47,11 +44,11 @@ import java.util.Locale;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class Advertisments extends Activity {
+public class NewsActivity extends Activity {
     Activity activity;
     private RecyclerView rv_ads;
     private ImageView iv_addAds;
-    AdsAdapter adsAdapter;
+    NewsAdapter newsAdapter;
     ArrayList<News> adsArrayList;
     private DBOperations DBO;
     private ImageView iv_back;
@@ -79,7 +76,7 @@ public class Advertisments extends Activity {
                 .build());
         activity = this;
         setColor();
-        setContentView(R.layout.activity_advertisments);
+        setContentView(R.layout.activity_news);
         DBO = new DBOperations(this);
         DBO.createDatabase();
         sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
@@ -116,7 +113,7 @@ public class Advertisments extends Activity {
     }
 
     private void setAdapter(final ArrayList<News> list) {
-        adsAdapter = new AdsAdapter(this, list, new AdsAdapter.OnRecycleViewItemClicked() {
+        newsAdapter = new NewsAdapter(this, list, new NewsAdapter.OnRecycleViewItemClicked() {
             @Override
             public void onItemClicked(View view, int position) {
                 deleteAds(position);
@@ -128,8 +125,8 @@ public class Advertisments extends Activity {
 //                editAdvDialog(position);
             }
         });
-        rv_ads.setAdapter(adsAdapter);
-        adsAdapter.notifyDataSetChanged();
+        rv_ads.setAdapter(newsAdapter);
+        newsAdapter.notifyDataSetChanged();
     }
 
     private void setColor() {
@@ -236,7 +233,7 @@ public class Advertisments extends Activity {
                         DBO.open();
                         DBO.delAds(adsArrayList.get(pos).getId());
                         adsArrayList.remove(pos);
-                        adsAdapter.notifyDataSetChanged();
+                        newsAdapter.notifyDataSetChanged();
                         DBO.close();
                     }
 
@@ -253,7 +250,7 @@ public class Advertisments extends Activity {
             DBO.open();
             DBO.delAds(adsArrayList.get(pos).getId());
             adsArrayList.remove(pos);
-            adsAdapter.notifyDataSetChanged();
+            newsAdapter.notifyDataSetChanged();
             DBO.close();
         }
     }

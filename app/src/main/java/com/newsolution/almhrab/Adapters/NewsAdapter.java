@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.DBOperations;
-import com.newsolution.almhrab.Model.Ads;
 import com.newsolution.almhrab.Model.News;
 import com.newsolution.almhrab.R;
 
@@ -24,7 +23,7 @@ import java.util.ArrayList;
 /**
  * Created by hp on 8/4/2016.
  */
-public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.AdsViewHolder> {
+public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.AdsViewHolder> {
     private static final int TYPE_HEADER = 0;  // Declaring Variable to Understand which View is being worked on
     private static final int TYPE_FOOTER = 1;
     private final DBOperations DBO;
@@ -33,10 +32,10 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.AdsViewHolder> {
     private final SharedPreferences.Editor spedit;
     // private ArrayList<Posts> posts;
     Activity activity;
-    ArrayList<Ads> adsList;
+    ArrayList<News> adsList;
 
 
-    public AdsAdapter(Activity activity, ArrayList<Ads> adsList, OnRecycleViewItemClicked listener) {
+    public NewsAdapter(Activity activity, ArrayList<News> adsList, OnRecycleViewItemClicked listener) {
         this.activity = activity;
         this.adsList = adsList;
         this.listener=listener;
@@ -57,7 +56,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.AdsViewHolder> {
 
     @Override
     public void onBindViewHolder(final AdsViewHolder holder, final int i) {
-        holder.tv_adsText.setText(adsList.get(i).getTitle());
+        holder.tv_adsText.setText(adsList.get(i).getTextAds());
         holder.iv_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

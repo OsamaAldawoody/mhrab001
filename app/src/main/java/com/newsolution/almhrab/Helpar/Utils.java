@@ -148,7 +148,7 @@ public class Utils {
 
     public static String addToTime(String time, String increment) {
         String result = "";
-        if (TextUtils.isEmpty(time)) {
+        if (!TextUtils.isEmpty(time)) {
             if (TextUtils.isEmpty(increment))
                 increment = "15";
             String intime[] = time.split(":");
@@ -545,6 +545,62 @@ public class Utils {
         return dateFormat.format(date);
     }
 
+    public static boolean isSaturday() {
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+        if (day == Calendar.SATURDAY) {
+            return true;
+        } else return false;
+    }
+
+    public static boolean isSunday() {
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+        if (day == Calendar.SUNDAY) {
+            return true;
+        } else return false;
+    }
+
+    public static boolean isMonday() {
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+        if (day == Calendar.MONDAY) {
+            return true;
+        } else return false;
+    }
+
+    public static boolean isTuesday() {
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+        if (day == Calendar.TUESDAY) {
+            return true;
+        } else return false;
+    }
+
+    public static boolean isWednesday() {
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+        if (day == Calendar.WEDNESDAY) {
+            return true;
+        } else return false;
+    }
+
+    public static boolean isThursday() {
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+        if (day == Calendar.THURSDAY) {
+            return true;
+        } else return false;
+    }
+
+    public static boolean isFriday() {
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+        if (day == Calendar.FRIDAY) {
+            return true;
+        } else return false;
+    }
+
     public static String generatePassword() {
         SecureRandom secureRandom = new SecureRandom();
         return new BigInteger(40, secureRandom).toString(32);
@@ -694,6 +750,7 @@ public class Utils {
             return true;
         }
     }
+
     public static boolean compareTimes(String d1, String d2) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
@@ -1013,6 +1070,7 @@ public class Utils {
 
         return outputIslamicDate;
     }
+
     public static String writeIslamicDate1(Activity act, DateHigri hd) {
         String[] wdNames = {act.getString(R.string.sun), act.getString(R.string.mon), act.getString(R.string.tus),
                 act.getString(R.string.wes)
@@ -1037,7 +1095,7 @@ public class Utils {
         int iDayN = hd.date1();
         // String outputIslamicDate = wdNames[(int) iDate[4]] + " " + (int)day + " " +MonthNames[(int) month] + " " + (int)year + " م " + (int)iDate[5] + " "+ iMonthNames[(int) iDate[6]] + " " + (int)iDate[7] + " هـ ";
         String outputIslamicDate = (int) iDate[5] + " " + iMonthNames[(int) iDate[6]] + " " +
-                (int) iDate[7] + " " + act.getString(R.string.mt) + " - " +  (int) day + " " + MonthNames[(int) month] + " " + (int) year;
+                (int) iDate[7] + " " + act.getString(R.string.mt) + " - " + (int) day + " " + MonthNames[(int) month] + " " + (int) year;
 
         return outputIslamicDate;
     }

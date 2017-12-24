@@ -3,6 +3,7 @@
     <dimen name="l_font_size">55dp</dimen>
     <dimen name="font_size">55dp</dimen>
     <dimen name="no_l_font_size">60dp</dimen>
+    <dimen name="iqama_font_size">70dp</dimen>
     <dimen name="no_font_size">35dp</dimen>
     <dimen name="shro_font_size">60dp</dimen>
     <dimen name="layout_marginTop">130dp</dimen>

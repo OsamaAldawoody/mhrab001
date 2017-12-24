@@ -119,7 +119,7 @@ public class SettingsActivity extends Activity {
         spedit = sp.edit();
 
         setContentView(R.layout.activity_settings);
-        checkLogin();
+        //checkLogin();
         DBO = new DBOperations(this);
         gv = (GlobalVars) getApplicationContext();
         DBO.open();
@@ -410,7 +410,7 @@ public class SettingsActivity extends Activity {
         ll_adv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(SettingsActivity.this, Advertisments.class));
+                startActivity(new Intent(SettingsActivity.this, NewsActivity.class));
             }
         });
         tvًPriority.setOnClickListener(new View.OnClickListener() {
@@ -443,7 +443,7 @@ public class SettingsActivity extends Activity {
         ll_NewAds.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(SettingsActivity.this, AddAdsActivity.class));
+                startActivity(new Intent(SettingsActivity.this, AdsActivity.class));
             }
         });
         tvIqamaSet.setOnClickListener(new View.OnClickListener() {
