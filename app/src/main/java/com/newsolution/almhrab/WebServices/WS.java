@@ -20,6 +20,7 @@ import com.newsolution.almhrab.Interface.OnFetched;
 import com.newsolution.almhrab.Interface.OnLoadedFinished;
 import com.newsolution.almhrab.Model.Azkar;
 import com.newsolution.almhrab.Model.City;
+import com.newsolution.almhrab.Model.Khotab;
 import com.newsolution.almhrab.Model.News;
 import com.newsolution.almhrab.Model.OptionSiteClass;
 import com.newsolution.almhrab.Model.Users;
@@ -546,6 +547,48 @@ public class WS {
                     String message = jsonObject.optString("ResultText");
                     if (Status) {
                         listener.onSuccess(activity.getString(R.string.success_edit));
+                    } else listener.onFail(message);
+
+                } catch (JSONException e) {
+                    listener.onFail(e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFail(String error) {
+                listener.onFail(error);
+            }
+        });
+    }
+    public static void getAllKhotab(final Activity activity, final OnLoadedFinished listener) {
+        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+        spedit = sp.edit();
+        int id = sp.getInt("masjedId", -1);
+        String GUID = sp.getString("masjedGUID", "");
+        String DeviceNo = sp.getString(AppConst.DeviceNo, "");
+
+        Map<String, String> param = new HashMap<>();
+        param.put("IdSubscribe", id + "");
+        param.put("GUID", GUID);
+        param.put("DeviceNo", DeviceNo);
+        param.put("lastUpdate", "0");
+
+        Log.i("////params ", param.toString());
+
+        UserOperations.getInstance(activity).sendPostRequest(Constants.Main_URL + "getAllKhotab", param, new OnLoadedFinished() {
+            @Override
+            public void onSuccess(String response) {
+                Log.i("////response ", response);
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(response);
+                    boolean Status = jsonObject.optBoolean("Status");
+                    String message = jsonObject.optString("ResultText");
+                    if (Status) {
+                        JSONArray jAKhotab = jsonObject.optJSONArray("OtherData");
+                        ArrayList<Khotab> khotabList = JsonHelper.jsonToKhotabArray(jAKhotab);
+                        DBOperations db = new DBOperations(activity);
+                        db.insertAllKhotab(khotabList);
                     } else listener.onFail(message);
 
                 } catch (JSONException e) {

@@ -184,6 +184,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     private AppCompatImageView ivLogo;
     private TextView tvName;
     public static boolean isOpenSermon = false;
+    public static boolean isOpenAds = false;
     private Runnable adsRunnable;
 
     class C05785 implements ILocalBluetoothCallBack {
@@ -715,6 +716,9 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         buildTheme();
         if (sp.getInt("priority", 0) == 1) {
             syncData();
+        }
+        if (Utils.isOnline(activity)) {
+            getAllKhotab();
         }
         changeSettings();
         setSleepPeriod();
@@ -1851,31 +1855,62 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         timerPray.schedule(asyncPray, 0, 1800000);
     }
 
-    private void checkAds() {
-        DBO.open();
-        Ads ads = DBO.getAds(sp.getInt("masjedId", -1));
-        DBO.close();
-        if (ads != null) {
-            String adsStartTime = ads.getStartTime();
-            String adsEndTime = ads.getStartTime();
-            SimpleDateFormat df = new SimpleDateFormat("HH:mm", new Locale("en"));
-            Date date = new Date();
-            String currentTime = df.format(date);
-            try {
-                Date start = df.parse(adsStartTime);
-                Date end = df.parse(adsEndTime);
-                Date now = df.parse(currentTime);
-                if (start.equals(now)) {
-                    if ((Utils.isSaturday() && ads.isSaturday()) || (Utils.isSunday() && ads.isSunday())
-                            || (Utils.isMonday() && ads.isMonday()) || (Utils.isTuesday() && ads.isTuesday())
-                            || (Utils.isWednesday() && ads.isWednesday()) || (Utils.isThursday() && ads.isThursday())
-                            || (Utils.isFriday() && ads.isFriday())) {
-                        Intent intent = new Intent(activity, ShowAdsActivity.class);
-                        startActivity(intent);
-                    }
+    private void getAllKhotab() {
+        try {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    WS.getAllKhotab(activity, new OnLoadedFinished() {
+                        @Override
+                        public void onSuccess(String response) {
+
+                        }
+
+                        @Override
+                        public void onFail(String error) {
+
+                        }
+                    });
                 }
-            } catch (ParseException e) {
-                e.printStackTrace();
+            });
+        } catch (NullPointerException e) {
+        }
+    }
+
+    private void checkAds() {
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm", new Locale("en"));
+        Date date = new Date();
+        String currentTime = df.format(date);
+        DBO.open();
+        ArrayList<Ads> adsList = DBO.getAdsByTime(sp.getInt("masjedId", -1), currentTime);
+        DBO.close();
+        if (adsList.size() > 0) {
+            for (int i = 0; i < adsList.size(); i++) {
+                Ads ads = adsList.get(i);
+                String adsStartTime = ads.getStartTime();
+                String adsEndTime = ads.getStartTime();
+                try {
+                    Date start = df.parse(adsStartTime);
+                    Date end = df.parse(adsEndTime);
+                    Date now = df.parse(currentTime);
+                    if (start.equals(now)) {
+                        if ((Utils.isSaturday() && ads.isSaturday()) || (Utils.isSunday() && ads.isSunday())
+                                || (Utils.isMonday() && ads.isMonday()) || (Utils.isTuesday() && ads.isTuesday())
+                                || (Utils.isWednesday() && ads.isWednesday()) || (Utils.isThursday() && ads.isThursday())
+                                || (Utils.isFriday() && ads.isFriday())) {
+                            if (!isOpenAds) {
+                                isOpenAds = true;
+                                Intent intent = new Intent(activity, ShowAdsActivity.class);
+                                intent.putExtra("ads", ads);
+                                intent.setAction("main");
+                                startActivity(intent);
+                            }
+                            break;
+                        }
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
         }
         adsRunnable = new Runnable() {
@@ -1885,6 +1920,15 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             }
         };
         AdsHandler.postDelayed(adsRunnable, 1000);
+    }
+
+    private void openAds() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                isOpenAds = false;
+            }
+        }, 60000);
     }
 
     private void checkTime() {
@@ -2358,7 +2402,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         timer.purge();
         try {
             AdsHandler.removeCallbacks(adsRunnable);
-
+            openAds();
             if (this._Timer != null) this._Timer.cancel();
             if (this._BroadcastService != null) {
                 this._BroadcastService.StopScan();

@@ -87,6 +87,7 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
     private SharedPreferences sp;
     private DBOperations DBO;
     private CheckBox cbSat, cbSun, cbMon, cbTue, cbWed, cbThu, cbFri;
+    private boolean isConflict = false;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -166,7 +167,14 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
         mTimePicker = new TimePickerDialog(activity, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                editText.setText(selectedHour + ":" + selectedMinute);
+                String hours = "" + selectedHour;
+                if (selectedHour < 10)
+                    hours = "0" + selectedHour;
+
+                String minute = "" + selectedMinute;
+                if (selectedMinute < 10)
+                    minute = "0" + selectedMinute;
+                editText.setText(hours + ":" + minute);
             }
         }, hour, minute, false);//Yes 24 hour time
         mTimePicker.setTitle("اختر وقت");
@@ -261,7 +269,7 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
             DBO = new DBOperations(this);
             DBO.createDatabase();
             DBO.open();
-            ArrayList<Ads> adsList = DBO.getAdsListByDay(sp.getInt("masjedId", -1),ads);
+            ArrayList<Ads> adsList = DBO.getAdsListByDay(sp.getInt("masjedId", -1), ads);
             Log.i("+++ads", adsList.size() + "  ");
             DBO.close();
             if (adsList.size() > 0) {
@@ -270,25 +278,37 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
                     String oldAdvStart = adv.getStartTime();
                     String oldAdvEnd = adv.getEndTime();
                     SimpleDateFormat df = new SimpleDateFormat("HH:mm", new Locale("en"));
-                    Date date = new Date();
-                    String currentTime = df.format(date);
                     try {
-                        Date oldAdvStartDate = df.parse(oldAdvStart);
-                        Date oldAdvEndDate = df.parse(oldAdvEnd);
-                        Date newAdvStartDate = df.parse(ads.getStartTime());
-                        Date newAdvEndDate = df.parse(ads.getEndTime());
-//                        if((From1 >= From2 && From1 < To2)  ||
-//                        (To1 > From2 && To1 <= To2) || (From2 > From1 && From2 < To1)
-//                         ||  (To2 > From1 && To2 < To1)){
+                        Date oldAdvStartDate = df.parse(oldAdvStart);//From1
+                        Date oldAdvEndDate = df.parse(oldAdvEnd);//To1
+                        Date newAdvStartDate = df.parse(ads.getStartTime());//From2
+                        Date newAdvEndDate = df.parse(ads.getEndTime());//To2
+                        if (((oldAdvStartDate.after(newAdvStartDate) || (oldAdvStartDate.equals(newAdvStartDate))
+                                && oldAdvStartDate.before(newAdvEndDate)) ||
+                                (oldAdvEndDate.after(newAdvStartDate) && (oldAdvEndDate.before(newAdvEndDate)) || oldAdvEndDate.equals(newAdvEndDate))
+                                || (newAdvStartDate.after(oldAdvStartDate) && newAdvStartDate.before(oldAdvEndDate))
+                                || (newAdvEndDate.after(oldAdvStartDate) && newAdvEndDate.before(oldAdvEndDate)))) {
 
+                            isConflict = true;
+                        }
+                        if (i == adsList.size() - 1) {
+                            if (isConflict) {
+                                Utils.showCustomToast(activity, "يوجد تعارض في الوقت مع إعلان آخر");
+                            } else {
+                                DBO.insertAds(ads);
+                                Utils.showCustomToast(activity, "تم إضافة الإعلان");
+                            }
+                        }
 //                        }
 
-                    }catch (ParseException e){
+                    } catch (ParseException e) {
+                        Utils.showCustomToast(activity, "حدث خطأ");
                     }
                 }
-            } else
+            } else {
                 DBO.insertAds(ads);
-            Utils.showCustomToast(activity, "تم إضافة الإعلان");
+                Utils.showCustomToast(activity, "تم إضافة الإعلان");
+            }
 
         } else if (view == ivSelectImg) {
             selectImage();

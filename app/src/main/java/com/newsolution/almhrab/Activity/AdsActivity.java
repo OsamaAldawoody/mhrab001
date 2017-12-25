@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.newsolution.almhrab.Adapters.AdsAdapter;
 import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.DBOperations;
+import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Model.Ads;
 import com.newsolution.almhrab.R;
 
@@ -127,9 +128,12 @@ public class AdsActivity extends AppCompatActivity {
     }
 
     private void showAds(Ads ads) {
-        Intent intent=new Intent(activity,ShowAdsActivity.class);
-        intent.putExtra("adsId",ads.getId());
+        Intent intent = new Intent(activity, ShowAdsActivity.class);
+        intent.setAction("view");
+        intent.putExtra("ads", ads);
         startActivity(intent);
+//        Utils.showCustomToast(activity, "click");
+
     }
 
     private void deleteAds(final int position) {
@@ -157,11 +161,11 @@ public class AdsActivity extends AppCompatActivity {
     }
 
     private void delete(final int pos) {
-            DBO.open();
-            DBO.delAdvertisement(adsArrayList.get(pos).getId(),sp.getInt("masjedId", -1));
-            adsArrayList.remove(pos);
-            adsAdapter.notifyDataSetChanged();
-            DBO.close();
+        DBO.open();
+        DBO.delAdvertisement(adsArrayList.get(pos).getId(), sp.getInt("masjedId", -1));
+        adsArrayList.remove(pos);
+        adsAdapter.notifyDataSetChanged();
+        DBO.close();
     }
 
     private void setColor() {

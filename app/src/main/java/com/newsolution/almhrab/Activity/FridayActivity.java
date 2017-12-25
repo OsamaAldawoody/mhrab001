@@ -7,6 +7,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.media.AudioManager;
+import android.net.Uri;
+import android.os.Build;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -15,18 +19,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.RelativeSizeSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Chronometer;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.DateHigri;
+import com.newsolution.almhrab.Helpar.PlaySound;
 import com.newsolution.almhrab.Helpar.Utils;
+import com.newsolution.almhrab.Model.Khotab;
 import com.newsolution.almhrab.R;
 import com.streamaxia.android.CameraPreview;
 import com.streamaxia.android.StreamaxiaPublisher;
@@ -48,7 +57,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class FridayActivity extends  AppCompatActivity implements RtmpHandler.RtmpListener, RecordHandler.RecordListener,
+public class FridayActivity extends AppCompatActivity implements RtmpHandler.RtmpListener, RecordHandler.RecordListener,
         EncoderHandler.EncodeListener {
 
     private final String TAG = FridayActivity.class.getSimpleName();
@@ -85,10 +94,15 @@ public class FridayActivity extends  AppCompatActivity implements RtmpHandler.Rt
     private TextView tvName;
     private Activity activity;
     TextView date1, time, amPm;
-    private static  String recPath ;//= Environment.getExternalStorageDirectory().getPath() + "/" +Utils.getDateTime()+".mp4";
+    private static String recPath;//= Environment.getExternalStorageDirectory().getPath() + "/" +Utils.getDateTime()+".mp4";
     private File saveDir;
     private SharedPreferences sp;
     private VideoView vvVideo;
+    private Khotab khotab;
+    private RelativeLayout rlLivingStream;
+    private Handler timerHandler = new Handler();
+    private Runnable timerRun;
+    private CountDownTimer countDownTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,12 +111,12 @@ public class FridayActivity extends  AppCompatActivity implements RtmpHandler.Rt
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_friday);
-        activity=this;
+        activity = this;
         ButterKnife.bind(this);
 //        hideStatusBar();
         saveDir = new File(Environment.getExternalStorageDirectory(), "AlMhrab");
         saveDir.mkdirs();
-        recPath = saveDir.getAbsolutePath()+ "/Live_" +Utils.getDateTime()+".mp4";
+        recPath = saveDir.getAbsolutePath() + "/Live_" + Utils.getDateTime() + ".mp4";
         mPublisher = new StreamaxiaPublisher(mCameraView, this);
 
         mPublisher.setEncoderHandler(new EncoderHandler(this));
@@ -120,6 +134,7 @@ public class FridayActivity extends  AppCompatActivity implements RtmpHandler.Rt
         fontDroidkufi = Typeface.createFromAsset(getAssets(), droidkufi);
         fontBangla_mn_bold = Typeface.createFromAsset(getAssets(), bangla_mn_bold);
 
+        rlLivingStream = (RelativeLayout) findViewById(R.id.rlLivingStream);
         vvVideo = (VideoView) findViewById(R.id.vvAdsVideo);
         tvUrdText = (TextView) findViewById(R.id.tvUrdText);
         tvEngText = (TextView) findViewById(R.id.tvEngText);
@@ -133,15 +148,66 @@ public class FridayActivity extends  AppCompatActivity implements RtmpHandler.Rt
         time.setTypeface(fontRoboto);
         date1.setTypeface(font);
         tvUrdText.setTypeface(fontBangla_mn_bold);
-        tvEngText.setSelected(true);
-        tvUrdText.setSelected(true);
+
         tvName.setText(sp.getString("masjedName", ""));
 //        tvEngText.setTypeface(fontBangla_mn_bold);
 //        tvName.setTypeface(fontDroidkufi);
 
         checkTime();
+        fillData();
 
     }
+
+    private void startKhotbaTimer() {
+        long khotbaPeriod = (khotab.getTimeExpected()) * 60 * 1000;
+        countDownTimer = new CountDownTimer(khotbaPeriod, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+                onDestroy();
+            }
+        }.start();
+    }
+
+    private void fillData() {
+        khotab = new Khotab();
+        String khotbaTitle = khotab.getTitle() + " - ";
+        if (!TextUtils.isEmpty(khotab.getTitle1()))
+            khotbaTitle = khotbaTitle + khotab.getTitle1() + " - ";
+        if (!TextUtils.isEmpty(khotab.getTitle2()))
+            khotbaTitle = khotbaTitle + khotab.getTitle2();
+        if (khotbaTitle.endsWith(" - "))
+            khotbaTitle.substring(0, khotbaTitle.length() - 2);
+        tvTitle.setText(khotbaTitle);
+        if (!TextUtils.isEmpty(khotab.getUrlVideoDeaf())) {
+            vvVideo.setVisibility(View.VISIBLE);
+            rlLivingStream.setVisibility(View.GONE);
+            vvVideo.setVideoURI(Uri.parse(khotab.getUrlVideoDeaf()));
+            vvVideo.start();
+        } else {
+            vvVideo.setVisibility(View.GONE);
+            rlLivingStream.setVisibility(View.VISIBLE);
+        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                animTranslation();
+                startKhotbaTimer();
+            }
+        }, 120000);
+    }
+
+    private void animTranslation() {
+        String body1 = khotab.getBody1();
+        String body2 = khotab.getBody2();
+        tvEngText.setText(body1 + "");
+        tvUrdText.setText(body2 + "");
+        tvEngText.setSelected(true);
+        tvUrdText.setSelected(true);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -156,7 +222,7 @@ public class FridayActivity extends  AppCompatActivity implements RtmpHandler.Rt
             mPublisher.startRecord(recPath);
 
         } else {
-          finish();
+            finish();
             Toast.makeText(this, "You need to grant persmissions in order to begin streaming.", Toast.LENGTH_LONG).show();
         }
     }
@@ -173,7 +239,8 @@ public class FridayActivity extends  AppCompatActivity implements RtmpHandler.Rt
         super.onDestroy();
         mPublisher.stopPublish();
         mPublisher.stopRecord();
-        MainActivity.isOpenSermon=true;
+        if (countDownTimer != null) countDownTimer.cancel();
+        MainActivity.isOpenSermon = true;
     }
 
 //    @Override
@@ -204,6 +271,7 @@ public class FridayActivity extends  AppCompatActivity implements RtmpHandler.Rt
             }
         }, 1000);
     }
+
     private void stopStreaming() {
         mPublisher.stopPublish();
         mPublisher.stopRecord();
@@ -383,6 +451,7 @@ public class FridayActivity extends  AppCompatActivity implements RtmpHandler.Rt
             // Ignore
         }
     }
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));

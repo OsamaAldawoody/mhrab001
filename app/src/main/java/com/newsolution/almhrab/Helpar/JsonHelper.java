@@ -2,6 +2,7 @@ package com.newsolution.almhrab.Helpar;
 
 import com.newsolution.almhrab.Model.Azkar;
 import com.newsolution.almhrab.Model.City;
+import com.newsolution.almhrab.Model.Khotab;
 import com.newsolution.almhrab.Model.News;
 import com.newsolution.almhrab.Model.OptionSiteClass;
 
@@ -150,6 +151,37 @@ public class JsonHelper {
         object.setPhoneAlertsEnglish(o.optString("PhoneAlertsEnglish"));
         object.setPhoneStatusVoice(o.optBoolean("PhoneStatusVoice"));
         object.setDateHijri(o.optInt("DateHijri"));
+        return object;
+    }
+    public static ArrayList<Khotab> jsonToKhotabArray(JSONArray a) {
+        int len = a.length();
+        ArrayList<Khotab> array = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            try {
+                array.add(jsonToKhotabClass(a.getJSONObject(i)));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return array;
+    }
+
+    public static Khotab jsonToKhotabClass(JSONObject o) {
+        Khotab object = new Khotab();
+        object.setId(o.optInt("Id"));
+        object.setTitle(o.optString("Title"));
+        object.setBody(o.optString("Body"));
+        object.setDateKhotab(o.optString("DateKhotab"));
+        object.setUpdatedAt(o.optString("UpdatedAt"));
+        object.setDescription(o.optString("Description"));
+        object.setTitle1(o.optString("Title1"));
+        object.setBody1(o.optString("Body1"));
+        object.setTitle2(o.optString("Title2"));
+        object.setBody2(o.optString("Body2"));
+        object.setUrlVideoDeaf(o.optString("UrlVideoDeaf"));
+        object.setTimeExpected(o.optInt("TimeExpected"));
+        object.setIsException(o.optInt("isException"));
+        object.setIsDeleted(o.optInt("isDeleted"));
         return object;
     }
 

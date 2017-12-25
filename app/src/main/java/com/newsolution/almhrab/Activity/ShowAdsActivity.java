@@ -74,10 +74,11 @@ public class ShowAdsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_show_ads);
         sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
         DBO = new DBOperations(this);
-        DBO.createDatabase();
-        DBO.open();
-        ads = DBO.getAds(sp.getInt("masjedId", -1));
-        DBO.close();
+//        DBO.createDatabase();
+//        DBO.open();
+//        ads = DBO.getAds(sp.getInt("masjedId", -1));
+//        DBO.close();
+        ads = (Ads) getIntent().getSerializableExtra("ads");
         font = Typeface.createFromAsset(getAssets(), droidkufiBold);
         fontRoboto = Typeface.createFromAsset(getAssets(), roboto);
         tvTitle = (TextView) findViewById(R.id.tvTitle);
@@ -93,7 +94,7 @@ public class ShowAdsActivity extends AppCompatActivity {
         date1.setTypeface(font);
         checkTime();
         fillData();
-        checkAds();
+        if (getIntent().getAction().equals("main")) checkAds();
     }
 
     private void fillData() {
@@ -106,39 +107,34 @@ public class ShowAdsActivity extends AppCompatActivity {
         String image = ads.getImage();
         String video = ads.getVideo();
         tvTitle.setText(title);
-        if (type == 1) {
-            ivAdsImage.setVisibility(View.VISIBLE);
-            vvAdsVideo.setVisibility(View.GONE);
-            tvAdsText.setVisibility(View.GONE);
-            tvAdsText.setText(text);
-            File f = new File(image);
-            ImageView mImgView1 = (ImageView) findViewById(R.id.imageView);
-            Bitmap bmp = BitmapFactory.decodeFile(f.getAbsolutePath());
-            ivAdsImage.setImageBitmap(bmp);
-            Log.i("---++ image: ", image);
-            Glide.with(activity).load(f).listener(new RequestListener<File, GlideDrawable>() {
-                @Override
-                public boolean onException(Exception e, File model, Target<GlideDrawable> target, boolean isFirstResource) {
-                    return false;
-                }
-
-                @Override
-                public boolean onResourceReady(GlideDrawable resource, File model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                    return false;
-                }
-            }).into(ivAdsImage);
-        } else if (type == 2) {
-            ivAdsImage.setVisibility(View.GONE);
-            vvAdsVideo.setVisibility(View.VISIBLE);
-            tvAdsText.setVisibility(View.GONE);
-            tvAdsText.setText(text);
-            vvAdsVideo.setVideoURI(Uri.parse(video));
-            vvAdsVideo.start();
-        } else if (type == 3) {
-            ivAdsImage.setVisibility(View.GONE);
-            vvAdsVideo.setVisibility(View.GONE);
-            tvAdsText.setText(text);
-            tvAdsText.setVisibility(View.VISIBLE);
+        try {
+            if (type == 1) {
+                ivAdsImage.setVisibility(View.VISIBLE);
+                vvAdsVideo.setVisibility(View.GONE);
+                tvAdsText.setVisibility(View.GONE);
+                tvAdsText.setText(text);
+                File f = new File(image);
+                Bitmap bmp = BitmapFactory.decodeFile(f.getAbsolutePath());
+                ivAdsImage.setImageBitmap(bmp);
+//            Log.i("---++ image: ", image);
+                Glide.with(activity).load(f).into(ivAdsImage);
+            } else if (type == 2) {
+                ivAdsImage.setVisibility(View.GONE);
+                vvAdsVideo.setVisibility(View.VISIBLE);
+                tvAdsText.setVisibility(View.GONE);
+                tvAdsText.setText(text);
+                vvAdsVideo.setVideoURI(Uri.parse(video));
+                vvAdsVideo.start();
+                Log.i("---++ video: ", video);
+            } else if (type == 3) {
+                ivAdsImage.setVisibility(View.GONE);
+                vvAdsVideo.setVisibility(View.GONE);
+                tvAdsText.setText(text);
+                tvAdsText.setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Utils.showCustomToast(activity, "تم حذف ملف الاعلان");
         }
 
     }
@@ -176,6 +172,8 @@ public class ShowAdsActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         AdsHandler.removeCallbacks(adsRunnable);
+        MainActivity.isOpenAds = true;
+
     }
 
     private void checkTime() {

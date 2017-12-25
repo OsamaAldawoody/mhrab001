@@ -1,9 +1,11 @@
 package com.newsolution.almhrab.Model;
 
+import java.io.Serializable;
+
 /**
  * Created by hp on 8/4/2016.
  */
-public class Ads {
+public class Ads implements Serializable {
     public Ads() {
     }
 
