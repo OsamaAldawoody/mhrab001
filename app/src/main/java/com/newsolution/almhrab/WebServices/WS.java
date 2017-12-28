@@ -75,11 +75,16 @@ public class WS {
                         String IdCityText = OtherData.optString("IdCityText");
                         String IdCityTextEn = OtherData.optString("IdCityTextEn");
                         String MyName = OtherData.optString("MyName");
+                        String Password = OtherData.optString("Password");
                         String img = Constants.IMAGE_URL + (OtherData.optString("img").replace("~", ""));
                         int Lat1 = OtherData.optInt("Lat_Degree");
                         int Lat2 = OtherData.optInt("Lat_Minute");
                         int Long1 = OtherData.optInt("Long_Degree");
                         int Long2 = OtherData.optInt("Long_Minute");
+                        boolean IsMasjed = OtherData.optBoolean("IsMasjed");
+                        boolean IsDeaf = OtherData.optBoolean("IsDeaf");
+                        spedit.putBoolean("IsMasjed", IsMasjed).commit();
+                        spedit.putBoolean("IsDeaf", IsDeaf).commit();
                         spedit.putInt("masjedId", Id).commit();
                         spedit.putInt("cityId", IdCity).commit();
                         spedit.putInt("lat1", Lat1).commit();
@@ -89,6 +94,7 @@ public class WS {
                         spedit.putString("masjedGUID", GUID).commit();
                         spedit.putString("masjedName", MyName).commit();
                         spedit.putString("masjedImg", img).commit();
+                        spedit.putString("masjedPW", Password).commit();
                         Users user = new Users(Id, FullName, UserName, Mobile, Email, GUID, IdCity, MyName, img);
 //                                Users user= new Users(Id, FullName, UserName, Mobile, Email, GUID, IdCity,IdCityText,Lat1,Lat2,
 //                                            Long1,Long2, MyName, img);
@@ -222,6 +228,10 @@ public class WS {
         param.put("AlShrouqEkama", settings.getAlShrouqEkama() + "");
         param.put("AlShrouqEkamaTime", settings.getAlShrouqEkamaTime() + "");
         param.put("AlShrouqEkamaIsTime", settings.isAlShrouqEkamaIsTime() + "");
+        param.put("AlShrouqEkamaIsTime", settings.isAlShrouqEkamaIsTime() + "");
+        param.put("AlShrouqEkamaIsTime", settings.isAlShrouqEkamaIsTime() + "");
+        param.put("CloseScreenAfterIsha", settings.getCloseScreenAfterIsha() + "");
+        param.put("RunScreenBeforeFajr", settings.getRunScreenBeforeFajr() + "");
 //        JSONObject object = null;
 //        try {
 //            object = new JSONObject(settings.toMap().toString());
@@ -588,7 +598,7 @@ public class WS {
                         JSONArray jAKhotab = jsonObject.optJSONArray("OtherData");
                         ArrayList<Khotab> khotabList = JsonHelper.jsonToKhotabArray(jAKhotab);
                         DBOperations db = new DBOperations(activity);
-                        db.insertAllKhotab(khotabList);
+                      if (khotabList.size()>0) db.insertAllKhotab(khotabList);
                     } else listener.onFail(message);
 
                 } catch (JSONException e) {
@@ -680,6 +690,12 @@ public class WS {
             int Lat2 = profile.optInt("Lat_Minute");
             int Long1 = profile.optInt("Long_Degree");
             int Long2 = profile.optInt("Long_Minute");
+            boolean IsMasjed = profile.optBoolean("IsMasjed");
+            boolean IsDeaf = profile.optBoolean("IsDeaf");
+            String Password = OtherData.optString("Password");
+            spedit.putBoolean("IsMasjed", IsMasjed).commit();
+            spedit.putBoolean("IsDeaf", IsDeaf).commit();
+            spedit.putString("masjedPW", Password).commit();
             spedit.putInt("masjedId", Id).commit();
             spedit.putInt("cityId", IdCity).commit();
             spedit.putInt("lat1", Lat1).commit();

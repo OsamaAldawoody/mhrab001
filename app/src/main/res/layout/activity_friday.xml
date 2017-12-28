@@ -91,44 +91,53 @@
         android:layout_height="250dp"
         android:layout_below="@+id/tvTitle"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="3dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:background="@drawable/live_rect"
         android:orientation="vertical">
-
-        <!--<ImageView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:background="#362417"-->
-        <!--android:scaleType="fitXY"-->
-        <!--android:src="@drawable/imam"/>-->
-        <com.streamaxia.android.CameraPreview
-            android:id="@+id/preview"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/rlLivingStream"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:keepScreenOn="true" />
+            android:layout_alignParentTop="true">
+            <!--<ImageView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:background="#362417"-->
+            <!--android:scaleType="fitXY"-->
+            <!--android:src="@drawable/imam"/>-->
+            <com.streamaxia.android.CameraPreview
+                android:id="@+id/preview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:keepScreenOn="true" />
 
-        <Chronometer
-            android:id="@+id/chronometer"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_centerInParent="true"
-            android:layout_margin="5dp"
-            android:background="@android:color/black"
-            android:padding="10dp"
-            android:textAlignment="center"
-            android:textColor="@android:color/white"
-            android:textSize="14sp" />
-
+            <Chronometer
+                android:id="@+id/chronometer"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="true"
+                android:layout_margin="5dp"
+                android:background="@android:color/black"
+                android:padding="10dp"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="14sp" />
+        </RelativeLayout>
         <VideoView
             android:id="@+id/vvAdsVideo"
             android:layout_width="match_parent"
@@ -139,7 +148,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:visibility="visible" />
+            android:visibility="gone" />
     </RelativeLayout>
 
     <LinearLayout
@@ -176,7 +185,7 @@
             android:id="@+id/tvUrdText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             android:ellipsize="marquee"
             android:focusable="true"
             android:focusableInTouchMode="true"

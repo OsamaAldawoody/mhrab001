@@ -1,10 +1,12 @@
 package com.newsolution.almhrab.Model;
 
+import java.io.Serializable;
+
 /**
  * Created by hp on 12/25/2017.
  */
 
-public class Khotab {
+public class Khotab implements Serializable{
     public int Id; // رقم الخطبة ، لا يتكرر
     public String Title; // عنوان الخطبة بالعربي ،،، ،، لازم يكون في نص ، يعني لازم يرجع الك
     public String Body;// نص الخطبة بالعربي ،، لازم يكون في نص ، يعني لازم يرجع الك

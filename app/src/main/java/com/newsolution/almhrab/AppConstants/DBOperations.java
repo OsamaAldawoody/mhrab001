@@ -504,6 +504,34 @@ public class DBOperations {
         return rowid != -1;
     }
 
+    public Khotab getKhotba(String date) {
+        Khotab object = new Khotab();
+        String selectQuery = "SELECT * FROM Khotab WHERE DateKhotab='" + date + "' LIMIT 1";
+        Log.i("Khotab", selectQuery);
+        Cursor cursor = mDb.rawQuery(selectQuery, null);
+        Log.i("Khotab", "" + cursor.getCount());
+        if (cursor.getCount() > 0&& cursor.moveToFirst()) {
+            do {
+                object.setId(cursor.getInt(cursor.getColumnIndex("Id")));
+                object.setTitle(cursor.getString(cursor.getColumnIndex("Title")));
+                object.setTitle1(cursor.getString(cursor.getColumnIndex("Title1")));
+                object.setTitle2(cursor.getString(cursor.getColumnIndex("Title2")));
+                object.setBody(cursor.getString(cursor.getColumnIndex("Body")));
+                object.setBody1(cursor.getString(cursor.getColumnIndex("Body1")));
+                object.setBody2(cursor.getString(cursor.getColumnIndex("Body2")));
+                object.setUpdatedAt(cursor.getString(cursor.getColumnIndex("UpdatedAt")));
+                object.setDateKhotab(cursor.getString(cursor.getColumnIndex("DateKhotab")));
+                object.setDescription(cursor.getString(cursor.getColumnIndex("Description")));
+                object.setUrlVideoDeaf(cursor.getString(cursor.getColumnIndex("UrlVideoDeaf")));
+                object.setTimeExpected(cursor.getInt(cursor.getColumnIndex("TimeExpected")));
+                object.setIsDeleted(cursor.getInt(cursor.getColumnIndex("isDeleted")));
+                object.setIsException(cursor.getInt(cursor.getColumnIndex("isException")));
+                Log.d("Khotab", "" + object.getUrlVideoDeaf());
+            } while (cursor.moveToNext());
+        } else object = null;
+        return object;
+    }
+
     //    public void updateNews(News news) {
 //        SQLiteDatabase db = mDbHelper.getWritableDatabase();
 //        db.enableWriteAheadLogging();
@@ -603,6 +631,8 @@ public class DBOperations {
         values.put("StatusEkamaVoiceI", (object.isStatusEkamaVoiceI()) ? 1 : 0);
         values.put("StatusAthanVoiceI", (object.isStatusAthanVoiceI()) ? 1 : 0);
         values.put("DateHijri", object.getDateHijri());
+        values.put("CloseScreenAfterIsha", object.getCloseScreenAfterIsha());
+        values.put("RunScreenBeforeFajr", object.getRunScreenBeforeFajr());
         db.insert("Settings", null, values);
         Log.d("Sync service", "# of set inserted : " + count);
         Log.d("Sync service", "# of set  : " + values.get("AlShrouqEkama"));
@@ -668,6 +698,8 @@ public class DBOperations {
                 object.setPhoneAlertsEnglish(cursor.getString(cursor.getColumnIndex("PhoneAlertsEnglish")));
                 object.setPhoneStatusVoice(cursor.getInt(cursor.getColumnIndex("PhoneStatusVoice")) == 1 ? true : false);
                 object.setDateHijri(cursor.getInt(cursor.getColumnIndex("DateHijri")));
+                object.setCloseScreenAfterIsha(cursor.getInt(cursor.getColumnIndex("CloseScreenAfterIsha")));
+                object.setRunScreenBeforeFajr(cursor.getInt(cursor.getColumnIndex("RunScreenBeforeFajr")));
                 Log.d("dataBase iqama", "" + object.isStatusAthanVoiceF());
             } while (cursor.moveToNext());
         }

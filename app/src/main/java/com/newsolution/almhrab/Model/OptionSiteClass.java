@@ -364,29 +364,6 @@ public class OptionSiteClass {
         IshaEkamaTime = ishaEkamaTime;
     }
 
-
-    public boolean StatusAthanVoiceF;
-    public boolean StatusEkamaVoiceF;
-    public boolean StatusAthanVoiceD;
-    public boolean StatusEkamaVoiceD;
-    public boolean StatusAthanVoiceA;
-    public boolean StatusEkamaVoiceA;
-    public boolean StatusAthanVoiceM;
-    public boolean StatusEkamaVoiceM;
-    public boolean StatusAthanVoiceI;
-    public boolean StatusEkamaVoiceI;
-    public int FajrEkama;
-    public int FajrAzkar;
-    public int FajrAzkarTimer;
-
-
-    public int DhuhrEkama;
-    public int DhuhrAzkar;
-    public int DhuhrAzkarTimer;
-
-    public int AsrEkama;
-    public int AlShrouqEkama;
-
     public int getAlShrouqEkama() {
         return AlShrouqEkama;
     }
@@ -430,6 +407,29 @@ public class OptionSiteClass {
 
     public int IshaAzkarTimer;
 
+
+    public boolean StatusAthanVoiceF;
+    public boolean StatusEkamaVoiceF;
+    public boolean StatusAthanVoiceD;
+    public boolean StatusEkamaVoiceD;
+    public boolean StatusAthanVoiceA;
+    public boolean StatusEkamaVoiceA;
+    public boolean StatusAthanVoiceM;
+    public boolean StatusEkamaVoiceM;
+    public boolean StatusAthanVoiceI;
+    public boolean StatusEkamaVoiceI;
+    public int FajrEkama;
+    public int FajrAzkar;
+    public int FajrAzkarTimer;
+
+
+    public int DhuhrEkama;
+    public int DhuhrAzkar;
+    public int DhuhrAzkarTimer;
+
+    public int AsrEkama;
+    public int AlShrouqEkama;
+
     /// <summary>
     /// حالة التنبيهات المرئية لإغلاق الهاتف
     /// </summary>
@@ -443,6 +443,24 @@ public class OptionSiteClass {
     public String PhoneAlertsUrdu;
     public boolean PhoneStatusVoice;
     public int DateHijri;
+    public int CloseScreenAfterIsha;
+    public int RunScreenBeforeFajr;
+
+    public int getCloseScreenAfterIsha() {
+        return CloseScreenAfterIsha;
+    }
+
+    public void setCloseScreenAfterIsha(int closeScreenAfterIsha) {
+        CloseScreenAfterIsha = closeScreenAfterIsha;
+    }
+
+    public int getRunScreenBeforeFajr() {
+        return RunScreenBeforeFajr;
+    }
+
+    public void setRunScreenBeforeFajr(int runScreenBeforeFajr) {
+        RunScreenBeforeFajr = runScreenBeforeFajr;
+    }
 
     @Override
     public String toString() {

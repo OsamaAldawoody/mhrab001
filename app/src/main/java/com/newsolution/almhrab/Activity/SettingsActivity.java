@@ -588,13 +588,44 @@ public class SettingsActivity extends Activity {
                     return;
                 }
                 if (sleepDialog.isShowing()) sleepDialog.dismiss();
-                spedit.putInt("sleepOn", Integer.parseInt(ed_play.getText().toString().trim())).commit();
-                spedit.putInt("sleepOff", Integer.parseInt(ed_stop.getText().toString().trim())).commit();
+                settings.setCloseScreenAfterIsha(Integer.parseInt(ed_play.getText().toString().trim()));
+                settings.setRunScreenBeforeFajr(Integer.parseInt(ed_stop.getText().toString().trim()));
+                if (sp.getInt("priority", 0) == 1) {
+                    if (Utils.isOnline(activity)) {
+                        final ProgressDialog pdS = new ProgressDialog(activity);
+                        pdS.setMessage(getString(R.string.wait));
+                        pdS.setCanceledOnTouchOutside(false);
+                        pdS.show();
+                        WS.UpdateSettings(activity, settings, new OnLoadedFinished() {
+                            @Override
+                            public void onSuccess(String response) {
+                                if (pdS.isShowing())
+                                    pdS.dismiss();
+                                spedit.putInt("sleepOn", Integer.parseInt(ed_play.getText().toString().trim())).commit();
+                                spedit.putInt("sleepOff", Integer.parseInt(ed_stop.getText().toString().trim())).commit();
 //                String sleepOnTime= Utils.addToTime(sp.getString("isha",""),sp.getInt("sleepOn",0)+"");
 //                String sleepOffTime= Utils.diffFromTime(sp.getString("suh",""),sp.getInt("sleepOff",0)+"");
 //                spedit.putString("sleepOnTime", sleepOnTime).commit();
 //                spedit.putString("sleepOffTime", sleepOffTime).commit();
-                Utils.showCustomToast(activity, getString(R.string.saved));
+                                Utils.showCustomToast(activity, getString(R.string.saved));
+                            }
+
+                            @Override
+                            public void onFail(String error) {
+                                if (pdS.isShowing())
+                                    pdS.dismiss();
+                            }
+                        });
+
+                    } else {
+                        Utils.showCustomToast(activity, getString(R.string.no_internet));
+                    }
+                } else {
+                    DBO.insertSettings(settings);
+                    spedit.putInt("sleepOn", Integer.parseInt(ed_play.getText().toString().trim())).commit();
+                    spedit.putInt("sleepOff", Integer.parseInt(ed_stop.getText().toString().trim())).commit();
+                    Utils.showCustomToast(activity, getString(R.string.saved));
+                }
             }
         });
         btn_cancel.setOnClickListener(new View.OnClickListener() {

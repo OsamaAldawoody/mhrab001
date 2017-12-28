@@ -73,13 +73,13 @@
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
         android:layout_marginBottom="10dp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="5dp"
         android:background="@drawable/title_back"
         android:gravity="center"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         android:text="ميلاد خير البشر - اچھے لوگوں کی پیدائش - ভালো মানুষদের জন্ম"
         android:textColor="@color/white"
         android:textSize="25dp" />
@@ -90,7 +90,7 @@
         android:layout_height="580dp"
         android:layout_below="@+id/tvTitle"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="15dp"
+        android:layout_marginBottom="10dp"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
         android:layout_marginTop="15dp"
@@ -98,34 +98,48 @@
         android:orientation="vertical">
 
         <!--<ImageView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:scaleType="fitXY"-->
-            <!--android:src="@drawable/imam" />-->
-        <com.streamaxia.android.CameraPreview
-            android:id="@+id/preview"
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:scaleType="fitXY"-->
+        <!--android:src="@drawable/imam" />-->
+        <RelativeLayout
+            android:id="@+id/rlLivingStream"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:keepScreenOn="true"/>
-        <Chronometer
-            android:id="@+id/chronometer"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_centerInParent="true"
-            android:layout_margin="10dp"
-            android:background="@android:color/black"
-            android:padding="10dp"
-            android:textAlignment="center"
-            android:textColor="@android:color/white"
-            android:textSize="15sp"/>
+            android:layout_alignParentTop="true">
+
+            <com.streamaxia.android.CameraPreview
+                android:id="@+id/preview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:keepScreenOn="true" />
+
+            <Chronometer
+                android:id="@+id/chronometer"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="true"
+                android:layout_margin="10dp"
+                android:background="@android:color/black"
+                android:padding="10dp"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="15sp" />
+        </RelativeLayout>
+
         <VideoView
             android:id="@+id/vvAdsVideo"
             android:layout_width="match_parent"
@@ -158,15 +172,15 @@
             android:id="@+id/tvEngText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="ایک اچھا آدمی محمد بن عبداللہ
- کی پیدائش اس پر ہے"
             android:ellipsize="marquee"
             android:focusable="true"
             android:focusableInTouchMode="true"
+            android:gravity="center"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
             android:singleLine="true"
+            android:text="ایک اچھا آدمی محمد بن عبداللہ
+ کی پیدائش اس پر ہے"
             android:textColor="@color/white"
             android:textSize="32dp" />
 
@@ -174,16 +188,16 @@
             android:id="@+id/tvUrdText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
-            android:text="একজন ভাল মানুষ মুহাম্মদ ইবনে
- আবদুল্লাহ এটা জন্ম হয় এটা জন্ম হয়"
+            android:layout_marginTop="15dp"
             android:ellipsize="marquee"
             android:focusable="true"
             android:focusableInTouchMode="true"
+            android:gravity="center"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
             android:singleLine="true"
+            android:text="একজন ভাল মানুষ মুহাম্মদ ইবনে
+ আবদুল্লাহ এটা জন্ম হয় এটা জন্ম হয়"
             android:textColor="@color/white"
             android:textSize="32dp" />
     </LinearLayout>

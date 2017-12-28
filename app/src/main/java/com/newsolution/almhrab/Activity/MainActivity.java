@@ -77,6 +77,7 @@ import com.newsolution.almhrab.Interface.OnLoadedFinished;
 import com.newsolution.almhrab.MarqueeViewSingle;
 import com.newsolution.almhrab.Model.Ads;
 import com.newsolution.almhrab.Model.City;
+import com.newsolution.almhrab.Model.Khotab;
 import com.newsolution.almhrab.Model.News;
 import com.newsolution.almhrab.Model.OptionSiteClass;
 import com.newsolution.almhrab.R;
@@ -419,7 +420,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/neosansarabic.ttf")//battar  droidkufi_regular droid_sans_arabic neosansarabic //mcs_shafa_normal
+                .setDefaultFontPath("fonts/neosansarabic.ttf")//battar  neosans_black droidkufi_regular droid_sans_arabic neosansarabic //mcs_shafa_normal
                 .setFontAttrId(R.attr.fontPath)
                 .build());
         setContentView(R.layout.activity_main);
@@ -1316,14 +1317,27 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     }
 
     private void playSermon() {
-        stopTimer = true;
-        timer.cancel();
-        timer.purge();
-        Log.i("***voice1", "countDown");
-        iqamatime = "";
-        Intent cp = new Intent(activity, FridayActivity.class);
-        startActivity(cp);
-        isOpenSermon = true;
+        DBO.open();
+        Khotab khotba = DBO.getKhotba(Utils.getCurrentDate());
+        DBO.close();
+        if (!sp.getBoolean("IsMasjed", false)) {
+            //isException هذه الجامع لا يوجد عليه رقابة يعني ما في بث مباشر او ترجمة
+            if (khotba != null) {
+                if (khotba.getIsException() == 0) {
+                    if (Utils.isOnline(activity)) {
+                        stopTimer = true;
+                        timer.cancel();
+                        timer.purge();
+                        Log.i("***voice1", "countDown");
+                        iqamatime = "";
+                        Intent cp = new Intent(activity, FridayActivity.class);
+                        cp.putExtra("khotba",khotba);
+                        startActivity(cp);
+                        isOpenSermon = true;
+                    }
+                }
+            }
+        }
     }
 
 
@@ -2256,8 +2270,8 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     }
 
     private void setSleepPeriod() {
-        String sleepOn = Utils.addToTime(sp.getString("isha", ""), sp.getInt("sleepOn", 0) + "");
-        String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), sp.getInt("sleepOff", 0) + "");
+        String sleepOn = Utils.addToTime(sp.getString("isha", ""), settings.getCloseScreenAfterIsha()/* sp.getInt("sleepOn", 0) */ + "");
+        String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), settings.getRunScreenBeforeFajr()/*sp.getInt("sleepOff", 0) */ + "");
         Log.e("**//sleepOn", sleepOn + "  **");
         Log.e("**//sleepOff", sleepOff);
         try {

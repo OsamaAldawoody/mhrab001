@@ -151,6 +151,8 @@ public class JsonHelper {
         object.setPhoneAlertsEnglish(o.optString("PhoneAlertsEnglish"));
         object.setPhoneStatusVoice(o.optBoolean("PhoneStatusVoice"));
         object.setDateHijri(o.optInt("DateHijri"));
+        object.setCloseScreenAfterIsha(o.optInt("CloseScreenAfterIsha"));
+        object.setRunScreenBeforeFajr(o.optInt("RunScreenBeforeFajr"));
         return object;
     }
     public static ArrayList<Khotab> jsonToKhotabArray(JSONArray a) {
@@ -180,8 +182,8 @@ public class JsonHelper {
         object.setBody2(o.optString("Body2"));
         object.setUrlVideoDeaf(o.optString("UrlVideoDeaf"));
         object.setTimeExpected(o.optInt("TimeExpected"));
-        object.setIsException(o.optInt("isException"));
-        object.setIsDeleted(o.optInt("isDeleted"));
+        object.setIsException((o.optBoolean("isException"))?1:0);
+        object.setIsDeleted((o.optBoolean("isDeleted"))?1:0);
         return object;
     }
 

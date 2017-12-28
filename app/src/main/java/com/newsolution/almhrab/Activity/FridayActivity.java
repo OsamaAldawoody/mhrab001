@@ -63,7 +63,7 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
     private final String TAG = FridayActivity.class.getSimpleName();
 
     // Set default values for the streamer
-    public final static String streamaxiaStreamName = "amal";
+    public static String streamaxiaStreamName = "amal";
     public final static int bitrate = 500;
     public final static int width = 720;
     public final static int height = 1280;
@@ -85,7 +85,9 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
     public static String arial = "fonts/ariblk.ttf";//comfort
     private Typeface fontArial;
     public static String bangla_mn_bold = "fonts/bangla_mn_bold.ttf";//comfort
+    public static String sansBold = "fonts/neosans_black.otf";//comfort
     private Typeface fontBangla_mn_bold;
+    private Typeface fontSansBold;
 
 
     private TextView tvUrdText;
@@ -112,17 +114,24 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_friday);
         activity = this;
+        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
+
         ButterKnife.bind(this);
 //        hideStatusBar();
         saveDir = new File(Environment.getExternalStorageDirectory(), "AlMhrab");
         saveDir.mkdirs();
         recPath = saveDir.getAbsolutePath() + "/Live_" + Utils.getDateTime() + ".mp4";
+        streamaxiaStreamName = sp.getInt("masjedId", -1) + "";
         mPublisher = new StreamaxiaPublisher(mCameraView, this);
 
-        mPublisher.setEncoderHandler(new EncoderHandler(this));
-        mPublisher.setRtmpHandler(new RtmpHandler(this));
-        mPublisher.setRecordEventHandler(new RecordHandler(this));
-        mCameraView.startCamera();
+        try {
+            mPublisher.setEncoderHandler(new EncoderHandler(this));
+            mPublisher.setRtmpHandler(new RtmpHandler(this));
+            mPublisher.setRecordEventHandler(new RecordHandler(this));
+            mCameraView.startCamera();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         setStreamerDefaultValues();
 
@@ -133,6 +142,7 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
         fontRoboto = Typeface.createFromAsset(getAssets(), roboto);
         fontDroidkufi = Typeface.createFromAsset(getAssets(), droidkufi);
         fontBangla_mn_bold = Typeface.createFromAsset(getAssets(), bangla_mn_bold);
+        fontSansBold = Typeface.createFromAsset(getAssets(), sansBold);
 
         rlLivingStream = (RelativeLayout) findViewById(R.id.rlLivingStream);
         vvVideo = (VideoView) findViewById(R.id.vvAdsVideo);
@@ -147,8 +157,10 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
         tvTitle.setTypeface(fontBangla_mn_bold);
         time.setTypeface(fontRoboto);
         date1.setTypeface(font);
-        tvUrdText.setTypeface(fontBangla_mn_bold);
-
+        tvUrdText.setTypeface(fontDroidkufi);//fontBangla_mn_bold
+        tvEngText.setTypeface(fontDroidkufi);
+        tvEngText.setText("");
+        tvUrdText.setText("");
         tvName.setText(sp.getString("masjedName", ""));
 //        tvEngText.setTypeface(fontBangla_mn_bold);
 //        tvName.setTypeface(fontDroidkufi);
@@ -160,20 +172,25 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
 
     private void startKhotbaTimer() {
         long khotbaPeriod = (khotab.getTimeExpected()) * 60 * 1000;
+        Log.i("khotbaPeriod: ", khotbaPeriod + "");
         countDownTimer = new CountDownTimer(khotbaPeriod, 1000) {
 
             public void onTick(long millisUntilFinished) {
             }
 
             public void onFinish() {
-                onDestroy();
+                try {
+                    finish();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }.start();
     }
 
     private void fillData() {
-        khotab = new Khotab();
-        String khotbaTitle = khotab.getTitle() + " - ";
+        khotab = (Khotab) getIntent().getSerializableExtra("khotba");
+        String khotbaTitle = "";
         if (!TextUtils.isEmpty(khotab.getTitle1()))
             khotbaTitle = khotbaTitle + khotab.getTitle1() + " - ";
         if (!TextUtils.isEmpty(khotab.getTitle2()))
@@ -181,18 +198,24 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
         if (khotbaTitle.endsWith(" - "))
             khotbaTitle.substring(0, khotbaTitle.length() - 2);
         tvTitle.setText(khotbaTitle);
-        if (!TextUtils.isEmpty(khotab.getUrlVideoDeaf())) {
-            vvVideo.setVisibility(View.VISIBLE);
-            rlLivingStream.setVisibility(View.GONE);
-            vvVideo.setVideoURI(Uri.parse(khotab.getUrlVideoDeaf()));
-            vvVideo.start();
-        } else {
-            vvVideo.setVisibility(View.GONE);
-            rlLivingStream.setVisibility(View.VISIBLE);
-        }
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                if (sp.getBoolean("IsDeaf", false)) {
+                    if (!TextUtils.isEmpty(khotab.getUrlVideoDeaf())) {
+                        vvVideo.setVisibility(View.VISIBLE);
+                        rlLivingStream.setVisibility(View.GONE);
+                        vvVideo.setVideoURI(Uri.parse(khotab.getUrlVideoDeaf()));
+                        vvVideo.start();
+                    } else {
+                        vvVideo.setVisibility(View.GONE);
+                        rlLivingStream.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    vvVideo.setVisibility(View.GONE);
+                    rlLivingStream.setVisibility(View.VISIBLE);
+                }
                 animTranslation();
                 startKhotbaTimer();
             }
@@ -220,7 +243,7 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
             mPublisher.setVideoBitRate(144);
             mPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
             mPublisher.startRecord(recPath);
-
+            Log.i("999999", "rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
         } else {
             finish();
             Toast.makeText(this, "You need to grant persmissions in order to begin streaming.", Toast.LENGTH_LONG).show();
@@ -229,27 +252,43 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
 
     @Override
     protected void onPause() {
-        super.onPause();
-        mCameraView.stopCamera();
-        mPublisher.pauseRecord();
+        try {
+            super.onPause();
+            mCameraView.stopCamera();
+            mPublisher.pauseRecord();
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mPublisher.stopPublish();
-        mPublisher.stopRecord();
-        if (countDownTimer != null) countDownTimer.cancel();
-        MainActivity.isOpenSermon = true;
+        try {
+            mPublisher.stopPublish();
+            mPublisher.stopRecord();
+            if (countDownTimer != null) countDownTimer.cancel();
+            MainActivity.isOpenSermon = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+        }
     }
 
 //    @Override
 //    public void onBackPressed() {
+//        try {
+//            mPublisher.stopPublish();
+//            mPublisher.stopRecord();
+//            if (countDownTimer != null) countDownTimer.cancel();
+//            MainActivity.isOpenSermon = true;
+//            finish();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            finish();
+//        }
 //        super.onBackPressed();
-//        mPublisher.stopPublish();
-//        mPublisher.stopRecord();
-//        MainActivity.isOpenSermon=true;
-//        finish();
 //    }
 
     private void checkTime() {
@@ -297,12 +336,16 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
     }
 
     private void setStatusMessage(final String msg) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(activity, "[" + msg + "]", Toast.LENGTH_LONG).show();
-            }
-        });
+        try {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(activity, "[" + msg + "]", Toast.LENGTH_LONG).show();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -342,14 +385,18 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
 
     @Override
     public void onRecordStarted(String s) {
-        Toast.makeText(activity, "[" + s + "]", Toast.LENGTH_LONG).show();
+//        Toast.makeText(activity, "[" + s + "]", Toast.LENGTH_LONG).show();
 
     }
 
     @Override
     public void onRecordFinished(String s) {
-        Toast.makeText(activity, "[" + s + "]", Toast.LENGTH_LONG).show();
-
+        try {
+            Toast.makeText(activity, "[" + s + "]", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+        }
     }
 
     @Override
@@ -449,6 +496,7 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
             mPublisher.stopRecord();
         } catch (Exception e1) {
             // Ignore
+            e.printStackTrace();
         }
     }
 

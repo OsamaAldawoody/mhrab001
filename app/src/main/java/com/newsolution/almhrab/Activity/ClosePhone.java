@@ -41,6 +41,7 @@ import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Hijri_Cal_Tools;
 import com.newsolution.almhrab.Interface.OnLoadedFinished;
 import com.newsolution.almhrab.Model.City;
+import com.newsolution.almhrab.Model.Khotab;
 import com.newsolution.almhrab.Model.News;
 import com.newsolution.almhrab.Model.OptionSiteClass;
 import com.newsolution.almhrab.R;
@@ -142,6 +143,8 @@ public class ClosePhone extends Activity {
     private LinearLayout rlTitle;
     private AppCompatImageView ivLogo;
     private TextView tvName;
+    public  boolean isOpenSermon = false;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -519,7 +522,7 @@ public class ClosePhone extends Activity {
                 }else {
                     tvIqama.setText("صلاة الجمعة");
                     remainTime1.setText("");
-                    playSermon();
+                    if (!isOpenSermon) playSermon();
                 }
                 if (iqamatime.equals("00:00:00")) {
                     remainTime1.setText("");
@@ -681,14 +684,29 @@ public class ClosePhone extends Activity {
         }
     }
     private void playSermon() {
-        stopTimer = true;
-        timer.cancel();
-        timer.purge();
-        iqamatime = "";
-        Intent cp = new Intent(activity, FridayActivity.class);
-        startActivity(cp);
-        finish();
+        DBO.open();
+        Khotab khotba = DBO.getKhotba(Utils.getCurrentDate());
+        DBO.close();
+        if (!sp.getBoolean("IsMasjed", false)) {
+            //isException هذه الجامع لا يوجد عليه رقابة يعني ما في بث مباشر او ترجمة
+            if (khotba != null) {
+                if (khotba.getIsException() == 0) {
+                    if (Utils.isOnline(activity)) {
+                        stopTimer = true;
+                        timer.cancel();
+                        timer.purge();
+                        Log.i("***voice1", "countDown");
+                        iqamatime = "";
+                        Intent cp = new Intent(activity, FridayActivity.class);
+                        cp.putExtra("khotba",khotba);
+                        startActivity(cp);
+                        isOpenSermon = true;
+                    }
+                }
+            }
+        }
     }
+
     private void runVoiceRecognition(final String currentPray) {
         if (currentPray.equals("fajr")) {
             period = settings.getFajrAzkar();
