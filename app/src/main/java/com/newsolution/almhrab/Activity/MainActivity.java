@@ -7,11 +7,14 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
@@ -26,6 +29,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -66,6 +70,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.newsolution.almhrab.AppConstants.AppConst;
+import com.newsolution.almhrab.AppConstants.Constants;
 import com.newsolution.almhrab.AppConstants.DBOperations;
 import com.newsolution.almhrab.AppConstants.DateHigri;
 import com.newsolution.almhrab.GlobalVars;
@@ -118,6 +123,16 @@ import com.newsolution.almhrab.scheduler.SalaatAlarmReceiver;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -138,7 +153,10 @@ import java.util.regex.Pattern;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import static com.newsolution.almhrab.Activity.FridayActivity.BROADCAST;
+
 public class MainActivity extends Activity/* implements RecognitionListener*/ {
+    private static int serverResponseCode;
     //    private Report _Report;
     public Queue<byte[]> Buffer = new LinkedList();
     private String DeviceName = "";
@@ -316,6 +334,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         }
     }
 
+    private BroadcastReceiver myReceiver;
     private double long1, long2;
     private double lat1, lat2;
     private SharedPreferences sp;
@@ -406,6 +425,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     private RelativeLayout rlMasjedTitle;
     final Handler AdsHandler = new Handler();
 
+    int masjedId;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -445,12 +465,12 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
         spedit = sp.edit();
         cityId = sp.getInt("cityId", 1);
+        masjedId = sp.getInt("masjedId", -1);
         DBO.open();
         city = DBO.getCityById(cityId);
         settings = DBO.getSettings();
         advs = DBO.getNews(Utils.getFormattedCurrentDate());
         DBO.close();
-
         lat1 = sp.getInt("lat1", city.getLat1());
         lat2 = sp.getInt("lat2", city.getLat2());
         long1 = sp.getInt("long1", city.getLon1());
@@ -466,6 +486,19 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         spedit.putString("imagrib", settings.getMagribEkama() + "").commit();
         spedit.putString("iisha", settings.getIshaEkama() + "").commit();
 
+        myReceiver = new BroadcastReceiver() {
+
+            public void onReceive(Context context, Intent intent) {
+                // TODO Auto-generated method stub
+                Bundle extras = intent.getExtras();
+                if (extras != null) {
+                    String recPath = extras.getString("send_data");
+                    Log.d("Received Msg : ", recPath);
+                    uploadSermonToServer(recPath, 6);
+                }
+            }
+        };
+//        uploadSermonToServer("", 6);
 
 //        prayTimes=  gv.getPrayTimes();
         cfajr = sp.getString("suh", "");
@@ -681,6 +714,8 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 
     @Override
     protected void onResume() {
+        IntentFilter intentFilter = new IntentFilter(BROADCAST);
+        registerReceiver(myReceiver, intentFilter);
         super.onResume();
         try {
             AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -1318,7 +1353,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 
     private void playSermon() {
         DBO.open();
-        Khotab khotba = DBO.getKhotba(Utils.getCurrentDate());
+        final Khotab khotba = DBO.getKhotba(Utils.getCurrentDate());
         DBO.close();
         if (!sp.getBoolean("IsMasjed", false)) {
             //isException هذه الجامع لا يوجد عليه رقابة يعني ما في بث مباشر او ترجمة
@@ -1330,16 +1365,136 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                         timer.purge();
                         Log.i("***voice1", "countDown");
                         iqamatime = "";
-                        Intent cp = new Intent(activity, FridayActivity.class);
-                        cp.putExtra("khotba",khotba);
-                        startActivity(cp);
-                        isOpenSermon = true;
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent cp = new Intent(activity, FridayActivity.class);
+                                cp.putExtra("khotba", khotba);
+                                startActivity(cp);
+                                isOpenSermon = true;
+                            }
+                        }, 10000);
                     }
                 }
             }
         }
     }
 
+    public  void uploadSermonToServer(String recPath, int masjedId) {
+        Uri filepath = Uri.fromFile(new File(recPath));
+//        int reponse = upLoad2Server("" + filepath, masjedId);
+        int rep = upLoad2Server("/storage/emulated/0/AlMhrab/جــامـع عــرفـة_2018-01-12 12:30:11.mp4", masjedId);
+
+
+    }
+
+    public  int upLoad2Server(String sourceFileUri, int masjedId) {
+        String upLoadServerUri = Constants.Main_URL + "SaveKhotabVideoTest";
+        // String [] string = sourceFileUri;
+        String fileName = sourceFileUri;
+
+        HttpURLConnection conn = null;
+        DataOutputStream dos = null;
+        DataInputStream inStream = null;
+        String lineEnd = "\r\n";
+        String twoHyphens = "--";
+        String boundary = "*****";
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 1 * 1024 * 1024;
+        String responseFromServer = "";
+
+        File sourceFile = new File(getRealPathFromURI(Uri.parse(sourceFileUri)));
+        if (!sourceFile.isFile()) {
+            Log.e("Huzza", "Source File Does not exist");
+            return 0;
+        }
+        try { // open a URL connection to the Servlet
+            FileInputStream fileInputStream = new FileInputStream(sourceFile);
+            URL url = new URL(upLoadServerUri);
+            conn = (HttpURLConnection) url.openConnection(); // Open a HTTP  connection to  the URL
+            conn.setDoInput(true); // Allow Inputs
+            conn.setDoOutput(true); // Allow Outputs
+            conn.setUseCaches(false); // Don't use a Cached Copy
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Connection", "Keep-Alive");
+            conn.setRequestProperty("ENCTYPE", "multipart/form-data");
+            conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+            conn.setRequestProperty("uploaded_file", fileName);
+            conn.setRequestProperty("IdSubscribe", masjedId + "");
+            dos = new DataOutputStream(conn.getOutputStream());
+
+            dos.writeBytes(twoHyphens + boundary + lineEnd);
+            dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\"" + fileName + "\"" + lineEnd);
+            dos.writeBytes(lineEnd);
+
+            bytesAvailable = fileInputStream.available(); // create a buffer of  maximum size
+            Log.i("Huzza", "Initial .available : " + bytesAvailable);
+
+            bufferSize = Math.min(bytesAvailable, maxBufferSize);
+            buffer = new byte[bufferSize];
+
+            // read file and write it into form...
+            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+            while (bytesRead > 0) {
+                dos.write(buffer, 0, bufferSize);
+                bytesAvailable = fileInputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+            }
+
+            // send multipart form data necesssary after file data...
+            dos.writeBytes(lineEnd);
+            dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+            // Responses from the server (code and message)
+            serverResponseCode = conn.getResponseCode();
+            String serverResponseMessage = conn.getResponseMessage();
+
+            Log.i("Upload file to server", "HTTP Response is : " + serverResponseMessage + ": " + serverResponseCode);
+            // close streams
+            Log.i("Upload file to server", fileName + " File is written");
+            fileInputStream.close();
+            dos.flush();
+            dos.close();
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+            Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//this block will give the response of upload link
+        try {
+            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line;
+            while ((line = rd.readLine()) != null) {
+                Log.i("Huzza", "RES Message: " + line);
+            }
+            rd.close();
+        } catch (IOException ioex) {
+            Log.e("Huzza", "error: " + ioex.getMessage(), ioex);
+        }
+        return serverResponseCode;  // like 200 (Ok)
+
+    }
+
+    private String getRealPathFromURI(Uri contentURI) {
+        String result = null;
+
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            if (cursor.moveToFirst()) {
+                int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+                result = cursor.getString(idx);
+            }
+            cursor.close();
+        }
+        return result;
+    }
 
     private void runVoiceRecognition(final String currentPray) {
         if (currentPray.equals("fajr")) {
@@ -1571,7 +1726,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 tText2.setVisibility(View.VISIBLE);
                 time1.setText(" " + fh + " ");
                 time2.setText(" " + fm + " ");
-                tText1.setText(getString(R.string.h) + " و");
+                tText1.setText(getString(R.string.h) /*+ " و"*/);
                 tText2.setText(getString(R.string.m));
             } else {
                 val = fh + "" + getString(R.string.h);
@@ -1590,7 +1745,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             tText2.setVisibility(View.VISIBLE);
             time1.setText(" " + fm + " ");
             time2.setText(" " + fs + " ");
-            tText1.setText(getString(R.string.m) + " و");
+            tText1.setText(getString(R.string.m)/* + " و"*/);
             tText2.setText(getString(R.string.s));
         } else if (diffSeconds > 0) {
             val = fs + "" + getString(R.string.s);

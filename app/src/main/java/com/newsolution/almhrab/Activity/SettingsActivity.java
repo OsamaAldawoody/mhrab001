@@ -119,7 +119,7 @@ public class SettingsActivity extends Activity {
         spedit = sp.edit();
 
         setContentView(R.layout.activity_settings);
-        //checkLogin();
+        checkLogin();
         DBO = new DBOperations(this);
         gv = (GlobalVars) getApplicationContext();
         DBO.open();

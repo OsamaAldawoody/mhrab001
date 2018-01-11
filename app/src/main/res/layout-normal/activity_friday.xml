@@ -100,6 +100,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/rlLivingStream"
+            android:visibility="visible"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentLeft="true"

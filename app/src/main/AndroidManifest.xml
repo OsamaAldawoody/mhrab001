@@ -107,7 +107,11 @@
         </receiver>
 
         <service android:name=".scheduler.SalaatSchedulingService" />
-
+        <receiver android:name=".SermonReceiver" >
+            <intent-filter >
+                <action android:name="com.newsolution.almhrab.android.action.broadcast"/>
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".Activity.Login"
             android:screenOrientation="portrait" />

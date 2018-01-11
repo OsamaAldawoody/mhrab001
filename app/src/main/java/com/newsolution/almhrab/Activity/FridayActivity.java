@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.CountDownTimer;
@@ -32,6 +33,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.newsolution.almhrab.AppConstants.AppConst;
+import com.newsolution.almhrab.AppConstants.Constants;
 import com.newsolution.almhrab.AppConstants.DateHigri;
 import com.newsolution.almhrab.Helpar.PlaySound;
 import com.newsolution.almhrab.Helpar.Utils;
@@ -63,7 +65,7 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
     private final String TAG = FridayActivity.class.getSimpleName();
 
     // Set default values for the streamer
-    public static String streamaxiaStreamName = "amal";
+    public static String streamaxiaStreamName = "AlMhrab_";
     public final static int bitrate = 500;
     public final static int width = 720;
     public final static int height = 1280;
@@ -105,6 +107,8 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
     private Handler timerHandler = new Handler();
     private Runnable timerRun;
     private CountDownTimer countDownTimer;
+    private boolean showLive = true;
+    public static final String BROADCAST = Constants.PACKAGE_NAME+".Activity.android.action.broadcast";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,13 +119,15 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
         setContentView(R.layout.activity_friday);
         activity = this;
         sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
+        khotab = (Khotab) getIntent().getSerializableExtra("khotba");
 
         ButterKnife.bind(this);
 //        hideStatusBar();
         saveDir = new File(Environment.getExternalStorageDirectory(), "AlMhrab");
         saveDir.mkdirs();
-        recPath = saveDir.getAbsolutePath() + "/Live_" + Utils.getDateTime() + ".mp4";
-        streamaxiaStreamName = sp.getInt("masjedId", -1) + "";
+        recPath = saveDir.getAbsolutePath() + "/" + sp.getString("masjedName", "AlMhrab") //+ "_" + khotab.getTitle()
+                + "_" + Utils.getDateTime() + ".mp4";
+        streamaxiaStreamName = streamaxiaStreamName + sp.getInt("masjedId", -1) + "";
         mPublisher = new StreamaxiaPublisher(mCameraView, this);
 
         try {
@@ -189,7 +195,6 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
     }
 
     private void fillData() {
-        khotab = (Khotab) getIntent().getSerializableExtra("khotba");
         String khotbaTitle = "";
         if (!TextUtils.isEmpty(khotab.getTitle1()))
             khotbaTitle = khotbaTitle + khotab.getTitle1() + " - ";
@@ -198,28 +203,40 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
         if (khotbaTitle.endsWith(" - "))
             khotbaTitle.substring(0, khotbaTitle.length() - 2);
         tvTitle.setText(khotbaTitle);
-
-        new Handler().postDelayed(new Runnable() {
+        if (sp.getBoolean("IsDeaf", false)) {
+            if (!TextUtils.isEmpty(khotab.getUrlVideoDeaf())) {
+                vvVideo.setVisibility(View.VISIBLE);
+                rlLivingStream.setVisibility(View.GONE);
+                showLive = false;
+                vvVideo.setVideoURI(Uri.parse(khotab.getUrlVideoDeaf()));
+                vvVideo.start();
+            } else {
+                showLive = true;
+                vvVideo.setVisibility(View.GONE);
+                rlLivingStream.setVisibility(View.VISIBLE);
+            }
+        } else {
+            showLive = true;
+            vvVideo.setVisibility(View.GONE);
+            rlLivingStream.setVisibility(View.VISIBLE);
+        }
+        vvVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
-            public void run() {
-                if (sp.getBoolean("IsDeaf", false)) {
-                    if (!TextUtils.isEmpty(khotab.getUrlVideoDeaf())) {
-                        vvVideo.setVisibility(View.VISIBLE);
-                        rlLivingStream.setVisibility(View.GONE);
-                        vvVideo.setVideoURI(Uri.parse(khotab.getUrlVideoDeaf()));
-                        vvVideo.start();
-                    } else {
-                        vvVideo.setVisibility(View.GONE);
-                        rlLivingStream.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    vvVideo.setVisibility(View.GONE);
-                    rlLivingStream.setVisibility(View.VISIBLE);
-                }
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                vvVideo.start();
+            }
+        });
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (!showLive) {
+//                    vvVideo.setVideoURI(Uri.parse(khotab.getUrlVideoDeaf()));
+//                    vvVideo.start();
+//                }
                 animTranslation();
                 startKhotbaTimer();
-            }
-        }, 120000);
+//            }
+//        }, 30000);
     }
 
     private void animTranslation() {
@@ -240,7 +257,7 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
             stopChronometer();
             mChronometer.setBase(SystemClock.elapsedRealtime());
             mChronometer.start();
-            mPublisher.setVideoBitRate(144);
+            mPublisher.setVideoBitRate(480);
             mPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
             mPublisher.startRecord(recPath);
             Log.i("999999", "rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
@@ -270,6 +287,13 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
             mPublisher.stopRecord();
             if (countDownTimer != null) countDownTimer.cancel();
             MainActivity.isOpenSermon = true;
+            Log.i("recPath: ",recPath);
+//            MainActivity.uploadSermonToServer(recPath,sp.getInt("masjedId",-1));
+            Intent intent = new Intent(BROADCAST);
+            Bundle extras = new Bundle();
+            extras.putString("send_data", recPath);
+            intent.putExtras(extras);
+            sendBroadcast(intent);
         } catch (Exception e) {
             e.printStackTrace();
             finish();

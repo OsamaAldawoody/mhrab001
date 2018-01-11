@@ -83,7 +83,7 @@ public class ClosePhone extends Activity {
     private GlobalVars gv;
     private SharedPreferences.Editor spedit;
     private AppCompatImageView ivMasjedLogo;
-    private  ImageView ivMenu;
+    private ImageView ivMenu;
     private TextView tvIqama, tvJmaaPray;
     TextView prev_tet1, prev_tet2, prev_tet3, date1, time, amPm,
             advText, in_masgedTemp, out_masgedTemp, tvHumidity, tvMasjedName;
@@ -109,7 +109,7 @@ public class ClosePhone extends Activity {
     ArrayList<String> advs = new ArrayList<String>();
     ArrayList<News> newses = new ArrayList<News>();
     ArrayList<String> azkar = new ArrayList<String>();
-    public String nextPray="";
+    public String nextPray = "";
     public String mosqueName;
     String[] mosquSettings;
     String[] prayTimes;
@@ -121,16 +121,16 @@ public class ClosePhone extends Activity {
     private TimerTask asyncPray;
     private Activity activity;
     private City city;
-    private boolean isFajrEkamaIsTime, isDhuhrEkamaIsTime, ishaEkamaIsTime, isAlShrouqEkamaIsTime,isMagribEkamaIsTime, isAsrEkamaIsTime;
+    private boolean isFajrEkamaIsTime, isDhuhrEkamaIsTime, ishaEkamaIsTime, isAlShrouqEkamaIsTime, isMagribEkamaIsTime, isAsrEkamaIsTime;
     private OptionSiteClass settings;
     private ImageView sound_stop;
-    private String iqamatime="";
-    private String currentPray="";
-    private boolean stopTimer=false;
+    private String iqamatime = "";
+    private String currentPray = "";
+    private boolean stopTimer = false;
     private int period = 300000;
     private TextView remainTime1;
-    private Typeface digital,regular;
-    private TextView tvIn, tvOut,tvHum;
+    private Typeface digital, regular;
+    private TextView tvIn, tvOut, tvHum;
     public static String droidkufiBold = "fonts/droid_kufi_bold.ttf";
     public static String droidkufi = "fonts/droidkufi_regular.ttf";
     private Typeface font;
@@ -143,7 +143,7 @@ public class ClosePhone extends Activity {
     private LinearLayout rlTitle;
     private AppCompatImageView ivLogo;
     private TextView tvName;
-    public  boolean isOpenSermon = false;
+    public boolean isOpenSermon = false;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -179,7 +179,7 @@ public class ClosePhone extends Activity {
         long1 = sp.getInt("long1", city.getLon1());
         long2 = sp.getInt("long2", city.getLon2());
 
-        gv.setMousqeSettings(settings.getFajrEkama() + "",settings.getAlShrouqEkama() + "", settings.getDhuhrEkama() + ""
+        gv.setMousqeSettings(settings.getFajrEkama() + "", settings.getAlShrouqEkama() + "", settings.getDhuhrEkama() + ""
                 , settings.getAsrEkama() + "", settings.getMagribEkama() + "", settings.getIshaEkama() + "");
         mosquSettings = gv.getMousqeSettings();
         spedit.putString("ifajer", settings.getFajrEkama() + "").commit();
@@ -203,8 +203,8 @@ public class ClosePhone extends Activity {
         tvHum = (TextView) findViewById(R.id.tvHum);
 
         remainTime1 = (TextView) findViewById(R.id.t1);
-         regular = Typeface.createFromAsset(getAssets(), "fonts/neosansarabic.ttf");
-         digital = Typeface.createFromAsset(getAssets(), "fonts/digital.ttf");
+        regular = Typeface.createFromAsset(getAssets(), "fonts/neosansarabic.ttf");
+        digital = Typeface.createFromAsset(getAssets(), "fonts/digital.ttf");
         remainTime1.setTypeface(digital);
         remainTime1.setTextColor(getResources().getColor(R.color.backLogo));
         tvIqama.setTypeface(fontDroidkufi);
@@ -234,19 +234,19 @@ public class ClosePhone extends Activity {
         buildUI();
         showNews();
 
-       if (TextUtils.isEmpty(sp.getString("TempIn",""))) {
-           getWeather(0);
-       }else {
-           in_masgedTemp.setText(sp.getString("TempIn",""));
-       }
-       if (TextUtils.isEmpty(sp.getString("TempOut",""))||TextUtils.isEmpty(sp.getString("HumOut",""))) {
-           getWeather(1);
-       }else {
-           out_masgedTemp.setText(sp.getString("TempOut",""));
-           tvHumidity.setText(sp.getString("HumOut","")+ "%");
+        if (TextUtils.isEmpty(sp.getString("TempIn", ""))) {
+            getWeather(0);
+        } else {
+            in_masgedTemp.setText(sp.getString("TempIn", ""));
+        }
+        if (TextUtils.isEmpty(sp.getString("TempOut", "")) || TextUtils.isEmpty(sp.getString("HumOut", ""))) {
+            getWeather(1);
+        } else {
+            out_masgedTemp.setText(sp.getString("TempOut", ""));
+            tvHumidity.setText(sp.getString("HumOut", "") + "%");
 
-       }
-        if (TextUtils.isEmpty(sp.getString("TempOut",""))&&TextUtils.isEmpty(sp.getString("TempIn",""))) {
+        }
+        if (TextUtils.isEmpty(sp.getString("TempOut", "")) && TextUtils.isEmpty(sp.getString("TempIn", ""))) {
             getWeather(-1);
         }
 
@@ -362,7 +362,7 @@ public class ClosePhone extends Activity {
                         public void run() {
                             if (PlaySound.isPlay(getBaseContext())) {
                                 sound_stop.setVisibility(View.VISIBLE);
-                            }else  sound_stop.setVisibility(View.GONE);
+                            } else sound_stop.setVisibility(View.GONE);
                             if (stopTimer) {
                                 return;
                             }
@@ -404,19 +404,20 @@ public class ClosePhone extends Activity {
             }
         }, 1000);
     }
+
     public void checkNextPrayTheme() {
         remainTime1.setTypeface(digital);
         Calendar today = Calendar.getInstance();
         int hour = today.get(Calendar.HOUR_OF_DAY);
         int minute = today.get(Calendar.MINUTE);
 
-            fajrTime.setText(convTime(cfajr));
-            sunriseTime.setText(convTime(csunrise));
-            dhuhrTime.setText(convTime(cdhohr));
-            asrTime.setText(convTime(casr));
-            maghribTime.setText(convTime(cmaghrib));
-            ishaTime.setText(convTime(cisha));
-            setIqamaTime();
+        fajrTime.setText(convTime(cfajr));
+        sunriseTime.setText(convTime(csunrise));
+        dhuhrTime.setText(convTime(cdhohr));
+        asrTime.setText(convTime(casr));
+        maghribTime.setText(convTime(cmaghrib));
+        ishaTime.setText(convTime(cisha));
+        setIqamaTime();
         try {
             SimpleDateFormat spd = new SimpleDateFormat("HH:mm:ss", new Locale("en"));
             String t1 = cfajr + ":00";
@@ -494,7 +495,7 @@ public class ClosePhone extends Activity {
                 setTextColor(fajrTime);
 //                setLargeTextSize(fajrTime);
                 remainTime1.setText(npt);
-                tvIqama.setText(TextUtils.isEmpty(npt)?"حان وقت الصلاة ":"إقامة الصلاة بعد ");
+                tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "إقامة الصلاة بعد ");
                 iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t11));
                 Log.i("***iqama:", iqamatime + " /");
                 currentPray = "fajr";
@@ -515,18 +516,18 @@ public class ClosePhone extends Activity {
 //                setLargeTextSize(dhuhrTime);
                 iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t22));
                 currentPray = "dhuhr";
-                Log.i("***iqama:", iqamatime + " / npt: "+npt);
+                Log.i("***iqama:", iqamatime + " / npt: " + npt);
                 if (!isFriday()) {
                     remainTime1.setText(npt);
-                    tvIqama.setText(TextUtils.isEmpty(npt)?"حان وقت الصلاة ":"إقامة الصلاة بعد ");
-                }else {
+                    tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "إقامة الصلاة بعد ");
+                } else {
                     tvIqama.setText("صلاة الجمعة");
                     remainTime1.setText("");
                     if (!isOpenSermon) playSermon();
                 }
                 if (iqamatime.equals("00:00:00")) {
                     remainTime1.setText("");
-                    if (!isFriday()){
+                    if (!isFriday()) {
                         tvIqama.setText("حان وقت الصلاة ");
                         runVoiceRecognition(currentPray);
                     }
@@ -535,7 +536,7 @@ public class ClosePhone extends Activity {
             }
             if ((c3.getTime().before(now) || c3.getTime().equals(now))
                     && ((c33.getTime().after(now)) || c33.getTime().equals(now))) {
-                MainActivity.isOpenSermon=false;
+                MainActivity.isOpenSermon = false;
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t33));
                 setBackground(llAsr);
                 setTextColor(asrTime);
@@ -543,7 +544,7 @@ public class ClosePhone extends Activity {
                 setTextColor(asrTitle);
 //                setLargeTextSize(asrTitle);
                 remainTime1.setText(npt);
-                tvIqama.setText(TextUtils.isEmpty(npt)?"حان وقت الصلاة ":"إقامة الصلاة بعد ");
+                tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "إقامة الصلاة بعد ");
                 iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t33));
                 currentPray = "asr";
                 Log.i("***iqama:", iqamatime + " /");
@@ -565,7 +566,7 @@ public class ClosePhone extends Activity {
                 setTextColor(maghribTitle);
 //                setLargeTextSize(maghribTitle);
                 remainTime1.setText(npt);
-                tvIqama.setText(TextUtils.isEmpty(npt)?"حان وقت الصلاة ":"إقامة الصلاة بعد ");
+                tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "إقامة الصلاة بعد ");
                 Log.i("***iqama:", iqamatime + " /");
                 if (iqamatime.equals("00:00:00")) {
                     tvIqama.setText("حان وقت الصلاة ");
@@ -582,7 +583,7 @@ public class ClosePhone extends Activity {
 //                setLargeTextSize(ishaTime);
                 setTextColor(ishaTitle);
 //                setLargeTextSize(ishaTitle);
-                tvIqama.setText(TextUtils.isEmpty(npt)?"حان وقت الصلاة ":"إقامة الصلاة بعد ");
+                tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "إقامة الصلاة بعد ");
                 remainTime1.setText(npt);
                 iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t55));
                 currentPray = "isha";
@@ -618,7 +619,7 @@ public class ClosePhone extends Activity {
                 setTextColor(dhuhrTime);
 //                //setLargeTextSize(dhuhrTime);
             } else if (now.after(c2.getTime()) && now.before(c3.getTime())) {
-                MainActivity.isOpenSermon=false;
+                MainActivity.isOpenSermon = false;
                 nextPray = "asr";
                 globalVariable.setNextPray("asr");
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t3)));
@@ -669,7 +670,7 @@ public class ClosePhone extends Activity {
                 } else if (sp.getString("next_adan", "").equals("isha")) {
                     next_adan = getResources().getString(R.string.p5);
                 }
-               remainTime1.setText("");
+                remainTime1.setText("");
                 tvIqama.setText(String.format(getString(R.string.isAthanTime), next_adan));
 
                 remainTime1.setTypeface(digital);
@@ -683,9 +684,10 @@ public class ClosePhone extends Activity {
             e.printStackTrace();
         }
     }
+
     private void playSermon() {
         DBO.open();
-        Khotab khotba = DBO.getKhotba(Utils.getCurrentDate());
+        final Khotab khotba = DBO.getKhotba(Utils.getCurrentDate());
         DBO.close();
         if (!sp.getBoolean("IsMasjed", false)) {
             //isException هذه الجامع لا يوجد عليه رقابة يعني ما في بث مباشر او ترجمة
@@ -697,10 +699,15 @@ public class ClosePhone extends Activity {
                         timer.purge();
                         Log.i("***voice1", "countDown");
                         iqamatime = "";
-                        Intent cp = new Intent(activity, FridayActivity.class);
-                        cp.putExtra("khotba",khotba);
-                        startActivity(cp);
-                        isOpenSermon = true;
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent cp = new Intent(activity, FridayActivity.class);
+                                cp.putExtra("khotba", khotba);
+                                startActivity(cp);
+                                isOpenSermon = true;
+                            }
+                        }, 120000);
                     }
                 }
             }
@@ -746,7 +753,7 @@ public class ClosePhone extends Activity {
 
     private void setIqamaTime() {
 
-        String[] mosquSettings={settings.getFajrEkama()+"",settings.getAlShrouqEkama()+"",settings.getDhuhrEkama()+"",settings.getAsrEkama() + ""
+        String[] mosquSettings = {settings.getFajrEkama() + "", settings.getAlShrouqEkama() + "", settings.getDhuhrEkama() + "", settings.getAsrEkama() + ""
                 , settings.getMagribEkama() + "", settings.getIshaEkama() + ""};
         isFajrEkamaIsTime = settings.isFajrEkamaIsTime();
         isAlShrouqEkamaIsTime = settings.isAlShrouqEkamaIsTime();
@@ -755,32 +762,32 @@ public class ClosePhone extends Activity {
         isMagribEkamaIsTime = settings.isMagribEkamaIsTime();
         ishaEkamaIsTime = settings.ishaEkamaIsTime();
         if (isFajrEkamaIsTime)
-            spedit.putString("iqsuh", settings.getFajrEkamaTime()+":00").commit();
+            spedit.putString("iqsuh", settings.getFajrEkamaTime() + ":00").commit();
         else
             spedit.putString("iqsuh", Utils.getIqama(cfajr, mosquSettings[0])).commit();
         if (isAlShrouqEkamaIsTime)
-            spedit.putString("iqsun", settings.getAlShrouqEkamaTime()+":00").commit();
+            spedit.putString("iqsun", settings.getAlShrouqEkamaTime() + ":00").commit();
         else
             spedit.putString("iqsun", Utils.getIqama(csunrise, mosquSettings[1])).commit();
 //                spedit.putString("iqsun", csunrise).commit();
         if (isDhuhrEkamaIsTime)
-            spedit.putString("iqduh", settings.getDhuhrEkamaTime()+":00").commit();
+            spedit.putString("iqduh", settings.getDhuhrEkamaTime() + ":00").commit();
         else
             spedit.putString("iqduh", Utils.getIqama(cdhohr, mosquSettings[2])).commit();
         if (isAsrEkamaIsTime)
-            spedit.putString("iqasr", settings.getAsrEkamaTime()+":00").commit();
+            spedit.putString("iqasr", settings.getAsrEkamaTime() + ":00").commit();
         else
             spedit.putString("iqasr", Utils.getIqama(casr, mosquSettings[3])).commit();
         if (isMagribEkamaIsTime)
-            spedit.putString("iqmagrib", settings.getMagribEkamaTime()+":00").commit();
+            spedit.putString("iqmagrib", settings.getMagribEkamaTime() + ":00").commit();
         else
             spedit.putString("iqmagrib", Utils.getIqama(cmaghrib, mosquSettings[4])).commit();
         if (ishaEkamaIsTime)
-            spedit.putString("iqisha", settings.getIshaEkamaTime()+":00").commit();
+            spedit.putString("iqisha", settings.getIshaEkamaTime() + ":00").commit();
         else
             spedit.putString("iqisha", Utils.getIqama(cisha, mosquSettings[5])).commit();
 
-        spedit.putInt("hijriDiff",settings.getDateHijri()).commit();
+        spedit.putInt("hijriDiff", settings.getDateHijri()).commit();
 
         icfajr = sp.getString("iqsuh", "");
         icsunrise = sp.getString("iqsun", "");
@@ -878,11 +885,12 @@ public class ClosePhone extends Activity {
 //        else if (diffMinutes > 0)
 //            val = fm + " " + getString(R.string.m) + " و " + fs + " " + getString(R.string.s);
 //        else
-            if (diffSeconds > 0) val = fs;// + " " + getString(R.string.s);
-       else if (diffSeconds== 0) val = "60";
+        if (diffSeconds > 0) val = fs;// + " " + getString(R.string.s);
+        else if (diffSeconds == 0) val = "60";
         else val = "";
         return val;
     }
+
     private String convTime(String time) {
         String intime[] = time.split(":");
         int hour = Integer.parseInt(intime[0]);
@@ -901,7 +909,7 @@ public class ClosePhone extends Activity {
             } else {
                 timeHHMM = "" + String.valueOf(hour) + ":" + String.valueOf(minutes);
             }
-            return timeHHMM ;//+ "ص";
+            return timeHHMM;//+ "ص";
         } else if (hour > 12) {
             hour = hour - 12;
             if (minutes < 10) {
@@ -909,7 +917,7 @@ public class ClosePhone extends Activity {
             } else {
                 timeHHMM = "" + String.valueOf(hour) + ":" + String.valueOf(minutes);
             }
-            return timeHHMM ;//+ "م";
+            return timeHHMM;//+ "م";
         } else {
             if (minutes < 10) {
                 timeHHMM = String.valueOf(hour) + ":0" + String.valueOf(minutes);
@@ -1129,32 +1137,32 @@ public class ClosePhone extends Activity {
                 isMagribEkamaIsTime = settings.isMagribEkamaIsTime();
                 ishaEkamaIsTime = settings.ishaEkamaIsTime();
                 if (isFajrEkamaIsTime)
-                    spedit.putString("iqsuh", settings.getFajrEkamaTime()+":00").commit();
+                    spedit.putString("iqsuh", settings.getFajrEkamaTime() + ":00").commit();
                 else
                     spedit.putString("iqsuh", Utils.getIqama(cfajr, mosquSettings[0])).commit();
                 if (isAlShrouqEkamaIsTime)
-                    spedit.putString("iqsun", settings.getAlShrouqEkamaTime()+":00").commit();
+                    spedit.putString("iqsun", settings.getAlShrouqEkamaTime() + ":00").commit();
                 else
                     spedit.putString("iqsun", Utils.getIqama(csunrise, mosquSettings[1])).commit();
 //                spedit.putString("iqsun", csunrise).commit();
                 if (isDhuhrEkamaIsTime)
-                    spedit.putString("iqduh", settings.getDhuhrEkamaTime()+":00").commit();
+                    spedit.putString("iqduh", settings.getDhuhrEkamaTime() + ":00").commit();
                 else
                     spedit.putString("iqduh", Utils.getIqama(cdhohr, mosquSettings[2])).commit();
                 if (isAsrEkamaIsTime)
-                    spedit.putString("iqasr", settings.getAsrEkamaTime()+":00").commit();
+                    spedit.putString("iqasr", settings.getAsrEkamaTime() + ":00").commit();
                 else
                     spedit.putString("iqasr", Utils.getIqama(casr, mosquSettings[3])).commit();
                 if (isMagribEkamaIsTime)
-                    spedit.putString("iqmagrib", settings.getMagribEkamaTime()+":00").commit();
+                    spedit.putString("iqmagrib", settings.getMagribEkamaTime() + ":00").commit();
                 else
                     spedit.putString("iqmagrib", Utils.getIqama(cmaghrib, mosquSettings[4])).commit();
                 if (ishaEkamaIsTime)
-                    spedit.putString("iqisha", settings.getIshaEkamaTime()+":00").commit();
+                    spedit.putString("iqisha", settings.getIshaEkamaTime() + ":00").commit();
                 else
                     spedit.putString("iqisha", Utils.getIqama(cisha, mosquSettings[5])).commit();
 
-                spedit.putInt("hijriDiff",settings.getDateHijri()).commit();
+                spedit.putInt("hijriDiff", settings.getDateHijri()).commit();
 
                 icfajr = sp.getString("iqsuh", "");
                 icsunrise = sp.getString("iqsun", "");
@@ -1165,11 +1173,12 @@ public class ClosePhone extends Activity {
 //                Log.i("****", cdhohr);
             }
             gv.setPrayTimes(cfajr, csunrise, cdhohr, casr, cmaghrib, cisha);
-           // checkNextPray();
+            // checkNextPray();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     private boolean isFriday() {
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_WEEK);
@@ -1178,7 +1187,8 @@ public class ClosePhone extends Activity {
             return true;
         } else return false;
     }
-//    private boolean isFriday() {
+
+    //    private boolean isFriday() {
 //        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", new Locale("en"));
 //        Calendar cal = getNextFridayDate();
 //        String friday = dateFormat.format(cal.getTime());
@@ -1257,9 +1267,9 @@ public class ClosePhone extends Activity {
     }
 
     private void getWeather(final int action) {
-        in_masgedTemp.setText(sp.getString("TempIn","24"));
-        out_masgedTemp.setText(sp.getString("TempOut","30"));
-        tvHumidity.setText(sp.getString("HumOut","35")+"%");
+        in_masgedTemp.setText(sp.getString("TempIn", "24"));
+        out_masgedTemp.setText(sp.getString("TempOut", "30"));
+        tvHumidity.setText(sp.getString("HumOut", "35") + "%");
 //        double latitude = lat1 + (lat2 / 60);
 //        double longitude = long1 + (long2 / 60);
 //        Log.i("555: ", latitude + " : " + longitude);
@@ -1300,6 +1310,7 @@ public class ClosePhone extends Activity {
 //            }
 //        });
     }
+
     private void setCloseNotificationTitle() {
 
         final Animation in = new AlphaAnimation(0.0f, 1.0f);
@@ -1316,20 +1327,25 @@ public class ClosePhone extends Activity {
 
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {     }
+            public void onAnimationStart(Animation animation) {
+            }
+
             @Override
             public void onAnimationEnd(Animation animation) {
-               if (isFriday()&& (nextPray.equals("dhuhr")||currentPray.equals("dhuhr"))){
-                   finish();
-               }else if (sp.getBoolean("voiceRec", true)) {
-                    llText.startAnimation(animation);
-                }else
+                if (isFriday() && (nextPray.equals("dhuhr") || currentPray.equals("dhuhr"))) {
                     finish();
-                 }
+                } else if (sp.getBoolean("voiceRec", true)) {
+                    llText.startAnimation(animation);
+                } else
+                    finish();
+            }
+
             @Override
             public void onAnimationRepeat(Animation animation) {
-            }});
+            }
+        });
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -1341,6 +1357,7 @@ public class ClosePhone extends Activity {
 //        }
 
     }
+
     private void showNews() {
         if (sp.getBoolean("news", true)) {
             if (advs.size() > 0) {
@@ -1356,6 +1373,7 @@ public class ClosePhone extends Activity {
             rlNews.setVisibility(View.GONE);
         }
     }
+
     private void setImage(String masjedImg, final AppCompatImageView imageView) {
         Glide.with(activity).load(Uri.parse(masjedImg))
                 .override(100, 100).listener(new RequestListener<Uri, GlideDrawable>() {

@@ -138,7 +138,6 @@
               android:textSize="15sp"/>
       </RelativeLayout>
 
-
         <VideoView
             android:id="@+id/vvAdsVideo"
             android:layout_width="match_parent"
