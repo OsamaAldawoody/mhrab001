@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/back3"
     android:layoutDirection="rtl"
+    android:fitsSystemWindows="true"
     android:rotation="0">
 
     <RelativeLayout

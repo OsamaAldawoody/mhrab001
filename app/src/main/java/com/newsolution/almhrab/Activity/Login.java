@@ -122,6 +122,7 @@ public class Login extends Activity implements View.OnClickListener {
                     spedit.putString("masjedName",user.getMyName()).commit();
                     spedit.putString("masjedImg",user.getImg()).commit();
                     spedit.putString("masjedPW", edPassword.getText().toString().trim()).commit();
+//                    Utils.showCustomToast(activity,sp.getString("masjedPW","")+"  99");
                     progress.setVisibility(View.GONE);
                     new Handler().postDelayed(new Runnable() {
                         @Override

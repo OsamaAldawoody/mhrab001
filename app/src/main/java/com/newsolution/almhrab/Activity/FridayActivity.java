@@ -37,8 +37,10 @@ import com.newsolution.almhrab.AppConstants.Constants;
 import com.newsolution.almhrab.AppConstants.DateHigri;
 import com.newsolution.almhrab.Helpar.PlaySound;
 import com.newsolution.almhrab.Helpar.Utils;
+import com.newsolution.almhrab.Interface.OnLoadedFinished;
 import com.newsolution.almhrab.Model.Khotab;
 import com.newsolution.almhrab.R;
+import com.newsolution.almhrab.WebServices.WS;
 import com.streamaxia.android.CameraPreview;
 import com.streamaxia.android.StreamaxiaPublisher;
 import com.streamaxia.android.handlers.EncoderHandler;
@@ -52,6 +54,7 @@ import java.net.SocketException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -108,7 +111,7 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
     private Runnable timerRun;
     private CountDownTimer countDownTimer;
     private boolean showLive = true;
-    public static final String BROADCAST = Constants.PACKAGE_NAME+".Activity.android.action.broadcast";
+    public static final String BROADCAST = Constants.PACKAGE_NAME + ".Activity.android.action.broadcast";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,8 +128,8 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
 //        hideStatusBar();
         saveDir = new File(Environment.getExternalStorageDirectory(), "AlMhrab");
         saveDir.mkdirs();
-        recPath = saveDir.getAbsolutePath() + "/" + sp.getString("masjedName", "AlMhrab") //+ "_" + khotab.getTitle()
-                + "_" + Utils.getDateTime() + ".mp4";
+        recPath = saveDir.getAbsolutePath() + "/AlMhrab_" + sp.getInt("masjedId", -1)//+ "_" + khotab.getTitle()
+                + "_" + Utils.getFormattedCurrentDate() + ".mp4";
         streamaxiaStreamName = streamaxiaStreamName + sp.getInt("masjedId", -1) + "";
         mPublisher = new StreamaxiaPublisher(mCameraView, this);
 
@@ -137,6 +140,7 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
             mCameraView.startCamera();
         } catch (Exception e) {
             e.printStackTrace();
+            finish();
         }
 
         setStreamerDefaultValues();
@@ -173,7 +177,22 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
 
         checkTime();
         fillData();
+//        isStreaming();
 
+    }
+
+    private void isStreaming() {
+        WS.isStreaming(activity, new OnLoadedFinished() {
+            @Override
+            public void onSuccess(String response) {
+
+            }
+
+            @Override
+            public void onFail(String error) {
+
+            }
+        });
     }
 
     private void startKhotbaTimer() {
@@ -233,8 +252,8 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
 //                    vvVideo.setVideoURI(Uri.parse(khotab.getUrlVideoDeaf()));
 //                    vvVideo.start();
 //                }
-                animTranslation();
-                startKhotbaTimer();
+        animTranslation();
+        startKhotbaTimer();
 //            }
 //        }, 30000);
     }
@@ -251,19 +270,24 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
     @Override
     protected void onResume() {
         super.onResume();
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED) {
-            stopStreaming();
-            stopChronometer();
-            mChronometer.setBase(SystemClock.elapsedRealtime());
-            mChronometer.start();
-            mPublisher.setVideoBitRate(480);
-            mPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
-            mPublisher.startRecord(recPath);
-            Log.i("999999", "rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
-        } else {
+        try {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED) {
+                stopStreaming();
+                stopChronometer();
+                mChronometer.setBase(SystemClock.elapsedRealtime());
+                mChronometer.start();
+                mPublisher.setVideoBitRate(480);
+                mPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
+                mPublisher.startRecord(recPath);
+                Log.i("999999", "rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
+            } else {
+                finish();
+                Toast.makeText(this, "You need to grant persmissions in order to begin streaming.", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             finish();
-            Toast.makeText(this, "You need to grant persmissions in order to begin streaming.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -287,11 +311,18 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
             mPublisher.stopRecord();
             if (countDownTimer != null) countDownTimer.cancel();
             MainActivity.isOpenSermon = true;
-            Log.i("recPath: ",recPath);
+            Log.i("recPath: ", recPath);
 //            MainActivity.uploadSermonToServer(recPath,sp.getInt("masjedId",-1));
+            DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
+            DateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
+            Date date = df.parse(khotab.getDateKhotab());
+            String DateKhotab = sdf.format(date);
+
             Intent intent = new Intent(BROADCAST);
             Bundle extras = new Bundle();
-            extras.putString("send_data", recPath);
+            extras.putString("recPath", recPath);
+            extras.putInt("IdKhotab", khotab.getId());
+            extras.putString("DateKhotab", DateKhotab);
             intent.putExtras(extras);
             sendBroadcast(intent);
         } catch (Exception e) {
@@ -354,9 +385,16 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
     }
 
     private void setStreamerDefaultValues() {
-        List<Size> sizes = mPublisher.getSupportedPictureSizes(getResources().getConfiguration().orientation);
-        Size resolution = sizes.get(0);
-        mPublisher.setVideoOutputResolution(resolution.width, resolution.height, this.getResources().getConfiguration().orientation);
+        try {
+            if (mPublisher != null) {
+                List<Size> sizes = mPublisher.getSupportedPictureSizes(getResources().getConfiguration().orientation);
+                Size resolution = sizes.get(0);
+                mPublisher.setVideoOutputResolution(resolution.width, resolution.height, this.getResources().getConfiguration().orientation);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+        }
     }
 
     private void setStatusMessage(final String msg) {
@@ -445,7 +483,6 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
     @Override
     public void onRtmpConnected(String s) {
         setStatusMessage(s);
-        Toast.makeText(activity, "[STOP]", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -516,6 +553,7 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
     private void handleException(Exception e) {
         try {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.i("streaming: ",e.getMessage());
             mPublisher.stopPublish();
             mPublisher.stopRecord();
         } catch (Exception e1) {

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/live_back"
+    android:fitsSystemWindows="true"
     android:gravity="center"
     android:layoutDirection="rtl"
     android:orientation="vertical"
@@ -29,7 +30,7 @@
     <LinearLayout
         android:id="@+id/clock"
         android:layout_width="wrap_content"
-        android:layout_height="140dp"
+        android:layout_height="130dp"
         android:layout_below="@+id/dateToday"
         android:layout_centerHorizontal="true"
         android:gravity="center_horizontal">
@@ -61,7 +62,7 @@
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:layout_below="@+id/clock"
         android:layout_centerHorizontal="true"
         android:text="لنقرأ فنحن أمة تقرأ"

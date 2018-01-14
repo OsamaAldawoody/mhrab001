@@ -16,6 +16,7 @@ import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.Constants;
 import com.newsolution.almhrab.AppConstants.DBOperations;
 import com.newsolution.almhrab.Helpar.JsonHelper;
+import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Interface.OnFetched;
 import com.newsolution.almhrab.Interface.OnLoadedFinished;
 import com.newsolution.almhrab.Model.Azkar;
@@ -50,7 +51,7 @@ public class WS {
     private static SharedPreferences sp;
     private static SharedPreferences.Editor spedit;
 
-    public static void login(Activity activity, final Map<String, String> params, final OnFetched listener) {
+    public static void login(final Activity activity, final Map<String, String> params, final OnFetched listener) {
         sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
         spedit = sp.edit();
         Log.i("params", params.toString());
@@ -95,6 +96,7 @@ public class WS {
                         spedit.putString("masjedName", MyName).commit();
                         spedit.putString("masjedImg", img).commit();
                         spedit.putString("masjedPW", Password).commit();
+//                        Utils.showCustomToast(activity,sp.getString("masjedPW",""));
                         Users user = new Users(Id, FullName, UserName, Mobile, Email, GUID, IdCity, MyName, img);
 //                                Users user= new Users(Id, FullName, UserName, Mobile, Email, GUID, IdCity,IdCityText,Lat1,Lat2,
 //                                            Long1,Long2, MyName, img);
@@ -692,10 +694,10 @@ public class WS {
             int Long2 = profile.optInt("Long_Minute");
             boolean IsMasjed = profile.optBoolean("IsMasjed");
             boolean IsDeaf = profile.optBoolean("IsDeaf");
-            String Password = OtherData.optString("Password");
+            String Password = profile.optString("Password");
             spedit.putBoolean("IsMasjed", IsMasjed).commit();
             spedit.putBoolean("IsDeaf", IsDeaf).commit();
-            spedit.putString("masjedPW", Password).commit();
+//            spedit.putString("masjedPW", Password).commit();
             spedit.putInt("masjedId", Id).commit();
             spedit.putInt("cityId", IdCity).commit();
             spedit.putInt("lat1", Lat1).commit();
@@ -705,7 +707,8 @@ public class WS {
             spedit.putString("masjedGUID", GUID).commit();
             spedit.putString("masjedName", MyName).commit();
             spedit.putString("masjedImg", img).commit();
-            Log.d(LOG_TAG, "Sync  "+sp.getString("masjedImg",""));
+            spedit.putString("masjedPW", Password).commit();
+            Log.i("//////", "Sync  "+Password);
 
             if (action == 0) {
                 db.insertAllAzkar(azkarList);
@@ -813,4 +816,40 @@ public class WS {
 //            }
 //        });
 //    }
+public static void isStreaming(final Activity activity, final OnLoadedFinished listener) {
+    sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+    spedit = sp.edit();
+    int id = sp.getInt("masjedId", -1);
+    String GUID = sp.getString("masjedGUID", "");
+    String DeviceNo = sp.getString(AppConst.DeviceNo, "");
+
+    Map<String, String> param = new HashMap<>();
+    param.put("IdSubscribe", id + "");
+    param.put("GUID", GUID);
+    param.put("DeviceNo", DeviceNo);
+
+    UserOperations.getInstance(activity).sendPostRequest(Constants.Main_URL + "isStreaming", param, new OnLoadedFinished() {
+        @Override
+        public void onSuccess(String response) {
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JSONObject(response);
+                boolean Status = jsonObject.optBoolean("Status");
+                String message = jsonObject.optString("ResultText");
+                if (Status) {
+                    listener.onSuccess(activity.getString(R.string.saved));
+                } else listener.onFail(message);
+
+            } catch (JSONException e) {
+                listener.onFail(e.getMessage());
+            }
+        }
+
+        @Override
+        public void onFail(String error) {
+            listener.onFail(error);
+        }
+    });
+}
+
 }

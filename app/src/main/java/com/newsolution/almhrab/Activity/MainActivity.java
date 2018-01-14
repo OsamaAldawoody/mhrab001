@@ -465,7 +465,6 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
         spedit = sp.edit();
         cityId = sp.getInt("cityId", 1);
-        masjedId = sp.getInt("masjedId", -1);
         DBO.open();
         city = DBO.getCityById(cityId);
         settings = DBO.getSettings();
@@ -492,13 +491,16 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 // TODO Auto-generated method stub
                 Bundle extras = intent.getExtras();
                 if (extras != null) {
-                    String recPath = extras.getString("send_data");
+                    String recPath = extras.getString("recPath");
+                    String DateKhotab = extras.getString("DateKhotab");
+                    int IdKhotab = extras.getInt("IdKhotab");
                     Log.d("Received Msg : ", recPath);
-                    uploadSermonToServer(recPath, 6);
+                    new uploadSermonToServer().execute(recPath, IdKhotab + "", DateKhotab);
+
                 }
             }
         };
-//        uploadSermonToServer("", 6);
+//        new uploadSermonToServer().execute("/storage/emulated/0/AlMhrab/AlMhrab_6_20180119.mp4",1+"",20180119+"");
 
 //        prayTimes=  gv.getPrayTimes();
         cfajr = sp.getString("suh", "");
@@ -1373,24 +1375,50 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                                 startActivity(cp);
                                 isOpenSermon = true;
                             }
-                        }, 10000);
+                        }, 30000);
                     }
                 }
             }
         }
     }
 
-    public  void uploadSermonToServer(String recPath, int masjedId) {
-        Uri filepath = Uri.fromFile(new File(recPath));
-//        int reponse = upLoad2Server("" + filepath, masjedId);
-        int rep = upLoad2Server("/storage/emulated/0/AlMhrab/جــامـع عــرفـة_2018-01-12 12:30:11.mp4", masjedId);
+    class uploadSermonToServer extends AsyncTask<String, Void, Boolean> {
 
+        @Override
+        protected Boolean doInBackground(String... params) {
+            try {
+                JSONObject result = upLoad2Server(params[0], params[1], params[2]);
+                if (result != null && result.optBoolean("Status")) {
+                    return true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+            return false;
+        }
 
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            Log.i("result: ", "server response: " + result);
+            if (!result) {
+                Utils.showCustomToast(activity, "لم يتم رفع تسجيل الخطبة");
+            } else {
+                Utils.showCustomToast(activity, "تم حفظ الملف بنجاح");
+
+            }
+        }
     }
 
-    public  int upLoad2Server(String sourceFileUri, int masjedId) {
-        String upLoadServerUri = Constants.Main_URL + "SaveKhotabVideoTest";
+    public JSONObject upLoad2Server(String sourceFileUri, String IdKhotab, String DateKhotab) {
+        masjedId = sp.getInt("masjedId", -1);
+        String GUID = sp.getString("masjedGUID", "");
+        String DeviceNo = sp.getString(AppConst.DeviceNo, "");
+        String upLoadServerUri = Constants.Main_URL + "SaveKhotabVideo?IdSubscribe=" + masjedId
+        + "&GUID=" + GUID+ "&DeviceNo=" + DeviceNo + "&IdKhotab=" + IdKhotab + "&DateKhotab=" + DateKhotab;
         // String [] string = sourceFileUri;
+        Log.i("/// test: ",upLoadServerUri+"");
         String fileName = sourceFileUri;
 
         HttpURLConnection conn = null;
@@ -1407,7 +1435,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         File sourceFile = new File(getRealPathFromURI(Uri.parse(sourceFileUri)));
         if (!sourceFile.isFile()) {
             Log.e("Huzza", "Source File Does not exist");
-            return 0;
+            return null;
         }
         try { // open a URL connection to the Servlet
             FileInputStream fileInputStream = new FileInputStream(sourceFile);
@@ -1421,7 +1449,6 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             conn.setRequestProperty("ENCTYPE", "multipart/form-data");
             conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
             conn.setRequestProperty("uploaded_file", fileName);
-            conn.setRequestProperty("IdSubscribe", masjedId + "");
             dos = new DataOutputStream(conn.getOutputStream());
 
             dos.writeBytes(twoHyphens + boundary + lineEnd);
@@ -1465,17 +1492,20 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             e.printStackTrace();
         }
 //this block will give the response of upload link
+        JSONObject jo = new JSONObject();
+        String data = "";
         try {
             BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line;
             while ((line = rd.readLine()) != null) {
                 Log.i("Huzza", "RES Message: " + line);
+                jo = new JSONObject(line);
             }
             rd.close();
-        } catch (IOException ioex) {
+        } catch (Exception ioex) {
             Log.e("Huzza", "error: " + ioex.getMessage(), ioex);
         }
-        return serverResponseCode;  // like 200 (Ok)
+        return jo;  // like 200 (Ok)
 
     }
 

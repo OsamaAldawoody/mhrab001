@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/live_back"
     android:gravity="center"
+    android:fitsSystemWindows="true"
     android:layoutDirection="rtl"
     android:orientation="vertical"
     android:textDirection="rtl"
@@ -29,7 +30,7 @@
     <LinearLayout
         android:id="@+id/clock"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="75dp"
         android:layout_below="@+id/dateToday"
         android:layout_centerHorizontal="true">
 
@@ -40,7 +41,7 @@
             android:layout_below="@+id/imageView"
             android:text="11:25"
             android:textColor="@color/white"
-            android:textSize="60dp" />
+            android:textSize="64dp" />
 
         <TextView
             android:id="@+id/amPm"
@@ -73,8 +74,8 @@
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
         android:layout_marginBottom="10dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
         android:layout_marginTop="5dp"
         android:background="@drawable/title_back"
         android:gravity="center"
@@ -82,7 +83,7 @@
         android:paddingRight="15dp"
         android:text="ميلاد خير البشر - اچھے لوگوں کی پیدائش - ভালো মানুষদের জন্ম"
         android:textColor="@color/white"
-        android:textSize="25dp" />
+        android:textSize="28dp" />
 
     <RelativeLayout
         android:id="@+id/llLive"
@@ -171,7 +172,7 @@
         <TextView
             android:id="@+id/tvEngText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="70dp"
             android:ellipsize="marquee"
             android:focusable="true"
             android:focusableInTouchMode="true"
@@ -182,12 +183,12 @@
             android:text="ایک اچھا آدمی محمد بن عبداللہ
  کی پیدائش اس پر ہے"
             android:textColor="@color/white"
-            android:textSize="32dp" />
+            android:textSize="48dp" />
 
         <TextView
             android:id="@+id/tvUrdText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="70dp"
             android:layout_marginTop="15dp"
             android:ellipsize="marquee"
             android:focusable="true"
@@ -199,7 +200,7 @@
             android:text="একজন ভাল মানুষ মুহাম্মদ ইবনে
  আবদুল্লাহ এটা জন্ম হয় এটা জন্ম হয়"
             android:textColor="@color/white"
-            android:textSize="32dp" />
+            android:textSize="48dp" />
     </LinearLayout>
 
     <TextView
