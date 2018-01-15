@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AppOpsManager;
+import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -83,6 +84,7 @@ public class Splash extends Activity {
     public static long ExitedTime = 10;
     public static long ScanRunTime = 60000;
     private int REQUEST_PERMISSIONS = 100;
+    private NotificationManager notificationManager;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -108,7 +110,7 @@ public class Splash extends Activity {
         int width = getWindowManager().getDefaultDisplay().getWidth();
         int height = getWindowManager().getDefaultDisplay().getHeight();
 //        Toast.makeText(activity, "width= " + width + " : height= " + height, Toast.LENGTH_LONG).show();
-
+         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         String deviceId = getDeviceId(getApplicationContext());//tManager.getDeviceId();
         spedit.putString(AppConst.DeviceNo, deviceId).commit();
 //        Log.i("/////* DeviceNo", deviceId);
@@ -126,13 +128,18 @@ public class Splash extends Activity {
 //                REQUEST_PERMISSIONS);
 
     }
+
     public void settingPermission() {
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.System.canWrite(getApplicationContext())) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + getPackageName()));
                 startActivityForResult(intent, 200);
-
-            }else  askForPermissions(new String[]{
+            }else if (!notificationManager.isNotificationPolicyAccessGranted()) {
+                Intent intent = new Intent(android.provider.Settings
+                            .ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+                    startActivityForResult(intent,300);
+            } else askForPermissions(new String[]{
                             android.Manifest.permission.ACCESS_COARSE_LOCATION,
                             android.Manifest.permission.ACCESS_COARSE_LOCATION,
                             android.Manifest.permission.READ_PHONE_STATE,
@@ -144,7 +151,7 @@ public class Splash extends Activity {
                             android.Manifest.permission.READ_EXTERNAL_STORAGE
                     },
                     REQUEST_PERMISSIONS);
-        }else  askForPermissions(new String[]{
+        } else askForPermissions(new String[]{
                         android.Manifest.permission.ACCESS_COARSE_LOCATION,
                         android.Manifest.permission.ACCESS_COARSE_LOCATION,
                         android.Manifest.permission.READ_PHONE_STATE,
@@ -158,6 +165,7 @@ public class Splash extends Activity {
                 REQUEST_PERMISSIONS);
 
     }
+
     protected final void askForPermissions(String[] permissions, int requestCode) {
         List<String> permissionsToRequest = new ArrayList<>();
         for (String permission : permissions) {
@@ -245,7 +253,13 @@ public class Splash extends Activity {
         } else if (resultCode == 0) {
             Toast.makeText(this, getString(R.string.lan_9), 0).show();
             finish();
-         } else if (requestCode == 200&&resultCode==RESULT_OK) {
+        } else if (requestCode == 200 && resultCode == RESULT_OK) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                    && !notificationManager.isNotificationPolicyAccessGranted()) {
+                Intent intent = new Intent(android.provider.Settings
+                        .ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+                startActivityForResult(intent,300);
+            }else
             askForPermissions(new String[]{
                             android.Manifest.permission.ACCESS_COARSE_LOCATION,
                             android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -258,10 +272,29 @@ public class Splash extends Activity {
                             android.Manifest.permission.READ_EXTERNAL_STORAGE
                     },
                     REQUEST_PERMISSIONS);
-        } else if (requestCode == 200&&resultCode==RESULT_CANCELED) {
+        } else if (requestCode == 300 && resultCode == RESULT_OK) {
+            askForPermissions(new String[]{
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                            android.Manifest.permission.READ_PHONE_STATE,
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            android.Manifest.permission.CAMERA,
+                            android.Manifest.permission.RECORD_AUDIO,
+//                        android.Manifest.permission.WRITE_SETTINGS,
+//                        android.Manifest.permission.DISABLE_KEYGUARD,
+                            android.Manifest.permission.READ_EXTERNAL_STORAGE
+                    },
+                    REQUEST_PERMISSIONS);
+        } else if (requestCode == 200 && resultCode == RESULT_CANCELED) {
+            finish();
+        }  else if (requestCode == 300 && resultCode == RESULT_CANCELED) {
+//            Utils.showCustomToast(activity,"request permission");
             finish();
         }
-        }
+//        else {
+//            Utils.showCustomToast(activity,"request code: "+requestCode+" : "+resultCode);
+//        }
+    }
 
     public void isNotificationEnabled() {
         boolean result = false;

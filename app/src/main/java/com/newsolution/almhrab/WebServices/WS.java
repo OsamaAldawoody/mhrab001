@@ -572,6 +572,7 @@ public class WS {
             }
         });
     }
+
     public static void getAllKhotab(final Activity activity, final OnLoadedFinished listener) {
         sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
         spedit = sp.edit();
@@ -600,7 +601,7 @@ public class WS {
                         JSONArray jAKhotab = jsonObject.optJSONArray("OtherData");
                         ArrayList<Khotab> khotabList = JsonHelper.jsonToKhotabArray(jAKhotab);
                         DBOperations db = new DBOperations(activity);
-                      if (khotabList.size()>0) db.insertAllKhotab(khotabList);
+                        if (khotabList.size() > 0) db.insertAllKhotab(khotabList);
                     } else listener.onFail(message);
 
                 } catch (JSONException e) {
@@ -676,7 +677,7 @@ public class WS {
             db.insertSettings(settings);
 
             JSONObject profile = OtherData.optJSONObject("profile");
-            Log.d(LOG_TAG, "Sync  "+profile.toString());
+            Log.d(LOG_TAG, "Sync  " + profile.toString());
             int Id = profile.optInt("Id");
             String FullName = profile.optString("FullName");
             String UserName = profile.optString("UserName");
@@ -708,7 +709,7 @@ public class WS {
             spedit.putString("masjedName", MyName).commit();
             spedit.putString("masjedImg", img).commit();
             spedit.putString("masjedPW", Password).commit();
-            Log.i("//////", "Sync  "+Password);
+            Log.i("//////", "Sync  " + Password);
 
             if (action == 0) {
                 db.insertAllAzkar(azkarList);
@@ -726,7 +727,7 @@ public class WS {
     }
 
 
-//    public static void viewProfile(final Activity activity, int viewProfile, final OnLoadedFinished listener) {
+    //    public static void viewProfile(final Activity activity, int viewProfile, final OnLoadedFinished listener) {
 //        UserOperations.getInstance(activity).sendGetRequest(Const.VIEW_PROFILE_URL + viewProfile, new OnLoadedFinished() {
 //            @Override
 //            public void onSuccess(String response) {
@@ -816,40 +817,41 @@ public class WS {
 //            }
 //        });
 //    }
-public static void isStreaming(final Activity activity, final OnLoadedFinished listener) {
-    sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
-    spedit = sp.edit();
-    int id = sp.getInt("masjedId", -1);
-    String GUID = sp.getString("masjedGUID", "");
-    String DeviceNo = sp.getString(AppConst.DeviceNo, "");
+    public static void isStreaming(final Activity activity, int TimeExpected, final OnLoadedFinished listener) {
+        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+        spedit = sp.edit();
+        int id = sp.getInt("masjedId", -1);
+        String GUID = sp.getString("masjedGUID", "");
+        String DeviceNo = sp.getString(AppConst.DeviceNo, "");
 
-    Map<String, String> param = new HashMap<>();
-    param.put("IdSubscribe", id + "");
-    param.put("GUID", GUID);
-    param.put("DeviceNo", DeviceNo);
+        Map<String, String> param = new HashMap<>();
+        param.put("IdSubscribe", id + "");
+        param.put("GUID", GUID);
+        param.put("DeviceNo", DeviceNo);
+        param.put("TimeExpected", TimeExpected + "");
+        UserOperations.getInstance(activity).sendPostRequest(Constants.Main_URL + "isStreaming", param, new OnLoadedFinished() {
+            @Override
+            public void onSuccess(String response) {
+                Log.i("/////: ",response);
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(response);
+                    boolean Status = jsonObject.optBoolean("Status");
+                    String message = jsonObject.optString("ResultText");
+                    if (Status) {
+                        listener.onSuccess(activity.getString(R.string.saved));
+                    } else listener.onFail(message);
 
-    UserOperations.getInstance(activity).sendPostRequest(Constants.Main_URL + "isStreaming", param, new OnLoadedFinished() {
-        @Override
-        public void onSuccess(String response) {
-            JSONObject jsonObject = null;
-            try {
-                jsonObject = new JSONObject(response);
-                boolean Status = jsonObject.optBoolean("Status");
-                String message = jsonObject.optString("ResultText");
-                if (Status) {
-                    listener.onSuccess(activity.getString(R.string.saved));
-                } else listener.onFail(message);
-
-            } catch (JSONException e) {
-                listener.onFail(e.getMessage());
+                } catch (JSONException e) {
+                    listener.onFail(e.getMessage());
+                }
             }
-        }
 
-        @Override
-        public void onFail(String error) {
-            listener.onFail(error);
-        }
-    });
-}
+            @Override
+            public void onFail(String error) {
+                listener.onFail(error);
+            }
+        });
+    }
 
 }

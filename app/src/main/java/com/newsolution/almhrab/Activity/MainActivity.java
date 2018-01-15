@@ -717,7 +717,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     @Override
     protected void onResume() {
         IntentFilter intentFilter = new IntentFilter(BROADCAST);
-        registerReceiver(myReceiver, intentFilter);
+       if (myReceiver!=null)registerReceiver(myReceiver, intentFilter);
         super.onResume();
         try {
             AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -2588,6 +2588,10 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 
     @Override
     protected void onPause() {
+        if(myReceiver != null) {
+            unregisterReceiver(myReceiver);
+            myReceiver = null;
+        }
         super.onPause();
         if (speech != null) {
             if (countDownTimer != null) countDownTimer.cancel();

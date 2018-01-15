@@ -177,12 +177,12 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
 
         checkTime();
         fillData();
-//        isStreaming();
+        isStreaming();
 
     }
 
     private void isStreaming() {
-        WS.isStreaming(activity, new OnLoadedFinished() {
+        WS.isStreaming(activity,khotab.getTimeExpected(), new OnLoadedFinished() {
             @Override
             public void onSuccess(String response) {
 
