@@ -390,6 +390,7 @@ public class Read extends Activity {
         tvHum = (TextView) findViewById(R.id.tvHum);
         tvHum.setText("الرطوبة الخارجية");
         tvMasjedName.setTypeface(fontDroidkufi);
+//        tvName.setTypeface(fontDroidkufi);
         tvIn.setTypeface(fontDroidkufi);
         tvOut.setTypeface(fontDroidkufi);
         tvHum.setTypeface(fontDroidkufi);

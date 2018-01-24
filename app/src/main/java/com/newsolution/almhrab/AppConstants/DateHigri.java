@@ -11,7 +11,7 @@ public class DateHigri {
         return ((n % m) + m) % m;
     }
 
-   public static double[] kuwaiticalendar(int hijriDiff, boolean adjust) {
+    public static double[] kuwaiticalendar(int hijriDiff, boolean adjust) {
         Calendar today = Calendar.getInstance();
         int adj=0;
         if(adjust){
@@ -25,7 +25,7 @@ public class DateHigri {
             long todaymili = today.getTimeInMillis() + adjustmili;
             today.setTimeInMillis(todaymili);
         }
-       double day =( today.get(Calendar.DAY_OF_MONTH))+hijriDiff;
+        double day =( today.get(Calendar.DAY_OF_MONTH))+hijriDiff;
         double  month = today.get(Calendar.MONTH);
         double  year = today.get(Calendar.YEAR);
 
@@ -123,9 +123,9 @@ public class DateHigri {
         double  month = today.get(Calendar.MONTH);
         double  year = today.get(Calendar.YEAR);
         double[] iDate = kuwaiticalendar(0,dayTest);
-       // String outputIslamicDate = wdNames[(int) iDate[4]] + " " + (int)day + " " +MonthNames[(int) month] + " " + (int)year + " م " + (int)iDate[5] + " "+ iMonthNames[(int) iDate[6]] + " " + (int)iDate[7] + " هـ ";
-       String outputIslamicDate = wdNames[(int) iDate[4]] + " | " + (int)day + " " +MonthNames[(int) month] + " " + (int)year + " | " + (int)iDate[5] + " "+ iMonthNames[(int) iDate[6]] + " " +
-               (int)iDate[7] + " هـ ";
+        // String outputIslamicDate = wdNames[(int) iDate[4]] + " " + (int)day + " " +MonthNames[(int) month] + " " + (int)year + " م " + (int)iDate[5] + " "+ iMonthNames[(int) iDate[6]] + " " + (int)iDate[7] + " هـ ";
+        String outputIslamicDate = wdNames[(int) iDate[4]] + " | " + (int)day + " " +MonthNames[(int) month] + " " + (int)year + " | " + (int)iDate[5] + " "+ iMonthNames[(int) iDate[6]] + " " +
+                (int)iDate[7] + " هـ ";
 
         return outputIslamicDate;
     }

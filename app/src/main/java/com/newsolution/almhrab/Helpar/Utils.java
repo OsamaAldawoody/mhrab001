@@ -59,7 +59,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by HSM on 1/16/2015.
  */
 public class Utils {
-    public static String PREFS = "voiceTweet";
+    public static String PREFS = "AlMhrabApp";
     public static final String ENGLISH = "English";
     public static final String ARABIC = "Arabic";
     public static String FONT_NAME_B = "fonts/neosansarabic.ttf";
@@ -1052,12 +1052,10 @@ public class Utils {
         String[] wdNames = {act.getString(R.string.sun), act.getString(R.string.mon), act.getString(R.string.tus),
                 act.getString(R.string.wes)
                 , act.getString(R.string.ths), act.getString(R.string.fri), act.getString(R.string.sat)};
-        String[] iMonthNames = {act.getString(R.string.am1), act.getString(R.string.am2), act.getString(R.string.am3),
-                act.getString(R.string.am4), String.valueOf(R.string.am5), act.getString(R.string.am6),
-                act.getString(R.string.am7),
-                act.getString(R.string.am8), act.getString(R.string.am9), act.getString(R.string.am10),
-                act.getString(R.string.am11)
-                , act.getString(R.string.am12)};
+        String[] iMonthNames = {"محرم","صفر","ربيع الأول",
+                "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة", "رجب",
+                "شعبان","شعبان", "شوال", "ذو القعدة"
+                , " ذو الحجة"};
         String[] MonthNames = {act.getString(R.string.em1), act.getString(R.string.em2), act.getString(R.string.em3),
                 act.getString(R.string.em4), act.getString(R.string.em5), act.getString(R.string.em6), act.getString(R.string.em7),
                 act.getString(R.string.em8), act.getString(R.string.em9), act.getString(R.string.em10), act.getString(R.string.em11)
@@ -1082,12 +1080,11 @@ public class Utils {
         String[] wdNames = {act.getString(R.string.sun), act.getString(R.string.mon), act.getString(R.string.tus),
                 act.getString(R.string.wes)
                 , act.getString(R.string.ths), act.getString(R.string.fri), act.getString(R.string.sat)};
-        String[] iMonthNames = {act.getString(R.string.am1), act.getString(R.string.am2), act.getString(R.string.am3),
-                act.getString(R.string.am4), String.valueOf(R.string.am5), act.getString(R.string.am6),
-                act.getString(R.string.am7),
-                act.getString(R.string.am8), act.getString(R.string.am9), act.getString(R.string.am10),
-                act.getString(R.string.am11)
-                , act.getString(R.string.am12)};
+        String[] iMonthNames = {"محرم","صفر","ربيع الأول",
+                "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة", "رجب",
+                "شعبان","شعبان", "شوال", "ذو القعدة"
+                , " ذو الحجة"};
+
         String[] MonthNames = {act.getString(R.string.em1), act.getString(R.string.em2), act.getString(R.string.em3),
                 act.getString(R.string.em4), act.getString(R.string.em5), act.getString(R.string.em6), act.getString(R.string.em7),
                 act.getString(R.string.em8), act.getString(R.string.em9), act.getString(R.string.em10), act.getString(R.string.em11)

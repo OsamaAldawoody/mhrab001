@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -125,16 +126,25 @@ public class ShowAdsActivity extends AppCompatActivity {
                 tvAdsText.setText(text);
                 vvAdsVideo.setVideoURI(Uri.parse(video));
                 vvAdsVideo.start();
-                Log.i("---++ video: ", video);
+//                Log.i("---++ video: ", video);
             } else if (type == 3) {
                 ivAdsImage.setVisibility(View.GONE);
                 vvAdsVideo.setVisibility(View.GONE);
                 tvAdsText.setText(text);
                 tvAdsText.setVisibility(View.VISIBLE);
             }
+            vvAdsVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    vvAdsVideo.start();
+                }
+            });
+        } catch (OutOfMemoryError e) {
+            e.printStackTrace();
+            Utils.showCustomToast(activity, "خطأ في ملف الاعلان");
+
         } catch (Exception e) {
             e.printStackTrace();
-            Utils.showCustomToast(activity, "تم حذف ملف الاعلان");
         }
 
     }

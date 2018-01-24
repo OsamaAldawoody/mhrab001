@@ -385,24 +385,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     private OptionSiteClass settings;
     private ImageView sound_stop;
     private String iqamatime = "";
-    private SpeechRecognizer speech = null;
-    private Intent recognizerIntent;
     private String LOG_TAG = "voiceRecognitionAct";
-    public String te0 = "Allahu Akbar";
-    public String te1 = "Allah hoo Akbar";
-    public String te2 = "Allah";
-    public String te3 = "Allahu";
-    public String te4 = "Allah";
-    public String te5 = "الله أكبر ";
-    public String te6 = "اللهو";
-    public String te7 = "Allahu Ackbar";
-    public String t1 = "send me ";
-    public String t2 = "samuel";
-    public String t3 = "similar";
-    public String s1 = "assalam";
-    public String s2 = "salam";
-    public int rn = 1;
-    public int maxRn = 0;
     private String currentPray = "";
     private CountDownTimer countDownTimer;
     private int period = 300000;
@@ -717,7 +700,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     @Override
     protected void onResume() {
         IntentFilter intentFilter = new IntentFilter(BROADCAST);
-       if (myReceiver!=null)registerReceiver(myReceiver, intentFilter);
+        if (myReceiver != null) registerReceiver(myReceiver, intentFilter);
         super.onResume();
         try {
             AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -1095,7 +1078,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 currentPray = "fajr";
 //                setTextColor(fajrTitle);
 //                setLargeTextSize(fajrTitle);
-                fajrTitle.setImageResource(R.drawable.ic_fajer_co);
+                fajrTitle.setImageResource(R.drawable.ic_fajer);//ic_fajer_co
                 setNoLargeTextSize(fajrIqama);
                 setIqamaTextColor(fajrIqama);
                 setPrayTextColor(fajrTime);
@@ -1121,7 +1104,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 setNoLargeTextSize(duhrIqama);
 //                setTextColor(duhrTitle);
 //                setLargeTextSize(duhrTitle);
-                duhrTitle.setImageResource(R.drawable.ic_duhr_on);
+                duhrTitle.setImageResource(R.drawable.ic_duhr);//ic_duhr_on
                 setPrayTextColor(dhuhrTime);
                 setNoLargeTextSize(dhuhrTime);
 //                nextIqamaTime.setText(setCustomFontStyle(npt));
@@ -1154,7 +1137,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (t33));
                 iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t33));
                 currentPray = "asr";
-                asrTitle.setImageResource(R.drawable.ic_asr_on);
+                asrTitle.setImageResource(R.drawable.ic_asr);//ic_asr_on
                 setIqamaTextColor(asrIqama);
                 setPrayTextColor(asrTime);
 //                setTextColor(asrTitle);
@@ -1182,7 +1165,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 currentPray = "magrib";
 
                 spedit.putString("phoneAlert", Utils.setPhoneAlert(icmaghrib, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
-                maghribTitle.setImageResource(R.drawable.ic_magrib_on);
+                maghribTitle.setImageResource(R.drawable.ic_magrib);//ic_magrib_on
                 setPrayTextColor(maghribTime);
                 setNoLargeTextSize(maghribTime);
 //                setTextColor(maghribTitle);
@@ -1206,7 +1189,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (t55));
                 iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t55));
                 currentPray = "isha";
-                ishaTitle.setImageResource(R.drawable.ic_isha_on);
+                ishaTitle.setImageResource(R.drawable.ic_isha);//ic_isha_on
                 setIqamaTextColor(ishaIqama);
                 setNoLargeTextSize(ishaIqama);
                 setPrayTextColor(ishaTime);
@@ -1243,7 +1226,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 //                iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t1)));
 //                setTextColor(fajrTitle);
 //                setLargeTextSize(fajrTitle);
-                fajrTitle.setImageResource(R.drawable.ic_fajer_co);
+                fajrTitle.setImageResource(R.drawable.ic_fajer);//ic_fajer_co
                 setIqamaTextColor(fajrIqama);
                 setNoLargeTextSize(fajrIqama);
                 setPrayTextColor(fajrTime);
@@ -1259,7 +1242,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t2)));
                 setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (getIqama(t2)));
 //                iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t2)));
-                duhrTitle.setImageResource(R.drawable.ic_duhr_on);
+                duhrTitle.setImageResource(R.drawable.ic_duhr);//ic_duhr_on
                 setIqamaTextColor(duhrIqama);
                 setNoLargeTextSize(duhrIqama);
 //                setTextColor(duhrTitle);
@@ -1274,7 +1257,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t3)));
                 setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (getIqama(t3)));
 //                iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t3)));
-                asrTitle.setImageResource(R.drawable.ic_asr_on);
+                asrTitle.setImageResource(R.drawable.ic_asr);//ic_asr_on
                 setIqamaTextColor(asrIqama);
                 setNoLargeTextSize(asrIqama);
                 setPrayTextColor(asrTime);
@@ -1287,7 +1270,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 spedit.putString("phoneAlert", Utils.setPhoneAlert(icmaghrib, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t4)));
                 setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (getIqama(t4)));
-                maghribTitle.setImageResource(R.drawable.ic_magrib_on);
+                maghribTitle.setImageResource(R.drawable.ic_magrib);//ic_magrib_on
                 setPrayTextColor(maghribTime);
                 setNoLargeTextSize(maghribTime);
 //                setTextColor(maghribTitle);
@@ -1300,7 +1283,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 spedit.putString("phoneAlert", Utils.setPhoneAlert(icisha, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t5)));//getIqama(t5)
                 setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (getIqama(t5)));
-                ishaTitle.setImageResource(R.drawable.ic_isha_on);
+                ishaTitle.setImageResource(R.drawable.ic_isha);//ic_isha_on
                 setIqamaTextColor(ishaIqama);
                 setNoLargeTextSize(ishaIqama);
                 setPrayTextColor(ishaTime);
@@ -1314,7 +1297,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 setCustomFontStyle(dayAsString, timeAsString, tomorrowAsString, "" + (getIqama(t1)));
 //                setTextColor(fajrTitle);
 //                setLargeTextSize(fajrTitle);
-                fajrTitle.setImageResource(R.drawable.ic_fajer_co);
+                fajrTitle.setImageResource(R.drawable.ic_fajer);//ic_fajer_co
                 setIqamaTextColor(fajrIqama);
                 setNoLargeTextSize(fajrIqama);
                 setPrayTextColor(fajrTime);
@@ -1367,15 +1350,21 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                         timer.purge();
                         Log.i("***voice1", "countDown");
                         iqamatime = "";
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent cp = new Intent(activity, FridayActivity.class);
-                                cp.putExtra("khotba", khotba);
-                                startActivity(cp);
-                                isOpenSermon = true;
-                            }
-                        }, 30000);
+                        Intent cp = new Intent(activity, FridayActivity.class);
+                        cp.putExtra("khotba", khotba);
+                        startActivity(cp);
+                        isOpenSermon = true;
+                        Log.i("***voice1", "isOpenSermon: "+isOpenSermon);
+
+//                        new Handler().postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                Intent cp = new Intent(activity, FridayActivity.class);
+//                                cp.putExtra("khotba", khotba);
+//                                startActivity(cp);
+//                                isOpenSermon = true;
+//                            }
+//                        }, 30000);
                     }
                 }
             }
@@ -1416,9 +1405,9 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         String GUID = sp.getString("masjedGUID", "");
         String DeviceNo = sp.getString(AppConst.DeviceNo, "");
         String upLoadServerUri = Constants.Main_URL + "SaveKhotabVideo?IdSubscribe=" + masjedId
-        + "&GUID=" + GUID+ "&DeviceNo=" + DeviceNo + "&IdKhotab=" + IdKhotab + "&DateKhotab=" + DateKhotab;
+                + "&GUID=" + GUID + "&DeviceNo=" + DeviceNo + "&IdKhotab=" + IdKhotab + "&DateKhotab=" + DateKhotab;
         // String [] string = sourceFileUri;
-        Log.i("/// test: ",upLoadServerUri+"");
+        Log.i("/// test: ", upLoadServerUri + "");
         String fileName = sourceFileUri;
 
         HttpURLConnection conn = null;
@@ -1527,22 +1516,6 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     }
 
     private void runVoiceRecognition(final String currentPray) {
-        if (currentPray.equals("fajr")) {
-            maxRn = 2;
-            period = settings.getFajrAzkar();
-        } else if (currentPray.equals("dhuhr")) {
-            period = settings.getDhuhrAzkar();
-            maxRn = 4;
-        } else if (currentPray.equals("asr")) {
-            period = settings.getAsrAzkar();
-            maxRn = 4;
-        } else if (currentPray.equals("magrib")) {
-            period = settings.getMagribAzkar();
-            maxRn = 3;
-        } else if (currentPray.equals("isha")) {
-            period = settings.getIshaAzkar();
-            maxRn = 4;
-        }
         if (sp.getBoolean("voiceRec", true)) {
             stopTimer = true;
             timer.cancel();
@@ -2134,7 +2107,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         DateHigri hd = new DateHigri();
         date1 = (TextView) findViewById(R.id.dateToday);
         date1.setTypeface(font);
-        date1.setText((Utils.writeIslamicDate(this, hd)));
+        date1.setText((Utils.writeIslamicDate(activity, hd)));
         time = (TextView) findViewById(R.id.Time);
         time.setTypeface(fontRoboto);
         DateFormat timeNow = new SimpleDateFormat("hh:mmss", new Locale("en"));
@@ -2155,7 +2128,29 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             }
         }, 1000);
     }
+    public String writeIslamicDate(DateHigri hd) {
+        String[] wdNames = {getString(R.string.sun), getString(R.string.mon), getString(R.string.tus), getString(R.string.wes)
+                , getString(R.string.ths), getString(R.string.fri), getString(R.string.sat)};
+        String[] iMonthNames = {"محرم","صفر","ربيع الأول",
+                "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة", "رجب",
+               "شعبان","شعبان", "شوال", "ذو القعدة"
+                , " ذو الحجة"};
+        String[] MonthNames = {getString(R.string.em1), getString(R.string.em2), getString(R.string.em3),
+                getString(R.string.em4), getString(R.string.em5), getString(R.string.em6), getString(R.string.em7),
+                getString(R.string.em8), getString(R.string.em9), getString(R.string.em10), getString(R.string.em11)
+                , getString(R.string.em12)};
+        boolean dayTest = true;
+        Calendar today = Calendar.getInstance();
+        double day = today.get(Calendar.DAY_OF_MONTH);
+        double month = today.get(Calendar.MONTH);
+        double year = today.get(Calendar.YEAR);
+        double[] iDate = hd.kuwaiticalendar(sp.getInt("hijriDiff",0),dayTest);
+        // String outputIslamicDate = wdNames[(int) iDate[4]] + " " + (int)day + " " +MonthNames[(int) month] + " " + (int)year + " م " + (int)iDate[5] + " "+ iMonthNames[(int) iDate[6]] + " " + (int)iDate[7] + " هـ ";
+        String outputIslamicDate = wdNames[(int) iDate[4]] + " | " + (int) day + " " + MonthNames[(int) month] + " " + (int) year + " | " + (int) iDate[5] + " " + iMonthNames[(int) iDate[6]] + " " +
+                (int) iDate[7] + " " + getString(R.string.mt);
 
+        return outputIslamicDate;
+    }
 
     private void animAdvs() {
         TextView advTitle;
@@ -2588,18 +2583,11 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 
     @Override
     protected void onPause() {
-        if(myReceiver != null) {
+        if (myReceiver != null) {
             unregisterReceiver(myReceiver);
             myReceiver = null;
         }
         super.onPause();
-        if (speech != null) {
-            if (countDownTimer != null) countDownTimer.cancel();
-            speech.stopListening();
-            speech.destroy();
-//            speech=null;
-            Log.i(LOG_TAG, "destroy");
-        }
         stopTimer = true;
         timer.cancel();
         timer.purge();

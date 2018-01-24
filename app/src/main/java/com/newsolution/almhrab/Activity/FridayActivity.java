@@ -402,6 +402,7 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                 Log.i("////*: ", "[" + msg + "]");
                     Toast.makeText(activity, "[" + msg + "]", Toast.LENGTH_LONG).show();
                 }
             });

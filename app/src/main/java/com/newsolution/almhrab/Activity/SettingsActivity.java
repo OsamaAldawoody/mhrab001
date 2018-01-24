@@ -642,13 +642,15 @@ public class SettingsActivity extends Activity {
         ed_stop.setText(sp.getInt("sleepOff", -1) != -1 ? sp.getInt("sleepOff", -1) + "" : "");
         sleepDialog.setContentView(view);
         sleepDialog.show();
-        sleepDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                if (sp.getInt("sleepOff", -1) == -1 && sp.getInt("sleepOff", -1) == -1)
-                    cb_sleep.setChecked(false);
-            }
-        });
+        sleepDialog.setCancelable(false);
+        sleepDialog.setCanceledOnTouchOutside(false);
+//        sleepDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//            @Override
+//            public void onDismiss(DialogInterface dialogInterface) {
+//                if (sp.getInt("sleepOff", -1) == -1 && sp.getInt("sleepOff", -1) == -1)
+//                    cb_sleep.setChecked(false);
+//            }
+//        });
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         Window window = sleepDialog.getWindow();
         lp.copyFrom(window.getAttributes());

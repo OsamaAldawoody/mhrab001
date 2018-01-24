@@ -274,7 +274,7 @@ public class ClosePhone extends Activity {
         tvName = (TextView) findViewById(R.id.tvName);
         tvHum.setText("الرطوبة الخارجية");
         tvMasjedName.setTypeface(fontDroidkufi);
-        tvName.setTypeface(fontDroidkufi);
+//        tvName.setTypeface(fontDroidkufi);
         tvIn.setTypeface(fontDroidkufi);
         tvOut.setTypeface(fontDroidkufi);
         tvHum.setTypeface(fontDroidkufi);

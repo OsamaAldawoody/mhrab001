@@ -476,8 +476,11 @@ public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Con
             else if (prayer.equalsIgnoreCase(context.getString(R.string.pa))) {
                 return sp.getBoolean("close_screen", true);
             } else return true;
+        }else{
+            if (prayer.equalsIgnoreCase(context.getString(R.string.pa))) {
+                return sp.getBoolean("close_screen", true);
+            } else return true;
         }
-        return true;
     }
 
     private boolean isFriday() {

@@ -110,7 +110,7 @@ public class Splash extends Activity {
         int width = getWindowManager().getDefaultDisplay().getWidth();
         int height = getWindowManager().getDefaultDisplay().getHeight();
 //        Toast.makeText(activity, "width= " + width + " : height= " + height, Toast.LENGTH_LONG).show();
-         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         String deviceId = getDeviceId(getApplicationContext());//tManager.getDeviceId();
         spedit.putString(AppConst.DeviceNo, deviceId).commit();
 //        Log.i("/////* DeviceNo", deviceId);
@@ -135,10 +135,10 @@ public class Splash extends Activity {
             if (!Settings.System.canWrite(getApplicationContext())) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + getPackageName()));
                 startActivityForResult(intent, 200);
-            }else if (!notificationManager.isNotificationPolicyAccessGranted()) {
+            } else if (!notificationManager.isNotificationPolicyAccessGranted()) {
                 Intent intent = new Intent(android.provider.Settings
-                            .ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
-                    startActivityForResult(intent,300);
+                        .ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+                startActivityForResult(intent, 300);
             } else askForPermissions(new String[]{
                             android.Manifest.permission.ACCESS_COARSE_LOCATION,
                             android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -146,8 +146,6 @@ public class Splash extends Activity {
                             android.Manifest.permission.CAMERA,
                             android.Manifest.permission.RECORD_AUDIO,
                             android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-//                        android.Manifest.permission.WRITE_SETTINGS,
-//                        android.Manifest.permission.DISABLE_KEYGUARD,
                             android.Manifest.permission.READ_EXTERNAL_STORAGE
                     },
                     REQUEST_PERMISSIONS);
@@ -242,6 +240,7 @@ public class Splash extends Activity {
         }
     }
 
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode != 1) {
@@ -258,20 +257,20 @@ public class Splash extends Activity {
                     && !notificationManager.isNotificationPolicyAccessGranted()) {
                 Intent intent = new Intent(android.provider.Settings
                         .ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
-                startActivityForResult(intent,300);
-            }else
-            askForPermissions(new String[]{
-                            android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                            android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                            android.Manifest.permission.READ_PHONE_STATE,
-                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            android.Manifest.permission.CAMERA,
-                            android.Manifest.permission.RECORD_AUDIO,
+                startActivityForResult(intent, 300);
+            } else
+                askForPermissions(new String[]{
+                                android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                                android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                                android.Manifest.permission.READ_PHONE_STATE,
+                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                android.Manifest.permission.CAMERA,
+                                android.Manifest.permission.RECORD_AUDIO,
 //                        android.Manifest.permission.WRITE_SETTINGS,
 //                        android.Manifest.permission.DISABLE_KEYGUARD,
-                            android.Manifest.permission.READ_EXTERNAL_STORAGE
-                    },
-                    REQUEST_PERMISSIONS);
+                                android.Manifest.permission.READ_EXTERNAL_STORAGE
+                        },
+                        REQUEST_PERMISSIONS);
         } else if (requestCode == 300 && resultCode == RESULT_OK) {
             askForPermissions(new String[]{
                             android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -287,7 +286,7 @@ public class Splash extends Activity {
                     REQUEST_PERMISSIONS);
         } else if (requestCode == 200 && resultCode == RESULT_CANCELED) {
             finish();
-        }  else if (requestCode == 300 && resultCode == RESULT_CANCELED) {
+        } else if (requestCode == 300 && resultCode == RESULT_CANCELED) {
 //            Utils.showCustomToast(activity,"request permission");
             finish();
         }
