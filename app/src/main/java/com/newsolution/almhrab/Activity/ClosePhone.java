@@ -672,9 +672,7 @@ public class ClosePhone extends Activity {
                 }
                 remainTime1.setText("");
                 tvIqama.setText(String.format(getString(R.string.isAthanTime), next_adan));
-
                 remainTime1.setTypeface(digital);
-
             } else {
                 remainTime1.setTypeface(regular);
                 remainTime1.setText(npt);
@@ -885,8 +883,11 @@ public class ClosePhone extends Activity {
 //        else if (diffMinutes > 0)
 //            val = fm + " " + getString(R.string.m) + " و " + fs + " " + getString(R.string.s);
 //        else
-        if (diffSeconds > 0) val = fs;// + " " + getString(R.string.s);
-        else if (diffSeconds == 0) val = "60";
+        if (diffSeconds > 0) {
+          if(diffSeconds<10)
+              fs="0"+fs;
+            val = fs;// + " " + getString(R.string.s);
+        } else if (diffSeconds == 0) val = "60";
         else val = "";
         return val;
     }

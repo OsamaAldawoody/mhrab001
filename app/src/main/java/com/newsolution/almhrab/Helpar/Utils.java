@@ -1103,6 +1103,41 @@ public class Utils {
 
         return outputIslamicDate;
     }
+    public static String writeMDate(Activity act, DateHigri hd) {
+        String[] wdNames = {act.getString(R.string.sun), act.getString(R.string.mon), act.getString(R.string.tus),
+                act.getString(R.string.wes)
+                , act.getString(R.string.ths), act.getString(R.string.fri), act.getString(R.string.sat)};
+
+        String[] MonthNames = {act.getString(R.string.em1), act.getString(R.string.em2), act.getString(R.string.em3),
+                act.getString(R.string.em4), act.getString(R.string.em5), act.getString(R.string.em6), act.getString(R.string.em7),
+                act.getString(R.string.em8), act.getString(R.string.em9), act.getString(R.string.em10), act.getString(R.string.em11)
+                , act.getString(R.string.em12)};
+        boolean dayTest = true;
+        Calendar today = Calendar.getInstance();
+        double day = today.get(Calendar.DAY_OF_MONTH);
+        double month = today.get(Calendar.MONTH);
+        double year = today.get(Calendar.YEAR);
+        double[] iDate = hd.kuwaiticalendar(act.getSharedPreferences(AppConst.PREFS, act.MODE_PRIVATE)
+                .getInt("hijriDiff", 0), dayTest);
+        int iDayN = hd.date1();
+        String outputIslamicDate = wdNames[iDayN] + "  " + (int) day + " " + MonthNames[(int) month]
+                + " " + (int) year+ " " + act.getString(R.string.mt1) ;
+        return outputIslamicDate;
+    }
+    public static String writeHDate(Activity act, DateHigri hd) {
+        String[] iMonthNames = {"محرم","صفر","ربيع الأول",
+                "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة", "رجب",
+                "شعبان","شعبان", "شوال", "ذو القعدة"
+                , " ذو الحجة"};
+
+        boolean dayTest = true;
+        double[] iDate = hd.kuwaiticalendar(act.getSharedPreferences(AppConst.PREFS, act.MODE_PRIVATE)
+                .getInt("hijriDiff", 0), dayTest);
+        String outputIslamicDate = (int) iDate[5] + " " + iMonthNames[(int) iDate[6]] + " " +
+                (int) iDate[7] + " " + act.getString(R.string.mt) ;
+
+        return outputIslamicDate;
+    }
 
 
 }

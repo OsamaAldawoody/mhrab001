@@ -518,11 +518,13 @@
                 android:id="@+id/alert_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/buttom_corner"
                 android:gravity="center_vertical"
                 android:paddingLeft="20dp"
-                android:paddingRight="20dp">
+                android:paddingRight="20dp"
+            >
 
                 <TextView
                     android:id="@+id/tvIqama"
@@ -530,9 +532,9 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
-                    android:gravity="center"
-                    android:paddingBottom="8dp"
-                    android:text="إقامة الصلاة بعد"
+                    android:gravity="bottom"
+                    android:paddingTop="15dp"
+                    android:text="المتبقي للإقامة"
                     android:textColor="@color/backLogo"
                     android:textDirection="rtl"
                     android:textSize="45dp" />
@@ -543,12 +545,12 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_toLeftOf="@id/tvIqama"
-                    android:gravity="center"
-                    android:paddingBottom="10dp"
+                    android:gravity="center_vertical"
                     android:text="20"
-                    android:textColor="@color/backLogo"
+                    android:textColor="@color/white"
                     android:textDirection="rtl"
-                    android:textSize="65dp" />
+                    android:textSize="130dp" />
+
                 <!--<LinearLayout-->
                 <!--android:id="@+id/llRemainingTime"-->
                 <!--android:layout_width="wrap_content"-->
@@ -569,16 +571,7 @@
                 <!--android:textSize="44dp" />-->
                 <!--</LinearLayout>-->
 
-                <!--<TextView-->
-                <!--android:id="@+id/nextIqamaTime"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_centerVertical="true"-->
-                <!--android:layout_marginLeft="10dp"-->
-                <!--android:layout_toLeftOf="@id/tvIqama"-->
-                <!--android:text=""-->
-                <!--android:textColor="@color/backLogo"-->
-                <!--android:textSize="35dp" />-->
+
             </RelativeLayout>
         </LinearLayout>
 

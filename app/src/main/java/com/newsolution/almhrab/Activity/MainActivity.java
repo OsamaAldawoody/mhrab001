@@ -409,6 +409,12 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     final Handler AdsHandler = new Handler();
 
     int masjedId;
+    private TextView tvIqamaR, tvIsPrayTime, tvIqRemaingTime, tvUnit;
+    private TextView tvPrayR, tvPrayName, tvPrayRemaingTime;
+    private RelativeLayout rlIqRemainingT, rlIsPrayTime, rlPrayRemainingT;
+    private Typeface digital;
+    private Typeface ptBoldHeading;
+    private Typeface battarFont;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -443,6 +449,10 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         fontArial = Typeface.createFromAsset(getAssets(), arial);
         fontRoboto = Typeface.createFromAsset(getAssets(), roboto);
         fontDroidkufi = Typeface.createFromAsset(getAssets(), droidkufi);
+        digital = Typeface.createFromAsset(getAssets(), "fonts/digital.ttf");
+        ptBoldHeading = Typeface.createFromAsset(getAssets(), "fonts/pt_bold_heading.ttf");
+        battarFont = Typeface.createFromAsset(getAssets(), "fonts/ae_battar.ttf");
+
         DBO = new DBOperations(this);
         gv = (GlobalVars) getApplicationContext();
         sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
@@ -576,6 +586,32 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 dispMenu(view);
             }
         });
+
+        rlIsPrayTime = (RelativeLayout) findViewById(R.id.rlIsPrayTime);
+        rlIqRemainingT = (RelativeLayout) findViewById(R.id.rlIqRemainingT);
+        rlPrayRemainingT = (RelativeLayout) findViewById(R.id.rlPrayRemainingT);
+        tvIsPrayTime = (TextView) findViewById(R.id.tvIsPrayTime);
+        tvIqRemaingTime = (TextView) findViewById(R.id.tvIqRemaingTime);
+        tvUnit = (TextView) findViewById(R.id.tvUnit);
+        tvIqamaR = (TextView) findViewById(R.id.tvIqamaR);
+        tvPrayName = (TextView) findViewById(R.id.tvPrayName);
+        tvPrayR = (TextView) findViewById(R.id.tvPrayR);
+        tvPrayRemaingTime = (TextView) findViewById(R.id.tvPrayRemaingTime);
+        tvIqRemaingTime.setTypeface(digital);
+        tvIqamaR.setTypeface(ptBoldHeading);
+        tvIsPrayTime.setTypeface(ptBoldHeading);
+        tvPrayR.setTypeface(ptBoldHeading);
+        tvUnit.setTypeface(ptBoldHeading);
+        tvPrayName.setTypeface(battarFont);
+        tvPrayRemaingTime.setTypeface(digital);
+
+        Calendar c = Calendar.getInstance();
+        DateFormat timeNow = new SimpleDateFormat("hh:mmss", new Locale("en"));
+        String timeText = timeNow.format(c.getTime());
+        SpannableString string = new SpannableString(timeText);
+        string.setSpan(new RelativeSizeSpan((0.5f)), 5, 7, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        tvPrayRemaingTime.setText(string);
+
         tvJmaaPray = (TextView) findViewById(R.id.tvJmaaPray);
         tvIqama = (TextView) findViewById(R.id.tvIqama);
         tvIn = (TextView) findViewById(R.id.tvIn);
@@ -1079,19 +1115,24 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 //                setTextColor(fajrTitle);
 //                setLargeTextSize(fajrTitle);
                 fajrTitle.setImageResource(R.drawable.ic_fajer);//ic_fajer_co
+                ZoomSelectedImage(fajrTitle);
                 setNoLargeTextSize(fajrIqama);
+                setNoLargeTextSize(fajrTime);
+                ZoomSelectedView(fajrTime);
+                ZoomSelectedView(fajrIqama);
                 setIqamaTextColor(fajrIqama);
                 setPrayTextColor(fajrTime);
-                setNoLargeTextSize(fajrTime);
 //                nextIqamaTime.setText(setCustomFontStyle(npt));
                 spedit.putString("phoneAlert", Utils.setPhoneAlert(icfajr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
                 tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "إقامة الصلاة بعد");
+                ShowRemainingIqamaTime(dayAsString, timeAsString, dayAsString, "" + (t11));
                 Log.i("***iqama:", iqamatime + " /pp");
                 if (iqamatime.equals("00:00:00")) {
                     tvIqama.setText("حان وقت الصلاة ");
                     llRemainingTime.setVisibility(View.GONE);
 //                    nextIqamaTime.setText("");
                     runVoiceRecognition(currentPray);
+                    itIsPrayTime(false, getString(R.string.fajer_igama));
                 }
                 return;
             }
@@ -1105,18 +1146,22 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 //                setTextColor(duhrTitle);
 //                setLargeTextSize(duhrTitle);
                 duhrTitle.setImageResource(R.drawable.ic_duhr);//ic_duhr_on
+                ZoomSelectedImage(duhrTitle);
                 setPrayTextColor(dhuhrTime);
                 setNoLargeTextSize(dhuhrTime);
-//                nextIqamaTime.setText(setCustomFontStyle(npt));
+                ZoomSelectedView(dhuhrTime);
+                ZoomSelectedView(duhrIqama);
                 Log.i("***iqama:", iqamatime + " /pp");
                 if (!isFriday()) {
                     tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "إقامة الصلاة بعد");
+                    ShowRemainingIqamaTime(dayAsString, timeAsString, dayAsString, "" + (t22));
                     setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (t22));
                     spedit.putString("phoneAlert", Utils.setPhoneAlert(icdhohr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
                     isOpenSermon = false;
                 } else {
                     spedit.putString("phoneAlert", "").commit();
                     tvIqama.setText("صلاة الجمعة");
+                    itIsPrayTime(true, getString(R.string.isFriday));
                     llRemainingTime.setVisibility(View.GONE);
                     if (!isOpenSermon) playSermon();
                 }
@@ -1126,6 +1171,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                     if (!isFriday()) {
                         tvIqama.setText("حان وقت الصلاة ");
                         runVoiceRecognition(currentPray);
+                        itIsPrayTime(false, getString(R.string.duhr_igama));
                     }
                 }
                 return;
@@ -1135,16 +1181,19 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 isOpenSermon = false;
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t33));
                 setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (t33));
+                ShowRemainingIqamaTime(dayAsString, timeAsString, dayAsString, "" + (t33));
                 iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t33));
                 currentPray = "asr";
                 asrTitle.setImageResource(R.drawable.ic_asr);//ic_asr_on
+                ZoomSelectedImage(asrTitle);
                 setIqamaTextColor(asrIqama);
                 setPrayTextColor(asrTime);
 //                setTextColor(asrTitle);
                 setNoLargeTextSize(asrIqama);
                 setNoLargeTextSize(asrTime);
 //                setLargeTextSize(asrTitle);
-
+                ZoomSelectedView(asrIqama);
+                ZoomSelectedView(asrTime);
                 spedit.putString("phoneAlert", Utils.setPhoneAlert(icasr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
 //                nextIqamaTime.setText(setCustomFontStyle(npt));
                 tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "إقامة الصلاة بعد");
@@ -1153,6 +1202,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                     tvIqama.setText("حان وقت الصلاة ");
                     llRemainingTime.setVisibility(View.GONE);
 //                    nextIqamaTime.setText("");
+                    itIsPrayTime(false, getString(R.string.aser_igama));
                     runVoiceRecognition(currentPray);
                 }
                 return;
@@ -1161,13 +1211,17 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                     && ((c44.getTime().after(now)) || c44.getTime().equals(now))) {
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t44));
                 setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (t44));
+                ShowRemainingIqamaTime(dayAsString, timeAsString, dayAsString, "" + (t44));
                 iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t44));
                 currentPray = "magrib";
 
                 spedit.putString("phoneAlert", Utils.setPhoneAlert(icmaghrib, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
                 maghribTitle.setImageResource(R.drawable.ic_magrib);//ic_magrib_on
+                ZoomSelectedImage(maghribTitle);
                 setPrayTextColor(maghribTime);
                 setNoLargeTextSize(maghribTime);
+                ZoomSelectedView(maghribTime);
+                ZoomSelectedView(magribIqama);
 //                setTextColor(maghribTitle);
 //                setLargeTextSize(maghribTitle);
                 setIqamaTextColor(magribIqama);
@@ -1179,6 +1233,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                     tvIqama.setText("حان وقت الصلاة ");
                     llRemainingTime.setVisibility(View.GONE);
 //                    nextIqamaTime.setText("");
+                    itIsPrayTime(false, getString(R.string.magrib_igama));
                     runVoiceRecognition(currentPray);
                 }
                 return;
@@ -1187,13 +1242,17 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                     && ((c55.getTime().after(now)) || c55.getTime().equals(now))) {
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t55));
                 setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (t55));
+                ShowRemainingIqamaTime(dayAsString, timeAsString, dayAsString, "" + (t55));
                 iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t55));
                 currentPray = "isha";
                 ishaTitle.setImageResource(R.drawable.ic_isha);//ic_isha_on
+                ZoomSelectedImage(ishaTitle);
                 setIqamaTextColor(ishaIqama);
                 setNoLargeTextSize(ishaIqama);
                 setPrayTextColor(ishaTime);
                 setNoLargeTextSize(ishaTime);
+                ZoomSelectedView(ishaIqama);
+                ZoomSelectedView(ishaTime);
 //                setTextColor(ishaTitle);
 //                setLargeTextSize(ishaTitle);
                 spedit.putString("phoneAlert", Utils.setPhoneAlert(icisha, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
@@ -1204,6 +1263,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                     tvIqama.setText("حان وقت الصلاة ");
                     llRemainingTime.setVisibility(View.GONE);
 //                    nextIqamaTime.setText("");
+                    itIsPrayTime(false, getString(R.string.isha_igama));
                     runVoiceRecognition(currentPray);
                 }
                 return;
@@ -1223,14 +1283,18 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 globalVariable.setNextPray("fajr");
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t1)));
                 setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (getIqama(t1)));
+                ShowRemainingPrayTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t1)));
 //                iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t1)));
 //                setTextColor(fajrTitle);
 //                setLargeTextSize(fajrTitle);
                 fajrTitle.setImageResource(R.drawable.ic_fajer);//ic_fajer_co
+                ZoomSelectedImage(fajrTitle);
                 setIqamaTextColor(fajrIqama);
                 setNoLargeTextSize(fajrIqama);
                 setPrayTextColor(fajrTime);
                 setNoLargeTextSize(fajrTime);
+                ZoomSelectedView(fajrTime);
+                ZoomSelectedView(fajrIqama);
             } else if (now.after(c1.getTime()) && now.before(c2.getTime())) {
                 nextPray = "dhuhr";
                 if (!isFriday()) {
@@ -1241,12 +1305,14 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 globalVariable.setNextPray("dhuhr");
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t2)));
                 setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (getIqama(t2)));
+                ShowRemainingPrayTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t2)));
 //                iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t2)));
                 duhrTitle.setImageResource(R.drawable.ic_duhr);//ic_duhr_on
+                ZoomSelectedImage(duhrTitle);
                 setIqamaTextColor(duhrIqama);
                 setNoLargeTextSize(duhrIqama);
-//                setTextColor(duhrTitle);
-//                setLargeTextSize(duhrTitle);
+                ZoomSelectedView(duhrIqama);
+                ZoomSelectedView(dhuhrTime);
                 setPrayTextColor(dhuhrTime);
                 setNoLargeTextSize(dhuhrTime);
             } else if (now.after(c2.getTime()) && now.before(c3.getTime())) {
@@ -1256,25 +1322,29 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 spedit.putString("phoneAlert", Utils.setPhoneAlert(icasr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t3)));
                 setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (getIqama(t3)));
+                ShowRemainingPrayTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t3)));
 //                iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t3)));
                 asrTitle.setImageResource(R.drawable.ic_asr);//ic_asr_on
+                ZoomSelectedImage(asrTitle);
                 setIqamaTextColor(asrIqama);
                 setNoLargeTextSize(asrIqama);
                 setPrayTextColor(asrTime);
                 setNoLargeTextSize(asrTime);
-//                setTextColor(asrTitle);
-//                setLargeTextSize(asrTitle);
+                ZoomSelectedView(asrTime);
+                ZoomSelectedView(asrIqama);
             } else if (now.after(c3.getTime()) && now.before(c4.getTime())) {
-                nextPray = "maghrib";
+                nextPray = "magrib";
                 globalVariable.setNextPray("maghrib");
                 spedit.putString("phoneAlert", Utils.setPhoneAlert(icmaghrib, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t4)));
                 setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (getIqama(t4)));
+                ShowRemainingPrayTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t4)));
                 maghribTitle.setImageResource(R.drawable.ic_magrib);//ic_magrib_on
+                ZoomSelectedImage(maghribTitle);
                 setPrayTextColor(maghribTime);
                 setNoLargeTextSize(maghribTime);
-//                setTextColor(maghribTitle);
-//                setLargeTextSize(maghribTitle);
+                ZoomSelectedView(magribIqama);
+                ZoomSelectedView(maghribTime);
                 setIqamaTextColor(magribIqama);
                 setNoLargeTextSize(magribIqama);
             } else if (now.after(c4.getTime()) && now.before(c5.getTime())) {
@@ -1283,21 +1353,26 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 spedit.putString("phoneAlert", Utils.setPhoneAlert(icisha, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t5)));//getIqama(t5)
                 setCustomFontStyle(dayAsString, timeAsString, dayAsString, "" + (getIqama(t5)));
+                ShowRemainingPrayTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t5)));
                 ishaTitle.setImageResource(R.drawable.ic_isha);//ic_isha_on
+                ZoomSelectedImage(ishaTitle);
                 setIqamaTextColor(ishaIqama);
                 setNoLargeTextSize(ishaIqama);
                 setPrayTextColor(ishaTime);
                 setNoLargeTextSize(ishaTime);
-//                setTextColor(ishaTitle);
-//                setLargeTextSize(ishaTitle);
+                ZoomSelectedView(ishaIqama);
+                ZoomSelectedView(ishaTime);
             } else if (now.after(c5.getTime())) {
+                nextPray = "fajr";
                 globalVariable.setNextPray("fajr");
                 spedit.putString("phoneAlert", Utils.setPhoneAlert(icfajr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
                 npt = getDifTime(dayAsString, timeAsString, tomorrowAsString, "" + (getIqama(t1)));
                 setCustomFontStyle(dayAsString, timeAsString, tomorrowAsString, "" + (getIqama(t1)));
-//                setTextColor(fajrTitle);
-//                setLargeTextSize(fajrTitle);
+                ShowRemainingPrayTime(dayAsString, timeAsString, tomorrowAsString, "" + (getIqama(t1)));
+                ZoomSelectedView(fajrTime);
+                ZoomSelectedView(fajrIqama);
                 fajrTitle.setImageResource(R.drawable.ic_fajer);//ic_fajer_co
+                ZoomSelectedImage(fajrTitle);
                 setIqamaTextColor(fajrIqama);
                 setNoLargeTextSize(fajrIqama);
                 setPrayTextColor(fajrTime);
@@ -1336,6 +1411,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 //        amPm.setText(ampm.format(Calendar.getInstance().getTime()));
     }
 
+
     private void playSermon() {
         DBO.open();
         final Khotab khotba = DBO.getKhotba(Utils.getCurrentDate());
@@ -1354,7 +1430,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                         cp.putExtra("khotba", khotba);
                         startActivity(cp);
                         isOpenSermon = true;
-                        Log.i("***voice1", "isOpenSermon: "+isOpenSermon);
+                        Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
 
 //                        new Handler().postDelayed(new Runnable() {
 //                            @Override
@@ -1682,6 +1758,135 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         return calendar;
     }
 
+    private void itIsPrayTime(boolean isFriday, String prayName) {
+        rlIqRemainingT.setVisibility(View.GONE);
+        rlPrayRemainingT.setVisibility(View.GONE);
+        rlIsPrayTime.setVisibility(View.VISIBLE);
+        if (isFriday) {
+            tvIsPrayTime.setText(getString(R.string.isFriday));
+        } else
+            tvIsPrayTime.setText(getString(R.string.isTime) + " " + prayName);
+    }
+
+    private void ShowRemainingIqamaTime(String cdate, String ctime, String tdate, String ttime) {
+        String val = "";
+        String dateStart = cdate + " " + ctime;
+        String dateStop = tdate + " " + ttime;
+
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss", new Locale("en"));
+        Date d1 = null;
+        Date d2 = null;
+        try {
+            d1 = format.parse(dateStart);
+            d2 = format.parse(dateStop);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        long diff = d2.getTime() - d1.getTime();
+        long diffSeconds = diff / 1000 % 60;
+        long diffMinutes = diff / (60 * 1000) % 60;
+        long diffHours = diff / (60 * 60 * 1000) % 24;
+
+        String fh = "";
+        String fs = "" + diffSeconds;
+        String fm = "";
+
+        fh = "" + diffHours;
+        fm = "" + diffMinutes;
+        rlIqRemainingT.setVisibility(View.VISIBLE);
+        rlPrayRemainingT.setVisibility(View.GONE);
+        rlIsPrayTime.setVisibility(View.GONE);
+
+        if (diffHours > 0) {
+            if (diffHours < 10)
+                fh = "0" + fh;
+            tvIqRemaingTime.setText(" " + fh + " ");
+            tvUnit.setText(getString(R.string.h));
+        } else if (diffMinutes > 0) {
+            if (diffMinutes < 10)
+                fm = "0" + fm;
+            tvIqRemaingTime.setText(" " + fm + " ");
+            tvUnit.setText(getString(R.string.m));
+        } else if (diffSeconds > 0) {
+            if (diffSeconds < 10)
+                fs = "0" + fs;
+            tvIqRemaingTime.setText(" " + fs + " ");
+            tvUnit.setText(getString(R.string.s));
+        } else {
+            rlIqRemainingT.setVisibility(View.GONE);
+            rlPrayRemainingT.setVisibility(View.GONE);
+            rlIsPrayTime.setVisibility(View.VISIBLE);
+            if (TextUtils.isEmpty(nextPray)) {
+                tvPrayName.setText(getString(R.string.isPrayTime));
+            } else {
+                if (nextPray.equals("fajr"))
+                    tvPrayName.setText(getString(R.string.isTime) + " " + getString(R.string.pn1));
+                else if (nextPray.equals("dhuhr"))
+                    tvPrayName.setText(getString(R.string.isTime) + " " + getString(R.string.pn3));
+                else if (nextPray.equals("asr"))
+                    tvPrayName.setText(getString(R.string.isTime) + " " + getString(R.string.pn4));
+                else if (nextPray.equals("magrib"))
+                    tvPrayName.setText(getString(R.string.isTime) + " " + getString(R.string.pn5));
+                else if (nextPray.equals("isha"))
+                    tvPrayName.setText(getString(R.string.isTime) + " " + getString(R.string.pn6));
+            }
+        }
+
+    }
+
+    private void ShowRemainingPrayTime(String cdate, String ctime, String tdate, String ttime) {
+        String val = "";
+        String dateStart = cdate + " " + ctime;
+        String dateStop = tdate + " " + ttime;
+
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss", new Locale("en"));
+        Date d1 = null;
+        Date d2 = null;
+        try {
+            d1 = format.parse(dateStart);
+            d2 = format.parse(dateStop);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        long diff = d2.getTime() - d1.getTime();
+        long diffSeconds = diff / 1000 % 60;
+        long diffMinutes = diff / (60 * 1000) % 60;
+        long diffHours = diff / (60 * 60 * 1000) % 24;
+
+        String fh = "";
+        String fs = "" + diffSeconds;
+        String fm = "";
+
+        fh = "" + diffHours;
+        fm = "" + diffMinutes;
+        rlIqRemainingT.setVisibility(View.GONE);
+        rlPrayRemainingT.setVisibility(View.VISIBLE);
+        rlIsPrayTime.setVisibility(View.GONE);
+        if (nextPray.equals("fajr"))
+            tvPrayName.setText(getString(R.string.pn1));
+        else if (nextPray.equals("dhuhr"))
+            tvPrayName.setText(getString(R.string.pn3));
+        else if (nextPray.equals("asr"))
+            tvPrayName.setText(getString(R.string.pn4));
+        else if (nextPray.equals("magrib"))
+            tvPrayName.setText(getString(R.string.pn5));
+        else if (nextPray.equals("isha"))
+            tvPrayName.setText(getString(R.string.pn6));
+
+        if (diffHours < 10)
+            fh = "0" + fh;
+        if (diffMinutes < 10)
+            fm = "0" + fm;
+        if (diffSeconds < 10)
+            fs = "0" + fs;
+        String string = fh + ":" + fm + fs;
+        SpannableString remainingTime = new SpannableString(string);
+        remainingTime.setSpan(new RelativeSizeSpan((0.5f)), 5, 7, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        tvPrayRemaingTime.setText(remainingTime);
+    }
+
     private void setCustomFontStyle(String cdate, String ctime, String tdate, String ttime) {
         String val = "";
         String dateStart = cdate + " " + ctime;
@@ -1710,7 +1915,6 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         fm = "" + diffMinutes;
         llRemainingTime.setVisibility(View.VISIBLE);
         Typeface regular = Typeface.createFromAsset(getAssets(), "fonts/neosansarabic.ttf");
-        Typeface digital = Typeface.createFromAsset(getAssets(), "fonts/digital.ttf");
         time1.setTypeface(digital);
         time2.setTypeface(digital);
         tText1.setTypeface(regular);
@@ -2128,12 +2332,13 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             }
         }, 1000);
     }
+
     public String writeIslamicDate(DateHigri hd) {
         String[] wdNames = {getString(R.string.sun), getString(R.string.mon), getString(R.string.tus), getString(R.string.wes)
                 , getString(R.string.ths), getString(R.string.fri), getString(R.string.sat)};
-        String[] iMonthNames = {"محرم","صفر","ربيع الأول",
+        String[] iMonthNames = {"محرم", "صفر", "ربيع الأول",
                 "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة", "رجب",
-               "شعبان","شعبان", "شوال", "ذو القعدة"
+                "شعبان", "شعبان", "شوال", "ذو القعدة"
                 , " ذو الحجة"};
         String[] MonthNames = {getString(R.string.em1), getString(R.string.em2), getString(R.string.em3),
                 getString(R.string.em4), getString(R.string.em5), getString(R.string.em6), getString(R.string.em7),
@@ -2144,7 +2349,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         double day = today.get(Calendar.DAY_OF_MONTH);
         double month = today.get(Calendar.MONTH);
         double year = today.get(Calendar.YEAR);
-        double[] iDate = hd.kuwaiticalendar(sp.getInt("hijriDiff",0),dayTest);
+        double[] iDate = hd.kuwaiticalendar(sp.getInt("hijriDiff", 0), dayTest);
         // String outputIslamicDate = wdNames[(int) iDate[4]] + " " + (int)day + " " +MonthNames[(int) month] + " " + (int)year + " م " + (int)iDate[5] + " "+ iMonthNames[(int) iDate[6]] + " " + (int)iDate[7] + " هـ ";
         String outputIslamicDate = wdNames[(int) iDate[4]] + " | " + (int) day + " " + MonthNames[(int) month] + " " + (int) year + " | " + (int) iDate[5] + " " + iMonthNames[(int) iDate[6]] + " " +
                 (int) iDate[7] + " " + getString(R.string.mt);
@@ -2190,7 +2395,24 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         asrTitle.setImageResource(R.drawable.ic_asr);
         maghribTitle.setImageResource(R.drawable.ic_magrib);
         ishaTitle.setImageResource(R.drawable.ic_isha);
-
+        setImageSize(fajrTitle);
+        setViewSize(fajrIqama);
+        setViewSize(fajrTime);
+        setImageSize(shroqTitle);
+        setViewSize(sunriseTime);
+        setViewSize(sunriseIqama);
+        setImageSize(duhrTitle);
+        setViewSize(duhrIqama);
+        setViewSize(dhuhrTime);
+        setImageSize(asrTitle);
+        setViewSize(asrTime);
+        setViewSize(asrIqama);
+        setImageSize(maghribTitle);
+        setViewSize(magribIqama);
+        setViewSize(maghribTime);
+        setImageSize(ishaTitle);
+        setViewSize(ishaTime);
+        setViewSize(ishaIqama);
         fajrTitle.setBackgroundColor(0);
 //        fajrTime.setTextColor(Color.parseColor("#674426"));
         fajrTime.setBackgroundResource(0);
@@ -2269,7 +2491,32 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 
     private void setNoLargeTextSize(TextView textView) {
         textView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimension(R.dimen.no_l_font_size));
+                getResources().getDimension(R.dimen.no_l_font_size1));
+    }
+
+    private void setImageSize(ImageView imageView) {
+        imageView.getLayoutParams().height = (int) activity.getResources().getDimension(R.dimen.titleImageHeight);
+    }
+
+    private void setViewSize(TextView textView) {
+        textView.getLayoutParams().height = (int) activity.getResources().getDimension(R.dimen.titleImageHeight);
+    }
+
+    private void ZoomSelectedImage(ImageView imageView) {
+        imageView.getLayoutParams().height = (int) activity.getResources().getDimension(R.dimen.titleImageHeight1);
+    }
+
+    private void ZoomSelectedView(TextView textView) {
+        textView.getLayoutParams().height = (int) activity.getResources().getDimension(R.dimen.titleImageHeight1);
+    }
+
+    private void setIqama(TextView textView) {
+        Calendar c = Calendar.getInstance();
+        DateFormat timeNow = new SimpleDateFormat("hh:mmss", new Locale("en"));
+        String timeText = timeNow.format(c.getTime());
+        SpannableString string = new SpannableString(timeText);
+        string.setSpan(new RelativeSizeSpan((0.5f)), 5, 7, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        tvPrayRemaingTime.setText(string);
     }
 
     private void setTextColor(TextView textView) {
@@ -2443,7 +2690,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 //                Log.i("****", cdhohr);
             }
             gv.setPrayTimes(cfajr, csunrise, cdhohr, casr, cmaghrib, cisha);
-            checkNextPray();
+//            checkNextPray();
         } catch (Exception e) {
             e.printStackTrace();
         }

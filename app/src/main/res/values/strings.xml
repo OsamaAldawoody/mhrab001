@@ -62,6 +62,7 @@
     <string name="em12">ديسمبر</string>
 
     <string name="mt">هـ</string>
+    <string name="mt1">م</string>
 
 
     <string name="p1">صلاة الفجر</string>
@@ -106,9 +107,9 @@
 
     <string name="PM">م </string>
     <string name="AM">ص </string>
-    <string name="h"> س</string>
-    <string name="m">د</string>
-    <string name="s">ث</string>
+    <string name="h"> ساعة</string>
+    <string name="m">دقيقة</string>
+    <string name="s">ثانية</string>
     <string name="percent">نسبي</string>
     <string name="contstant">وقت ثابت</string>
     <string name="det_iqama"> تحديد الإقامة</string>
@@ -163,6 +164,9 @@
     <string name="aser_igama">صلاة العصر </string>
     <string name="magrib_igama">صلاة المغرب </string>
     <string name="isha_igama">صلاة العشاء </string>
+    <string name="isTime">الآن</string>
+    <string name="isPrayTime">وقت الصلاة</string>
+    <string name="isFriday">صلاة الجمعة</string>
 
 
     <string name="m_adv">إعلانات المسجد</string>

@@ -504,7 +504,7 @@ public class SettingsActivity extends Activity {
                     ed_caption.setError("أدخل كلمة المرور للحساب");
                     return;
                 }
-                Log.i("//////////: ",sp.getString("masjedPW", "")+" ll");
+                Log.i("//////////: ", sp.getString("masjedPW", "") + " ll");
                 if (!(ed_caption.getText().toString().trim()).equals(sp.getString("masjedPW", ""))) {
                     ed_caption.setError("كلمة المرور غير صحيحة");
                     return;

@@ -11,67 +11,317 @@
     android:textDirection="rtl"
     tools:context="com.newsolution.almhrab.Activity.ShowAdsActivity">
 
-    <TextView
-        android:id="@+id/dateToday"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="25dp"
-        android:gravity="center"
-        android:text="السبت | 5 ديسمبر 2015 | 24 صفر1437 هـ"
-        android:textColor="@color/white"
-        android:layoutDirection="rtl"
-        android:textSize="16dp" />
 
     <LinearLayout
-        android:id="@+id/clock"
-        android:layout_width="wrap_content"
-        android:layout_height="65dp"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/dateToday">
+        android:id="@+id/llDateTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="25dp"
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/Time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/imageView"
-            android:text="11:25"
-            android:layout_gravity="center_vertical"
-            android:textColor="@color/white"
-            android:textSize="60dp" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="65dp"
+            android:layout_weight="0.5"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/amPm"
+            <TextView
+                android:id="@+id/dateTodayM"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_weight="0.5"
+                android:gravity="bottom|right"
+                android:layoutDirection="rtl"
+                android:text="السبت  5 ديسمبر 2015"
+                android:textColor="@color/white"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/dateTodayH"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_weight="0.5"
+                android:gravity="bottom|right"
+                android:layoutDirection="rtl"
+                android:text="24 صفر1437 هـ"
+                android:textColor="@color/white"
+                android:textSize="15dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/clock"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="5dp"
-            android:text="ص"
-            android:layout_gravity="bottom"
-            android:textColor="@color/white"
-            android:textSize="18dp"
-            android:visibility="visible" />
+            android:layout_height="65dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:gravity="bottom|center_horizontal">
+
+            <TextView
+                android:id="@+id/Time"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/imageView"
+                android:gravity="bottom|center_horizontal"
+                android:text="11:25"
+                android:textColor="@color/white"
+                android:textSize="40dp" />
+
+            <TextView
+                android:id="@+id/amPm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="5dp"
+                android:gravity="center_vertical"
+                android:paddingBottom="10dp"
+                android:text="م"
+                android:textColor="@color/white"
+                android:textSize="14dp"
+                android:visibility="visible" />
+        </LinearLayout>
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/times"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_below="@id/llDateTime"
+        android:layout_gravity="center"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/llFajer"
+            android:layout_width="46dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/fajrTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="الفجر"
+                android:textColor="@color/white"
+                android:textSize="13dp" />
+
+            <TextView
+                android:id="@+id/fajrTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="04:48"
+                android:textColor="@color/white"
+                android:textSize="14dp" />
+
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_margin="1dp"
+            android:background="@drawable/shadow_grey_vertical" />
+
+        <LinearLayout
+            android:id="@+id/llSunrise"
+            android:layout_width="46dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/shroqTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="الشروق"
+                android:textColor="@color/white"
+                android:textSize="13dp" />
+
+            <TextView
+                android:id="@+id/sunriseTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="06:14"
+                android:textColor="@color/white"
+                android:textSize="14dp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_margin="1dp"
+            android:background="@drawable/shadow_grey_vertical" />
+
+        <LinearLayout
+            android:id="@+id/llDuhr"
+            android:layout_width="46dp"
+            android:layout_height="match_parent"
+            android:layout_margin="1dp"
+            android:background="@drawable/active"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/duhrTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:text="الظهر"
+                android:textColor="@color/black"
+                android:textSize="13dp" />
+
+            <TextView
+                android:id="@+id/dhuhrTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="02:48"
+                android:textColor="@color/black"
+                android:textSize="14dp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_margin="1dp"
+            android:background="@drawable/shadow_grey_vertical"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/llAsr"
+            android:layout_width="46dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/asrTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="العصر"
+                android:textColor="@color/white"
+                android:textSize="13dp" />
+
+            <TextView
+                android:id="@+id/asrTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="04:48"
+                android:textColor="@color/white"
+                android:textSize="14dp" />
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_margin="1dp"
+            android:background="@drawable/shadow_grey_vertical"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/llMagrib"
+            android:layout_width="46dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/mgrbTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="المغرب"
+                android:textColor="@color/white"
+                android:textSize="13dp" />
+
+            <TextView
+                android:id="@+id/maghribTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="04:48"
+                android:textColor="@color/white"
+                android:textSize="14dp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_margin="1dp"
+            android:background="@drawable/shadow_grey_vertical" />
+
+        <LinearLayout
+            android:id="@+id/llIsha"
+            android:layout_width="46dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/ishaTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="العشاء"
+                android:textColor="@color/white"
+                android:textSize="13dp" />
+
+            <TextView
+                android:id="@+id/ishaTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="00:00"
+                android:textColor="@color/white"
+                android:textSize="14dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/clock"
+        android:layout_height="70dp"
+        android:layout_below="@+id/times"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
         android:text="لنقرأ فنحن أمة تقرأ"
         android:textColor="@color/white"
-        android:textSize="28dp" />
+        android:textSize="60dp"
+        android:visibility="gone" />
 
     <RelativeLayout
         android:id="@+id/llLive"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/tvName"
-        android:layout_below="@+id/tvTitle"
+        android:layout_below="@+id/times"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="25dp"
@@ -81,9 +331,9 @@
         android:orientation="vertical">
 
         <VideoView
+            android:id="@+id/vvAdsVideo"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/vvAdsVideo"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentLeft="true"
@@ -94,25 +344,25 @@
 
 
         <ImageView
+            android:id="@+id/ivAdsImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/ivAdsImage"
             android:background="#362417"
             android:scaleType="fitXY"
             android:src="@drawable/imam"
             android:visibility="visible" />
+
         <TextView
+            android:id="@+id/tvAdsText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
             android:lineSpacingMultiplier="1.1"
-            android:textSize="24dp"
-            android:id="@+id/tvAdsText"
             android:padding="@dimen/padding"
-            android:visibility="gone"
             android:scrollbars="vertical"
             android:textColor="@color/white"
-            />
+            android:textSize="24dp"
+            android:visibility="gone" />
     </RelativeLayout>
 
     <TextView

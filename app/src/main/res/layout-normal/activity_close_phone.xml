@@ -41,6 +41,7 @@
             android:padding="10dp"
             android:src="@drawable/ic_volume_up_white_24dp"
             android:visibility="gone" />
+
         <LinearLayout
             android:id="@+id/clock"
             android:layout_width="wrap_content"
@@ -215,7 +216,7 @@
                 android:text="السبت | 5 ديسمبر 2015 | 24 صفر1437 هـ"
                 android:textColor="@color/white"
                 android:textDirection="ltr"
-                android:textSize="14dp" />
+                android:textSize="13dp" />
         </LinearLayout>
 
         <View
@@ -224,9 +225,9 @@
             android:layout_height="3dp"
             android:layout_below="@id/day"
             android:layout_gravity="center"
-            android:layout_marginTop="5dp"
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp"
+            android:layout_marginTop="5dp"
             android:background="@drawable/shadow_grey" />
 
         <RelativeLayout
@@ -495,8 +496,7 @@
                         android:gravity="center"
                         android:text="يرجى إغلاق الجوال !"
                         android:textColor="@color/textClose"
-                        android:textSize="25dp"
-                        />
+                        android:textSize="25dp" />
 
                     <TextView
                         android:id="@+id/prev_tet2"
@@ -517,8 +517,7 @@
                         android:gravity="center"
                         android:text="موبائل بند کریں براہ مہربانی!"
                         android:textColor="@color/textClose"
-                        android:textSize="25dp"
-                        />
+                        android:textSize="25dp" />
                 </LinearLayout>
 
                 <View
@@ -526,9 +525,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="3dp"
                     android:layout_below="@id/prev_tet3"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginLeft="50dp"
                     android:layout_marginRight="50dp"
-                    android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/shadow_grey" />
 
@@ -548,23 +547,23 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="2dp"
-                        android:text="إقامة الصلاة بعد"
                         android:gravity="center"
+                        android:text="إقامة الصلاة بعد"
                         android:textColor="@color/backLogo"
                         android:textDirection="rtl"
-                        android:textSize="18dp" />
+                        android:textSize="16dp" />
 
                     <TextView
                         android:id="@+id/t1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
                         android:layout_centerVertical="true"
                         android:layout_toLeftOf="@id/tvIqama"
+                        android:gravity="center"
                         android:text="20"
                         android:textColor="@color/backLogo"
                         android:textDirection="rtl"
-                        android:textSize="25dp" />
+                        android:textSize="30dp" />
                     <!--<LinearLayout-->
                     <!--android:id="@+id/llRemainingTime"-->
                     <!--android:layout_width="wrap_content"-->
@@ -711,9 +710,9 @@
                     android:layout_height="match_parent"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
+                    android:background="@drawable/name_back"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:background="@drawable/name_back"
                     android:visibility="gone">
 
                     <android.support.v7.widget.AppCompatImageView

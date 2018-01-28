@@ -2,8 +2,11 @@
 <resources>
     <dimen name="l_font_size">45dp</dimen>
     <dimen name="font_size">45dp</dimen>
+    <dimen name="smallFont_size">40dp</dimen>
     <!--40dp-->
     <dimen name="no_l_font_size">60dp</dimen>
+    <dimen name="no_l_font_size1">64dp</dimen>
+    <dimen name="pray_font_size">72dp</dimen>
     <dimen name="iqama_font_size">70dp</dimen>
     <!--40dp-->
     <dimen name="no_font_size">30dp</dimen>
@@ -15,5 +18,7 @@
     <dimen name="textSize">18dp</dimen>
     <dimen name="height_media">360dp</dimen>
     <dimen name="padding">20dp</dimen>
+    <dimen name="titleImageHeight">100dp</dimen>
+    <dimen name="titleImageHeight1">125dp</dimen>
 
 </resources>

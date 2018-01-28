@@ -215,7 +215,7 @@
                 android:text="السبت | 5 ديسمبر 2015 | 24 صفر1437 هـ"
                 android:textColor="@color/white"
                 android:textDirection="ltr"
-                android:textSize="14dp" />
+                android:textSize="13dp" />
         </LinearLayout>
 
         <View
@@ -552,7 +552,7 @@
                         android:gravity="center"
                         android:textColor="@color/backLogo"
                         android:textDirection="rtl"
-                        android:textSize="18dp" />
+                        android:textSize="16dp" />
 
                     <TextView
                         android:id="@+id/t1"
@@ -564,7 +564,7 @@
                         android:text="20"
                         android:textColor="@color/backLogo"
                         android:textDirection="rtl"
-                        android:textSize="25dp" />
+                        android:textSize="30dp" />
                     <!--<LinearLayout-->
                     <!--android:id="@+id/llRemainingTime"-->
                     <!--android:layout_width="wrap_content"-->

@@ -1108,7 +1108,6 @@ public class Read extends Activity {
         String[] prayTimes = {cfajr, csunrise, cdhohr, casr, cmaghrib, cisha};
         return prayTimes;
     }
-
     public void getPrayerTimes() {
 //        Toast.makeText(activity,sp.getInt("cityId",1)+"", Toast.LENGTH_SHORT).show();
         Context context;
