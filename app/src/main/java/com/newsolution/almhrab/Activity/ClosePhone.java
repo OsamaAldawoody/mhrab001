@@ -495,7 +495,7 @@ public class ClosePhone extends Activity {
                 setTextColor(fajrTime);
 //                setLargeTextSize(fajrTime);
                 remainTime1.setText(npt);
-                tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "إقامة الصلاة بعد ");
+                tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "المتبقي للإقامة ");
                 iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t11));
                 Log.i("***iqama:", iqamatime + " /");
                 currentPray = "fajr";
@@ -519,7 +519,7 @@ public class ClosePhone extends Activity {
                 Log.i("***iqama:", iqamatime + " / npt: " + npt);
                 if (!isFriday()) {
                     remainTime1.setText(npt);
-                    tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "إقامة الصلاة بعد ");
+                    tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "المتبقي للإقامة ");
                 } else {
                     tvIqama.setText("صلاة الجمعة");
                     remainTime1.setText("");
@@ -544,7 +544,7 @@ public class ClosePhone extends Activity {
                 setTextColor(asrTitle);
 //                setLargeTextSize(asrTitle);
                 remainTime1.setText(npt);
-                tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "إقامة الصلاة بعد ");
+                tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "المتبقي للإقامة ");
                 iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t33));
                 currentPray = "asr";
                 Log.i("***iqama:", iqamatime + " /");
@@ -566,7 +566,7 @@ public class ClosePhone extends Activity {
                 setTextColor(maghribTitle);
 //                setLargeTextSize(maghribTitle);
                 remainTime1.setText(npt);
-                tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "إقامة الصلاة بعد ");
+                tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "المتبقي للإقامة ");
                 Log.i("***iqama:", iqamatime + " /");
                 if (iqamatime.equals("00:00:00")) {
                     tvIqama.setText("حان وقت الصلاة ");
@@ -583,7 +583,7 @@ public class ClosePhone extends Activity {
 //                setLargeTextSize(ishaTime);
                 setTextColor(ishaTitle);
 //                setLargeTextSize(ishaTitle);
-                tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "إقامة الصلاة بعد ");
+                tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "المتبقي للإقامة ");
                 remainTime1.setText(npt);
                 iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t55));
                 currentPray = "isha";
@@ -674,7 +674,7 @@ public class ClosePhone extends Activity {
                 tvIqama.setText(String.format(getString(R.string.isAthanTime), next_adan));
                 remainTime1.setTypeface(digital);
             } else {
-                remainTime1.setTypeface(regular);
+                remainTime1.setTypeface(digital);
                 remainTime1.setText(npt);
                 tvIqama.setText("باقٍ على الأذان ");
             }
@@ -878,16 +878,20 @@ public class ClosePhone extends Activity {
 //        } else {
         fm = "" + diffMinutes;
 //        }
-//        if (diffHours > 0)
-//            val = fh + " " + getString(R.string.h) + " و " + fm + " " + getString(R.string.m);
-//        else if (diffMinutes > 0)
-//            val = fm + " " + getString(R.string.m) + " و " + fs + " " + getString(R.string.s);
-//        else
-        if (diffSeconds > 0) {
+        if (diffHours > 0) {
+            if (diffHours < 10)
+                fh = "0" + fh;
+            val=fh;
+        }   else if (diffMinutes > 0) {
+            if (diffMinutes < 10)
+                fm = "0" + fm;
+            val = fm;
+            if (diffMinutes==1) val = "60";
+        }  else if (diffSeconds > 0) {
           if(diffSeconds<10)
               fs="0"+fs;
             val = fs;// + " " + getString(R.string.s);
-        } else if (diffSeconds == 0) val = "60";
+        } //else if (diffSeconds == 0) val = "60";
         else val = "";
         return val;
     }

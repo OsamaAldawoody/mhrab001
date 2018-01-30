@@ -537,7 +537,7 @@
                     android:text="المتبقي للإقامة"
                     android:textColor="@color/backLogo"
                     android:textDirection="rtl"
-                    android:textSize="45dp" />
+                    android:textSize="40dp" />
 
                 <TextView
                     android:id="@+id/t1"
@@ -546,10 +546,11 @@
                     android:layout_centerVertical="true"
                     android:layout_toLeftOf="@id/tvIqama"
                     android:gravity="center_vertical"
-                    android:text="20"
+                    android:paddingBottom="13dp"
+                    android:text=""
                     android:textColor="@color/white"
                     android:textDirection="rtl"
-                    android:textSize="130dp" />
+                    android:textSize="100dp" />
 
                 <!--<LinearLayout-->
                 <!--android:id="@+id/llRemainingTime"-->

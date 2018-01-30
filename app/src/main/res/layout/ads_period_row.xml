@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:layoutDirection="rtl"
+    android:orientation="vertical"
+    android:textDirection="rtl">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/padding"
+        android:paddingRight="@dimen/padding">
+
+        <TextView
+            android:id="@+id/tittle1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/adsPeriod"
+            android:textColor="@color/black"
+            android:textSize="@dimen/textSize"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/ed_start"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:drawablePadding="5dp"
+                android:drawableRight="@drawable/ic_date_range_black_24dp"
+                android:focusable="false"
+                android:gravity="right|center_vertical"
+                android:hint="من"
+                android:inputType="date"
+                android:padding="@dimen/padding"
+                android:textColor="@color/black_light"
+                android:textColorHint="@color/lb_grey"
+                android:textSize="@dimen/small_font_size" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/ed_end"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:drawablePadding="5dp"
+                android:drawableRight="@drawable/ic_date_range_black_24dp"
+                android:focusable="false"
+                android:gravity="right|center_vertical"
+                android:hint="إلى"
+                android:inputType="date"
+                android:padding="@dimen/padding"
+                android:textColor="@color/black_light"
+                android:textColorHint="@color/lb_grey"
+                android:textSize="@dimen/small_font_size" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tittle2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/padding"
+            android:paddingRight="@dimen/padding"
+            android:text="@string/adsDay"
+            android:textColor="@color/black"
+            android:textSize="@dimen/textSize"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layoutDirection="ltr"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/cbFri"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:button="@null"
+                android:checked="false"
+                android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
+                android:gravity="center"
+                android:text="الجمعة"
+                android:textColor="@color/black"
+                android:textSize="@dimen/small_font_size"
+                android:textStyle="normal|bold" />
+
+            <CheckBox
+                android:id="@+id/cbThu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:button="@null"
+                android:checked="false"
+                android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
+                android:gravity="center"
+                android:text="الخميس"
+                android:textColor="@color/black"
+                android:textSize="@dimen/small_font_size"
+                android:textStyle="normal|bold" />
+
+
+            <CheckBox
+                android:id="@+id/cbWed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:button="@null"
+                android:checked="false"
+                android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
+                android:gravity="center"
+                android:text="الاربعاء"
+                android:textColor="@color/black"
+                android:textSize="@dimen/small_font_size"
+                android:textStyle="normal|bold" />
+
+
+            <CheckBox
+                android:id="@+id/cbTue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:button="@null"
+                android:checked="false"
+                android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
+                android:gravity="center"
+                android:text="الثلاثاء"
+                android:textColor="@color/black"
+                android:textSize="@dimen/small_font_size"
+                android:textStyle="normal|bold" />
+
+
+            <CheckBox
+                android:id="@+id/cbMon"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:button="@null"
+                android:checked="false"
+                android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
+                android:gravity="center"
+                android:text="الاتنين"
+                android:textColor="@color/black"
+                android:textSize="@dimen/small_font_size"
+                android:textStyle="normal|bold" />
+
+
+            <CheckBox
+                android:id="@+id/cbSun"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:button="@null"
+                android:checked="false"
+                android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
+                android:gravity="center"
+                android:text="الاحد"
+                android:textColor="@color/black"
+                android:textSize="@dimen/small_font_size"
+                android:textStyle="normal|bold" />
+
+
+            <CheckBox
+                android:id="@+id/cbSat"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:button="@null"
+                android:checked="false"
+                android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
+                android:gravity="center"
+                android:text="السبت"
+                android:textSize="@dimen/small_font_size"
+                android:textStyle="normal|bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|center_vertical"
+        android:layout_marginLeft="@dimen/padding"
+        android:layout_marginTop="@dimen/padding"
+        android:background="@color/back_text"
+        android:padding="@dimen/smallPadding"
+        android:paddingLeft="@dimen/padding"
+        android:paddingRight="@dimen/padding"
+        android:text="@string/add"
+        android:textColor="@color/white"
+        android:textSize="@dimen/textSize" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/padding"
+        android:background="@color/background_gradient_end" />
+</LinearLayout>

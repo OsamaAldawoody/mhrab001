@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.IdRes;
@@ -20,7 +21,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.AppCompatImageView;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -68,7 +68,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.newsolution.almhrab.AppConstants.Constants.RESULT_LOAD_IMAGE;
 
-public class AddAdsActivity extends AppCompatActivity implements View.OnClickListener, RadioGroup.OnCheckedChangeListener {
+public class EditAdsActivity extends AppCompatActivity implements View.OnClickListener, RadioGroup.OnCheckedChangeListener {
 
     private Activity activity;
     private ImageView ivAdsVideoThumb, ivSelectVideo, ivAdsImg, ivThumb, ivSelectImg, iv_back;
@@ -287,13 +287,6 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
 //                        edAddAppearance.setText(size+"");
                     llAdsPeriods.removeAllViews();
                     tittleA.setVisibility(View.GONE);
-                    for (int i = 0; i < adsList.size(); i++) {
-                        AdsPeriods adsPeriods = null;
-                        Log.i("///*: size ", adsList.size() + "");
-                        tittleA.setVisibility(View.VISIBLE);
-                        adsPeriods = adsList.get(i);
-                        llAdsPeriods.addView(getItem(i, adsPeriods));
-                    }
                 }
 
             }
@@ -497,7 +490,7 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
                             ads.setVideo(selectedVideoPath);
                             ads.setText(edAdsText.getText().toString().trim());
                             ads.setStartDate(ed_start.getText().toString().trim());
-                            ads.setEndDate(ed_end.getText().toString().trim());
+                            ads.setStartDate(ed_end.getText().toString().trim());
                             String msg = "تم إضافة الاعلان";
                             DBO = new DBOperations(activity);
                             if (advId == -1) {
@@ -805,7 +798,7 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
 
     private void selectVideo() {
         try {
-            Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
             intent.setType("video/*");
             startActivityForResult(intent, VIDEO_SELECT);
         } catch (Exception r) {

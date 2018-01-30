@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.newsolution.almhrab.Model.Ads;
+import com.newsolution.almhrab.Model.AdsPeriods;
 import com.newsolution.almhrab.Model.Azkar;
 import com.newsolution.almhrab.Model.City;
 import com.newsolution.almhrab.Model.Khotab;
@@ -510,7 +511,7 @@ public class DBOperations {
         Log.i("Khotab", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("Khotab", "" + cursor.getCount());
-        if (cursor.getCount() > 0&& cursor.moveToFirst()) {
+        if (cursor.getCount() > 0 && cursor.moveToFirst()) {
             do {
                 object.setId(cursor.getInt(cursor.getColumnIndex("Id")));
                 object.setTitle(cursor.getString(cursor.getColumnIndex("Title")));
@@ -718,14 +719,13 @@ public class DBOperations {
         return isExist;
     }
 
-    public void insertAds(Ads object) {
+    public int insertAds(Ads object) {
+        long rowId=0;
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         db.enableWriteAheadLogging();
         db.beginTransaction();
         int count = 0;
-//        db.delete("Advertisement", "", null);
         ContentValues values = new ContentValues();
-
 //        values.put("id", object.getId());
         values.put("MasjedID", object.getMasjedID());
         values.put("Type", object.getType());
@@ -733,22 +733,50 @@ public class DBOperations {
         values.put("Text", object.getText());
         values.put("Image", object.getImage());
         values.put("Video", object.getVideo());
-        values.put("StartTime", object.getStartTime());
-        values.put("EndTime", object.getEndTime());
-        values.put("Saturday", object.isSaturday() ? 1 : 0);
-        values.put("Sunday", object.isSunday() ? 1 : 0);
-        values.put("Monday", object.isMonday() ? 1 : 0);
-        values.put("Tuesday", object.isTuesday() ? 1 : 0);
-        values.put("Wednesday", object.isWednesday() ? 1 : 0);
-        values.put("Thursday", object.isThursday() ? 1 : 0);
-        values.put("Friday", object.isFriday() ? 1 : 0);
+        values.put("StartDate", object.getStartDate());
+        values.put("EndDate", object.getEndDate());
 
-        db.insert("Advertisement", null, values);
+         rowId=db.insert("Advertisement", null, values);
         Log.d("Sync service", "# of set inserted in Advertisement: " + count);
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
+        return (int)rowId;
+    }
+    public void insertAdsPeriod(ArrayList<AdsPeriods> a) {
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        db.enableWriteAheadLogging();
+        db.beginTransaction();
+//        if (a!=null)
+//            db.delete("azkar","",null);
+        int count = 0;
+        int len = a.size();
+        //Delete services
+        for (int i = 0; i < len; i++) {
+            AdsPeriods current = a.get(i);
+            AddAdsPeriod(db, current);
+                count++;
+
+        }
+        Log.d("Sync service", "# of New Azkar inserted : " + count);
 
         db.setTransactionSuccessful();
         db.endTransaction();
         db.close();
+    }
+
+    public boolean AddAdsPeriod(SQLiteDatabase db, AdsPeriods object) {
+        ContentValues values = new ContentValues();
+        values.put("AdvId", object.getAdvId());
+        values.put("StartTime", object.getStartTime());
+        values.put("EndTime", object.getEndTime());
+        values.put("day", object.getDay());
+        values.put("StartDate", object.getStartDate() );
+        values.put("EndDate", object.getEndDate() );
+        //db.insert("Service_Provider", null, values);
+        long rowid = db.insert("AdsPeriods", null, values);
+        // db.close();
+        return rowid != -1;
     }
 
     public Ads getAds(int masjedID) {
@@ -766,15 +794,29 @@ public class DBOperations {
                 object.setText(cursor.getString(cursor.getColumnIndex("Text")));
                 object.setImage(cursor.getString(cursor.getColumnIndex("Image")));
                 object.setVideo(cursor.getString(cursor.getColumnIndex("Video")));
+                object.setStartDate(cursor.getString(cursor.getColumnIndex("StartDate")));
+                object.setEndDate(cursor.getString(cursor.getColumnIndex("EndDate")));
+            } while (cursor.moveToNext());
+        } else object = null;
+        return object;
+    }
+
+    public AdsPeriods getAdvPeriods(int advId) {
+        AdsPeriods object = new AdsPeriods();
+        String selectQuery = "SELECT * FROM AdsPeriods WHERE AdvId=" + advId + " LIMIT 1";
+        Log.i("Quert", selectQuery);
+        Cursor cursor = mDb.rawQuery(selectQuery, null);
+        Log.i("Qu dataBase", "" + cursor.getCount());
+        if (cursor.moveToFirst()) {
+            do {
+                object.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                object.setAdvId(cursor.getInt(cursor.getColumnIndex("AdvId")));
                 object.setStartTime(cursor.getString(cursor.getColumnIndex("StartTime")));
                 object.setEndTime(cursor.getString(cursor.getColumnIndex("EndTime")));
-                object.setSaturday(cursor.getInt(cursor.getColumnIndex("Saturday")) == 1 ? true : false);
-                object.setSunday(cursor.getInt(cursor.getColumnIndex("Sunday")) == 1 ? true : false);
-                object.setMonday(cursor.getInt(cursor.getColumnIndex("Monday")) == 1 ? true : false);
-                object.setTuesday(cursor.getInt(cursor.getColumnIndex("Tuesday")) == 1 ? true : false);
-                object.setWednesday(cursor.getInt(cursor.getColumnIndex("Wednesday")) == 1 ? true : false);
-                object.setThursday(cursor.getInt(cursor.getColumnIndex("Thursday")) == 1 ? true : false);
-                object.setFriday(cursor.getInt(cursor.getColumnIndex("Friday")) == 1 ? true : false);
+                object.setStartDate(cursor.getString(cursor.getColumnIndex("StartDate")));
+                object.setEndDate(cursor.getString(cursor.getColumnIndex("EndDate")));
+                object.setDay(cursor.getInt(cursor.getColumnIndex("day")));
+
             } while (cursor.moveToNext());
         } else object = null;
         return object;
@@ -797,15 +839,8 @@ public class DBOperations {
                 object.setText(cursor.getString(cursor.getColumnIndex("Text")));
                 object.setImage(cursor.getString(cursor.getColumnIndex("Image")));
                 object.setVideo(cursor.getString(cursor.getColumnIndex("Video")));
-                object.setStartTime(cursor.getString(cursor.getColumnIndex("StartTime")));
-                object.setEndTime(cursor.getString(cursor.getColumnIndex("EndTime")));
-                object.setSaturday(cursor.getInt(cursor.getColumnIndex("Saturday")) == 1 ? true : false);
-                object.setSunday(cursor.getInt(cursor.getColumnIndex("Sunday")) == 1 ? true : false);
-                object.setMonday(cursor.getInt(cursor.getColumnIndex("Monday")) == 1 ? true : false);
-                object.setTuesday(cursor.getInt(cursor.getColumnIndex("Tuesday")) == 1 ? true : false);
-                object.setWednesday(cursor.getInt(cursor.getColumnIndex("Wednesday")) == 1 ? true : false);
-                object.setThursday(cursor.getInt(cursor.getColumnIndex("Thursday")) == 1 ? true : false);
-                object.setFriday(cursor.getInt(cursor.getColumnIndex("Friday")) == 1 ? true : false);
+                object.setStartDate(cursor.getString(cursor.getColumnIndex("StartTime")));
+                object.setEndDate(cursor.getString(cursor.getColumnIndex("EndTime")));
                 adses.add(object);
             } while (cursor.moveToNext());
         }
@@ -828,16 +863,9 @@ public class DBOperations {
                 object.setText(cursor.getString(cursor.getColumnIndex("Text")));
                 object.setImage(cursor.getString(cursor.getColumnIndex("Image")));
                 object.setVideo(cursor.getString(cursor.getColumnIndex("Video")));
-                object.setStartTime(cursor.getString(cursor.getColumnIndex("StartTime")));
-                object.setEndTime(cursor.getString(cursor.getColumnIndex("EndTime")));
-                object.setSaturday(cursor.getInt(cursor.getColumnIndex("Saturday")) == 1 ? true : false);
-                object.setSunday(cursor.getInt(cursor.getColumnIndex("Sunday")) == 1 ? true : false);
-                object.setMonday(cursor.getInt(cursor.getColumnIndex("Monday")) == 1 ? true : false);
-                object.setTuesday(cursor.getInt(cursor.getColumnIndex("Tuesday")) == 1 ? true : false);
-                object.setWednesday(cursor.getInt(cursor.getColumnIndex("Wednesday")) == 1 ? true : false);
-                object.setThursday(cursor.getInt(cursor.getColumnIndex("Thursday")) == 1 ? true : false);
-                object.setFriday(cursor.getInt(cursor.getColumnIndex("Friday")) == 1 ? true : false);
-                Log.i("Qu dataBase", "" + object.getStartTime());
+                object.setStartDate(cursor.getString(cursor.getColumnIndex("StartDate")));
+                object.setEndDate(cursor.getString(cursor.getColumnIndex("EndDate")));
+                Log.i("Qu dataBase", "" + object.getStartDate());
                 adsList.add(object);
             } while (cursor.moveToNext());
         }
@@ -845,60 +873,128 @@ public class DBOperations {
         return adsList;
     }
 
-    public ArrayList<Ads> getAdsListByDay(int masjedID, Ads ads) {
-        ArrayList<Ads> adsList = new ArrayList<>();
+    //    public ArrayList<Ads> getAdsListByDay(int masjedID, Ads ads) {
+//        ArrayList<Ads> adsList = new ArrayList<>();
+//// MasjedID=" + masjedID + " AND
+//        String selectQuery = "SELECT * FROM Advertisement WHERE ";
+//        if (ads.isSaturday())
+//            selectQuery = selectQuery + " Saturday=1 OR";
+//        if (ads.isSunday())
+//            selectQuery = selectQuery + " Sunday=1 OR";
+//        if (ads.isMonday())
+//            selectQuery = selectQuery + "  Monday=1 OR";
+//        if (ads.isTuesday())
+//            selectQuery = selectQuery + "  Tuesday=1 OR";
+//        if (ads.isWednesday())
+//            selectQuery = selectQuery + "  Wednesday=1 OR";
+//        if (ads.isThursday())
+//            selectQuery = selectQuery + "  Thursday=1 OR";
+//        if (ads.isFriday())
+//            selectQuery = selectQuery + "  Friday=1";
+//        if (selectQuery.endsWith("OR"))
+//            selectQuery = selectQuery.substring(0, selectQuery.length() - 2);
+//        Log.i("Quert", selectQuery);
+//        Cursor cursor = mDb.rawQuery(selectQuery, null);
+//        Log.i("Qu dataBase", "" + cursor.getCount());
+//        if (cursor.moveToFirst()) {
+//            do {
+//                Ads object = new Ads();
+//                object.setId(cursor.getInt(cursor.getColumnIndex("id")));
+//                object.setMasjedID(cursor.getInt(cursor.getColumnIndex("MasjedID")));
+//                object.setType(cursor.getInt(cursor.getColumnIndex("Type")));
+//                object.setTitle(cursor.getString(cursor.getColumnIndex("Title")));
+//                object.setText(cursor.getString(cursor.getColumnIndex("Text")));
+//                object.setImage(cursor.getString(cursor.getColumnIndex("Image")));
+//                object.setVideo(cursor.getString(cursor.getColumnIndex("Video")));
+//                object.setStartTime(cursor.getString(cursor.getColumnIndex("StartTime")));
+//                object.setEndTime(cursor.getString(cursor.getColumnIndex("EndTime")));
+//                object.setSaturday(cursor.getInt(cursor.getColumnIndex("Saturday")) == 1 ? true : false);
+//                object.setSunday(cursor.getInt(cursor.getColumnIndex("Sunday")) == 1 ? true : false);
+//                object.setMonday(cursor.getInt(cursor.getColumnIndex("Monday")) == 1 ? true : false);
+//                object.setTuesday(cursor.getInt(cursor.getColumnIndex("Tuesday")) == 1 ? true : false);
+//                object.setWednesday(cursor.getInt(cursor.getColumnIndex("Wednesday")) == 1 ? true : false);
+//                object.setThursday(cursor.getInt(cursor.getColumnIndex("Thursday")) == 1 ? true : false);
+//                object.setFriday(cursor.getInt(cursor.getColumnIndex("Friday")) == 1 ? true : false);
+//                adsList.add(object);
+//                Log.i("Qu dataBase", "" + object.getTitle() + " :" + object.isSaturday() + ":" + object.isSunday() + ": " + object.isMonday() +
+//                        ":" + object.isTuesday() + " :" + object.isWednesday() + ":" + object.isThursday() + ":" + object.isFriday());
+//            } while (cursor.moveToNext());
+//        }
+//        return adsList;
+//    }
+    public ArrayList<AdsPeriods> getAdsListByDay(int masjedId, AdsPeriods ads) {
+        ArrayList<AdsPeriods> adsList = new ArrayList<>();
 // MasjedID=" + masjedID + " AND
-        String selectQuery = "SELECT * FROM Advertisement WHERE ";
-        if (ads.isSaturday())
-            selectQuery = selectQuery + " Saturday=1 OR";
-        if (ads.isSunday())
-            selectQuery = selectQuery + " Sunday=1 OR";
-        if (ads.isMonday())
-            selectQuery = selectQuery + "  Monday=1 OR";
-        if (ads.isTuesday())
-            selectQuery = selectQuery + "  Tuesday=1 OR";
-        if (ads.isWednesday())
-            selectQuery = selectQuery + "  Wednesday=1 OR";
-        if (ads.isThursday())
-            selectQuery = selectQuery + "  Thursday=1 OR";
-        if (ads.isFriday())
-            selectQuery = selectQuery + "  Friday=1";
-        if (selectQuery.endsWith("OR"))
-            selectQuery = selectQuery.substring(0, selectQuery.length() - 2);
+        String selectQuery = "select * from Advertisement left join" +
+                "AdsPeriods on Advertisement.id =AdsPeriods.AdvId" +
+                " where Advertisement.MasjedID=" + masjedId +
+                " and (('" + ads.getStartDate() + "' between AdsPeriods.StartDate and AdsPeriods.EndDate )" +
+                "  or( '" + ads.getEndDate() + "' between AdsPeriods.StartDate and AdsPeriods.EndDate) )" +
+                " and AdsPeriods.day =" + ads.getDay() +
+                " and  (('" + ads.getStartTime() + "' between AdsPeriods.StartTime and AdsPeriods.EndTime ) " +
+                " or( '" + ads.getEndTime() + "' between AdsPeriods.StartTime and AdsPeriods.EndTime) )";
+
         Log.i("Quert", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("Qu dataBase", "" + cursor.getCount());
-        if (cursor.moveToFirst()) {
+        if (cursor.getCount() > 0 && cursor.moveToFirst()) {
             do {
-                Ads object = new Ads();
+                AdsPeriods object = new AdsPeriods();
                 object.setId(cursor.getInt(cursor.getColumnIndex("id")));
-                object.setMasjedID(cursor.getInt(cursor.getColumnIndex("MasjedID")));
-                object.setType(cursor.getInt(cursor.getColumnIndex("Type")));
-                object.setTitle(cursor.getString(cursor.getColumnIndex("Title")));
-                object.setText(cursor.getString(cursor.getColumnIndex("Text")));
-                object.setImage(cursor.getString(cursor.getColumnIndex("Image")));
-                object.setVideo(cursor.getString(cursor.getColumnIndex("Video")));
+                object.setAdvId(cursor.getInt(cursor.getColumnIndex("AdvId")));
+                object.setDay(cursor.getInt(cursor.getColumnIndex("day")));
                 object.setStartTime(cursor.getString(cursor.getColumnIndex("StartTime")));
                 object.setEndTime(cursor.getString(cursor.getColumnIndex("EndTime")));
-                object.setSaturday(cursor.getInt(cursor.getColumnIndex("Saturday")) == 1 ? true : false);
-                object.setSunday(cursor.getInt(cursor.getColumnIndex("Sunday")) == 1 ? true : false);
-                object.setMonday(cursor.getInt(cursor.getColumnIndex("Monday")) == 1 ? true : false);
-                object.setTuesday(cursor.getInt(cursor.getColumnIndex("Tuesday")) == 1 ? true : false);
-                object.setWednesday(cursor.getInt(cursor.getColumnIndex("Wednesday")) == 1 ? true : false);
-                object.setThursday(cursor.getInt(cursor.getColumnIndex("Thursday")) == 1 ? true : false);
-                object.setFriday(cursor.getInt(cursor.getColumnIndex("Friday")) == 1 ? true : false);
                 adsList.add(object);
-                Log.i("Qu dataBase", "" + object.getTitle() + " :" + object.isSaturday() + ":" + object.isSunday() + ": " + object.isMonday() +
-                        ":" + object.isTuesday() + " :" + object.isWednesday() + ":" + object.isThursday() + ":" + object.isFriday());
+                Log.i("Qu dataBase", "" + object.getAdvId() + " : " + object.getDay());
             } while (cursor.moveToNext());
         }
         return adsList;
+    }
+    public boolean itHasConflict(int masjedId, AdsPeriods ads) {
+        boolean hasConflict = false;
+     String startDate=ads.getStartDate();
+     String endDate=ads.getEndDate();
+     String startTime=ads.getStartTime();
+     String endTime=ads.getEndTime();
+     int day=ads.getDay();
+
+        String selectQuery =" select * from Advertisement left join  AdsPeriods on\n" +
+                " (Advertisement.id = AdsPeriods.AdvId) where Advertisement.MasjedID="+masjedId+" and (\n" +
+                " (strftime('%Y-%m-%d', AdsPeriods.StartDate)  between  strftime('%Y-%m-%d','"+startDate+"')  and strftime('%Y-%m-%d','"+endDate+"')) \n" +
+                "or ( strftime('%Y-%m-%d', AdsPeriods.EndDate)  between  strftime('%Y-%m-%d','"+startDate+"')  and strftime('%Y-%m-%d','"+endDate+"')) \n" +
+                " or (strftime('%Y-%m-%d','"+startDate+"') between strftime('%Y-%m-%d', AdsPeriods.StartDate) and strftime('%Y-%m-%d', AdsPeriods.EndDate) ) \n" +
+                " or( strftime('%Y-%m-%d','"+endDate+"') between strftime('%Y-%m-%d', AdsPeriods.StartDate) and strftime('%Y-%m-%d', AdsPeriods.EndDate))\n" +
+                " ) and  (AdsPeriods.day ="+day+") and ( (strftime('%H:%M', AdsPeriods.StartTime) between  strftime('%H:%M','"+startTime+"') " +
+                " and  strftime('%H:%M','"+endTime+"') )\n" +
+                " or(  strftime('%H:%M', AdsPeriods.EndTime)  between  strftime('%H:%M','"+startTime+"')  and  strftime('%H:%M','"+endTime+"'))\n" +
+                " or ( strftime('%H:%M','"+startTime+"') between strftime('%H:%M', AdsPeriods.StartTime) and strftime('%H:%M', AdsPeriods.EndTime))\n" +
+                " or (  strftime('%H:%M','"+endTime+"') between strftime('%H:%M', AdsPeriods.StartTime) and strftime('%H:%M', AdsPeriods.EndTime))\n" +
+                " )";
+        Log.i("Quert", selectQuery);
+        Cursor cursor = mDb.rawQuery(selectQuery, null);
+        Log.i("Qu dataBase", "" + cursor.getCount());
+        if (cursor.getCount() > 0 && cursor.moveToFirst()) {
+            do {
+                AdsPeriods object = new AdsPeriods();
+                object.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                object.setAdvId(cursor.getInt(cursor.getColumnIndex("AdvId")));
+                object.setDay(cursor.getInt(cursor.getColumnIndex("day")));
+                object.setStartTime(cursor.getString(cursor.getColumnIndex("StartTime")));
+                object.setEndTime(cursor.getString(cursor.getColumnIndex("EndTime")));
+                hasConflict = true;
+                Log.i("Qu dataBase", "" + object.getAdvId() + " : " + object.getDay());
+            } while (cursor.moveToNext());
+        }
+        return hasConflict;
     }
 
     public void delAdvertisement(int id, int MasjedID) {
         Log.d("DBOperations", "table profile data eraser");
         // open();
         mDb.execSQL("DELETE  FROM Advertisement where id=" + id + " AND MasjedID=" + MasjedID + "");
+        mDb.execSQL("DELETE  FROM AdsPeriods where AdvId=" + id + "");
+
         Log.i("DBOperations", "DELETE  FROM Advertisement where id=" + id + " AND MasjedID=" + MasjedID + "");
 
     }

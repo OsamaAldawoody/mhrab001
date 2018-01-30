@@ -2254,7 +2254,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     }
 
     private void checkAds() {
-        SimpleDateFormat df = new SimpleDateFormat("HH:mm", new Locale("en"));
+     /*   SimpleDateFormat df = new SimpleDateFormat("HH:mm", new Locale("en"));
         Date date = new Date();
         String currentTime = df.format(date);
         DBO.open();
@@ -2296,6 +2296,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             }
         };
         AdsHandler.postDelayed(adsRunnable, 1000);
+  */
     }
 
     private void openAds() {

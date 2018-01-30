@@ -157,6 +157,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeAct" />
         <activity
+            android:name=".Activity.EditAdsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeAct" />
+        <activity
             android:name=".Activity.AddAdsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeAct" />

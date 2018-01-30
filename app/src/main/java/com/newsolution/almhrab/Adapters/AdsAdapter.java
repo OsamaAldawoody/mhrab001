@@ -59,23 +59,23 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.AdsViewHolder> {
     public void onBindViewHolder(final AdsViewHolder holder, final int i) {
         Ads ads = adsList.get(i);
         String days = "";
-        if (ads.isSaturday())
-            days = days + "السبت ";
-        if (ads.isSunday())
-            days = days + " الأحد ";
-        if (ads.isMonday())
-            days = days + " الاثنين ";
-        if (ads.isTuesday())
-            days = days + " الثلاثاء ";
-        if (ads.isWednesday())
-            days = days + " الأربعاء ";
-        if (ads.isThursday())
-            days = days + " الخميس ";
-        if (ads.isFriday())
-            days = days + " الجمعة ";
+//        if (ads.isSaturday())
+//            days = days + "السبت ";
+//        if (ads.isSunday())
+//            days = days + " الأحد ";
+//        if (ads.isMonday())
+//            days = days + " الاثنين ";
+//        if (ads.isTuesday())
+//            days = days + " الثلاثاء ";
+//        if (ads.isWednesday())
+//            days = days + " الأربعاء ";
+//        if (ads.isThursday())
+//            days = days + " الخميس ";
+//        if (ads.isFriday())
+//            days = days + " الجمعة ";
         holder.tv_adsDays.setText(days);
         holder.tv_adsText.setText(ads.getTitle());
-        holder.tv_adsPeriod.setText("من "+ads.getStartTime() + " إلى " + ads.getEndTime());
+        holder.tv_adsPeriod.setText("من "+ads.getStartDate() + " إلى " + ads.getEndDate());
         holder.iv_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

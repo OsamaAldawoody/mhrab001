@@ -218,7 +218,7 @@
             android:text="السبت | 5 ديسمبر 2015 | 24 صفر1437 هـ"
             android:textColor="@color/white"
             android:textDirection="ltr"
-            android:textSize="30dp" />
+            android:textSize="28dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -533,9 +533,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="4dp"
-                        android:paddingTop="3dp"
                         android:layout_toLeftOf="@+id/tvIqamaR"
                         android:gravity="center"
+                        android:paddingTop="8dp"
                         android:text="20"
                         android:textColor="@color/white"
                         android:textSize="@dimen/pray_font_size" />
@@ -571,7 +571,7 @@
                         android:text="المتبقي لأذان"
                         android:textAlignment="center"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/smallFont_size" />
+                        android:textSize="30dp" />
 
                     <TextView
                         android:id="@+id/tvPrayName"

@@ -233,9 +233,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical"
-                android:padding="@dimen/padding">
+                android:paddingLeft="@dimen/padding"
+                android:paddingRight="@dimen/padding">
 
                 <TextView
                     android:id="@+id/tittle1"
@@ -292,134 +293,89 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:orientation="vertical">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/padding"
+                android:paddingRight="@dimen/padding">
 
                 <TextView
-                    android:id="@+id/tittle2"
-                    android:layout_width="match_parent"
+                    android:id="@+id/tittleAppearance"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/padding"
-                    android:text="@string/adsDay"
-                    android:paddingRight="@dimen/padding"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="0.6"
+                    android:text="@string/adsAppearance"
                     android:textColor="@color/black"
                     android:textSize="@dimen/textSize"
                     android:visibility="visible" />
-                <LinearLayout
-                    android:layout_width="match_parent"
+
+                <RelativeLayout
+                    android:id="@+id/layout"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layoutDirection="ltr"
-                    android:orientation="horizontal">
-                        <CheckBox
-                            android:id="@+id/cbFri"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_margin="1dp"
-                            android:button="@null"
-                            android:checked="false"
-                            android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
-                            android:gravity="center"
-                            android:text="الجمعة"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/small_font_size"
-                            android:textStyle="normal|bold" />
-                        <CheckBox
-                            android:id="@+id/cbThu"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:button="@null"
-                            android:checked="false"
-                            android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
-                            android:layout_margin="1dp"
-                            android:gravity="center"
-                            android:text="الخميس"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/small_font_size"
-                            android:textStyle="normal|bold" />
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="0.4">
 
 
-                        <CheckBox
-                            android:id="@+id/cbWed"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:button="@null"
-                            android:checked="false"
-                            android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
-                            android:gravity="center"
-                            android:text="الاربعاء"
-                            android:textColor="@color/black"
-                            android:layout_margin="1dp"
-                            android:textSize="@dimen/small_font_size"
-                            android:textStyle="normal|bold" />
+                    <EditText
+                        android:id="@+id/edAddAppearance"
+                        android:layout_width="@dimen/viewWidth"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:focusable="true"
+                        android:gravity="right|center_vertical"
+                        android:hint="عدد المرات"
+                        android:text="0"
+                        android:inputType="number"
+                        android:padding="@dimen/smallPadding"
+                        android:textColor="@color/black_light"
+                        android:textColorHint="@color/lb_grey"
+                        android:textSize="@dimen/small_font_size" />
 
 
-                        <CheckBox
-                            android:id="@+id/cbTue"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:button="@null"
-                            android:checked="false"
-                            android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
-                            android:gravity="center"
-                            android:text="الثلاثاء"
-                            android:textColor="@color/black"
-                            android:layout_margin="1dp"
-                            android:textSize="@dimen/small_font_size"
-                            android:textStyle="normal|bold" />
+                    <android.support.v7.widget.AppCompatImageView
+                        android:id="@+id/up"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                       android:visibility="gone"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="2dp"
+                        android:layout_toLeftOf="@+id/edAddAppearance"
+                        app:srcCompat="@drawable/ic_keyboard_arrow_up" />
 
+                    <android.support.v7.widget.AppCompatImageView
+                        android:id="@+id/down"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="5dp"
+                        android:visibility="gone"
+                        android:layout_toLeftOf="@+id/up"
+                        app:srcCompat="@drawable/ic_keyboard_arrow_down" />
+                </RelativeLayout>
 
-                        <CheckBox
-                            android:id="@+id/cbMon"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:button="@null"
-                            android:checked="false"
-                            android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
-                            android:gravity="center"
-                            android:text="الاتنين"
-                            android:textColor="@color/black"
-                            android:layout_margin="1dp"
-                            android:textSize="@dimen/small_font_size"
-                            android:textStyle="normal|bold" />
-
-
-                        <CheckBox
-                            android:id="@+id/cbSun"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:button="@null"
-                            android:checked="false"
-                            android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
-                            android:gravity="center"
-                            android:text="الاحد"
-                            android:layout_margin="1dp"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/small_font_size"
-                            android:textStyle="normal|bold" />
-
-
-                        <CheckBox
-                            android:id="@+id/cbSat"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:button="@null"
-                            android:checked="false"
-                            android:layout_margin="1dp"
-                            android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
-                            android:gravity="center"
-                            android:text="السبت"
-                            android:textSize="@dimen/small_font_size"
-                            android:textStyle="normal|bold" />
-                </LinearLayout>
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/tittleA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/padding"
+                android:paddingRight="@dimen/padding"
+                android:text="@string/adsTime"
+                android:textColor="@color/black"
+                android:textSize="@dimen/textSize"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/llAdsPeriods"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical">
+
+            </LinearLayout>
+
 
             <View
                 android:layout_width="match_parent"

@@ -39,7 +39,7 @@
                 android:layoutDirection="rtl"
                 android:text="السبت  5 ديسمبر 2015"
                 android:textColor="@color/white"
-                android:textSize="30dp" />
+                android:textSize="32dp" />
 
             <TextView
                 android:id="@+id/dateTodayH"
@@ -51,13 +51,13 @@
                 android:layoutDirection="rtl"
                 android:text="24 صفر1437 هـ"
                 android:textColor="@color/white"
-                android:textSize="30dp" />
+                android:textSize="32dp" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/clock"
             android:layout_width="wrap_content"
-            android:layout_height="130dp"
+            android:layout_height="128dp"
             android:layout_gravity="bottom|center_horizontal"
             android:gravity="bottom|center_horizontal">
 
@@ -101,9 +101,9 @@
 
         <LinearLayout
             android:id="@+id/llFajer"
-            android:layout_width="110dp"
+            android:layout_width="105dp"
             android:layout_height="wrap_content"
-            android:layout_margin="2dp"
+            android:layout_margin="1dp"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -113,7 +113,7 @@
                 android:layout_height="wrap_content"
                 android:text="الفجر"
                 android:textColor="@color/white"
-                android:textSize="28dp" />
+                android:textSize="26dp" />
 
             <TextView
                 android:id="@+id/fajrTime"
@@ -128,14 +128,14 @@
         <View
             android:layout_width="2dp"
             android:layout_height="match_parent"
-            android:layout_margin="2dp"
+            android:layout_margin="1dp"
             android:background="@drawable/shadow_grey_vertical" />
 
         <LinearLayout
             android:id="@+id/llSunrise"
-            android:layout_width="110dp"
+            android:layout_width="105dp"
             android:layout_height="wrap_content"
-            android:layout_margin="2dp"
+            android:layout_margin="1dp"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -145,7 +145,7 @@
                 android:layout_height="wrap_content"
                 android:text="الشروق"
                 android:textColor="@color/white"
-                android:textSize="28dp" />
+                android:textSize="26dp" />
 
             <TextView
                 android:id="@+id/sunriseTime"
@@ -159,14 +159,14 @@
         <View
             android:layout_width="2dp"
             android:layout_height="match_parent"
-            android:layout_margin="2dp"
+            android:layout_margin="1dp"
             android:background="@drawable/shadow_grey_vertical" />
 
         <LinearLayout
             android:id="@+id/llDuhr"
-            android:layout_width="110dp"
+            android:layout_width="105dp"
             android:layout_height="match_parent"
-            android:layout_margin="2dp"
+            android:layout_margin="1dp"
             android:background="@drawable/active"
             android:gravity="center"
             android:orientation="vertical">
@@ -177,7 +177,7 @@
                 android:layout_height="wrap_content"
                 android:text="الظهر"
                 android:textColor="@color/black"
-                android:textSize="28dp" />
+                android:textSize="26dp" />
 
             <TextView
                 android:id="@+id/dhuhrTime"
@@ -191,15 +191,15 @@
         <View
             android:layout_width="2dp"
             android:layout_height="match_parent"
-            android:layout_margin="2dp"
+            android:layout_margin="1dp"
             android:background="@drawable/shadow_grey_vertical"
             android:visibility="visible" />
 
         <LinearLayout
             android:id="@+id/llAsr"
-            android:layout_width="110dp"
+            android:layout_width="105dp"
             android:layout_height="wrap_content"
-            android:layout_margin="2dp"
+            android:layout_margin="1dp"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -209,7 +209,7 @@
                 android:layout_height="wrap_content"
                 android:text="العصر"
                 android:textColor="@color/white"
-                android:textSize="28dp" />
+                android:textSize="26dp" />
 
             <TextView
                 android:id="@+id/asrTime"
@@ -223,14 +223,14 @@
         <View
             android:layout_width="2dp"
             android:layout_height="match_parent"
-            android:layout_margin="2dp"
+            android:layout_margin="1dp"
             android:background="@drawable/shadow_grey_vertical" />
 
         <LinearLayout
             android:id="@+id/llMagrib"
-            android:layout_width="110dp"
+            android:layout_width="105dp"
             android:layout_height="wrap_content"
-            android:layout_margin="2dp"
+            android:layout_margin="1dp"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -240,7 +240,7 @@
                 android:layout_height="wrap_content"
                 android:text="المغرب"
                 android:textColor="@color/white"
-                android:textSize="28dp" />
+                android:textSize="26dp" />
 
             <TextView
                 android:id="@+id/maghribTime"
@@ -254,14 +254,14 @@
         <View
             android:layout_width="2dp"
             android:layout_height="match_parent"
-            android:layout_margin="2dp"
+            android:layout_margin="1dp"
             android:background="@drawable/shadow_grey_vertical" />
 
         <LinearLayout
             android:id="@+id/llIsha"
-            android:layout_width="110dp"
+            android:layout_width="105dp"
             android:layout_height="wrap_content"
-            android:layout_margin="2dp"
+            android:layout_margin="1dp"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -271,7 +271,7 @@
                 android:layout_height="wrap_content"
                 android:text="العشاء"
                 android:textColor="@color/white"
-                android:textSize="28dp" />
+                android:textSize="26dp" />
 
             <TextView
                 android:id="@+id/ishaTime"
@@ -350,7 +350,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:layout_marginBottom="35dp"
+        android:layout_marginBottom="40dp"
         android:background="@drawable/name_back"
         android:ellipsize="end"
         android:gravity="center"

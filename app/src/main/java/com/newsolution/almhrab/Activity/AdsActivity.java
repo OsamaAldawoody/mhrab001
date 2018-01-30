@@ -120,7 +120,8 @@ public class AdsActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(View view, int position) {
-                showAds(list.get(position));
+                editAds(list.get(position));
+//                showAds(list.get(position));
             }
         });
         rv_ads.setAdapter(adsAdapter);
@@ -134,6 +135,12 @@ public class AdsActivity extends AppCompatActivity {
         startActivity(intent);
 //        Utils.showCustomToast(activity, "click");
 
+    }
+
+    private void editAds(Ads ads) {
+        Intent intent = new Intent(activity, EditAdsActivity.class);
+        intent.putExtra("ads", ads);
+        startActivity(intent);
     }
 
     private void deleteAds(final int position) {

@@ -14,9 +14,11 @@
     <dimen name="height">70dp</dimen>
     <dimen name="height_media">400dp</dimen>
     <dimen name="padding">30dp</dimen>
+    <dimen name="smallPadding">15dp</dimen>
     <dimen name="textSize">20dp</dimen>
     <dimen name="titleImageHeight">100dp</dimen>
     <dimen name="titleImageHeight1">130dp</dimen>
     <dimen name="titleImageHeight2">130dp</dimen>
+    <dimen name="viewWidth">130dp</dimen>
 
 </resources>
