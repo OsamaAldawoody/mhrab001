@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -20,6 +21,7 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.text.Editable;
@@ -44,6 +46,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.util.Util;
 import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.DBOperations;
 import com.newsolution.almhrab.Helpar.Utils;
@@ -59,9 +62,12 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -93,15 +99,18 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
     private boolean isConflict = false;
     private boolean isConflictAds = false;
     private Button btnCheck;
+    ArrayList<Boolean> conflictList = new ArrayList<>();
     ArrayList<Integer> checkList = new ArrayList<>();
     ArrayList<AdsPeriods> adsPeriodsList = new ArrayList<>();
     ArrayList<AdsPeriods> adsList = new ArrayList<>();
     //    ArrayList<Ads> adsList = new ArrayList<>();
     ArrayList<String> prayerTimes = new ArrayList<>();
-    private int advId = -1;
+    private int advId;
     int items = 0;
     int count = 0;
     private AppCompatImageView down, up;
+    private Ads adv;
+    private String advText, title, endDate, startDate;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -117,8 +126,37 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
                 .build());
         activity = this;
         setColor();
-        setContentView(R.layout.activity_add_ads);
+        setContentView(R.layout.activity_edit_ads);
         DBO = new DBOperations(activity);
+        adv = (Ads) getIntent().getSerializableExtra("ads");
+        advId = adv.getId();
+        DBO.open();
+        ArrayList<AdsPeriods> list = DBO.getAdvPeriods(adv.getId());
+        DBO.close();
+        int size = list.size();
+        String day = "";
+        String ids = "";
+        Log.i("//list size: ", size + "");
+        for (int i = 0; i < size; i++) {
+            DBO.open();
+            AdsPeriods periods = list.get(i);
+            periods.setAdvId(adv.getId());
+            day = DBO.getAdvPeriods(adv.getId(), periods.getStartTime(), periods.getEndTime());
+            ids = DBO.getAdvPeriodsIds(adv.getId(), periods.getStartTime(), periods.getEndTime());
+            DBO.close();
+            AdsPeriods newAdsPeriod = new AdsPeriods(periods.getAdvId(), periods.getStartTime(), periods.getEndTime(),
+                    periods.getStartDate(), periods.getEndDate(), day, ids, true);
+            Log.i("//list day int: ", day + " : ids: " + ids);
+            if (!isContain(adsList, newAdsPeriod)) adsList.add(newAdsPeriod);
+        }
+        Log.i("//list Size: ", adsList.size() + "");
+        List<String> al = new ArrayList<>();
+// add elements to al, including duplicates
+//        Set<AdsPeriods> hs = new HashSet<>();
+//        hs.addAll(adsList);
+//        adsList.clear();
+//        adsList.addAll(hs);
+        Log.i("//list Size after set: ", adsList.size() + "");
         sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
         askForPermissions(new String[]{
                         android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -154,15 +192,8 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
         ed_start = (EditText) findViewById(R.id.ed_start);
         ed_end = (EditText) findViewById(R.id.ed_end);
         tvSave = (TextView) findViewById(R.id.tvSave);
-        tvSave.setVisibility(View.GONE);
+        tvSave.setVisibility(View.VISIBLE);
         tittleA = (TextView) findViewById(R.id.tittleA);
-//        cbSat = (CheckBox) findViewById(R.id.cbSat);
-//        cbSun = (CheckBox) findViewById(R.id.cbSun);
-//        cbMon = (CheckBox) findViewById(R.id.cbMon);
-//        cbTue = (CheckBox) findViewById(R.id.cbTue);
-//        cbWed = (CheckBox) findViewById(R.id.cbWed);
-//        cbThu = (CheckBox) findViewById(R.id.cbThu);
-//        cbFri = (CheckBox) findViewById(R.id.cbFri);
 
         iv_back.setOnClickListener(this);
         ivSelectImg.setOnClickListener(this);
@@ -170,6 +201,89 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
         ivAdsVideoThumb.setOnClickListener(this);
         tvSave.setOnClickListener(this);
         rgAdsType.setOnCheckedChangeListener(this);
+
+        edAddAppearance.setText(adsList.size() + "");
+        llAdsPeriods.removeAllViews();
+        tittleA.setVisibility(View.VISIBLE);
+        for (int i = 0; i < adsList.size(); i++) {
+            checkList.add(i);
+        }
+        if (size < checkList.size()) {
+            size = checkList.size();
+            edAddAppearance.setText(size + "");
+        }
+        size = Integer.parseInt(edAddAppearance.getText().toString().trim());
+        if (size > 0) {
+            llAdsPeriods.removeAllViews();
+            for (int i = 0; i < size; i++) {
+                AdsPeriods adsPeriods = null;
+                Log.i("///*: size ", adsList.size() + "");
+                if (i < adsList.size()) {
+                    adsPeriods = adsList.get(i);
+                    llAdsPeriods.addView(getItem(i, adsPeriods));
+                } else
+                    llAdsPeriods.addView(getItem(i, null));
+            }
+        } else {
+            llAdsPeriods.removeAllViews();
+            tittleA.setVisibility(View.GONE);
+            for (int i = 0; i < adsList.size(); i++) {
+                AdsPeriods adsPeriods = null;
+                Log.i("///*: size ", adsList.size() + "");
+                tittleA.setVisibility(View.VISIBLE);
+                adsPeriods = adsList.get(i);
+                llAdsPeriods.addView(getItem(i, adsPeriods));
+            }
+        }
+        endDate = adv.getEndDate();
+        startDate = adv.getStartDate();
+        advText = adv.getText();
+        title = adv.getTitle();
+        type = adv.getType();
+        selectedImagePath = adv.getImage();
+        selectedVideoPath = adv.getVideo();
+        ed_end.setText(endDate);
+        ed_start.setText(startDate);
+        edAdsText.setText(advText);
+        edAdsTitle.setText(title);
+        if (type == 1) {
+            videoData = null;
+            selectedVideoPath = "";
+            edAdsText.setText("");
+            rbImage.setChecked(true);
+            File f = new File(selectedImagePath);
+            Bitmap bmp = BitmapFactory.decodeFile(f.getAbsolutePath());
+            ivAdsImg.setImageBitmap(bmp);
+            Glide.with(activity).load(f).into(ivAdsImg);
+        } else if (type == 2) {
+            selectedImage = null;
+            selectedImagePath = "";
+            edAdsText.setText("");
+            rbVideo.setChecked(true);
+            videoData = Uri.parse(selectedVideoPath);
+            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(selectedVideoPath
+                    , MediaStore.Video.Thumbnails.MINI_KIND);
+            System.out.println(">>>> bitmap " + bitmap);
+            if (bitmap == null)
+                return;
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream); //compress to which format you want.
+            byte[] byte_arr = stream.toByteArray();
+            image_str = Base64.encodeToString(byte_arr, 0);
+            ivAdsVideoThumb.setImageBitmap(bitmap);
+            ivThumb.setVisibility(View.VISIBLE);
+        } else if (type == 3) {
+            rbText.setChecked(true);
+            selectedImage = null;
+            selectedImagePath = "";
+            videoData = null;
+            selectedVideoPath = "";
+            edAdsText.setText(advText);
+            rlImage.setVisibility(View.GONE);
+            rlVideo.setVisibility(View.GONE);
+            rlText.setVisibility(View.VISIBLE);
+        }
+
         ed_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -233,7 +347,7 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void afterTextChanged(Editable editable) {
 //                checkList.clear();
-                tvSave.setVisibility(View.GONE);
+//                tvSave.setVisibility(View.GONE);
                 if (!TextUtils.isEmpty(edAddAppearance.getText().toString().trim())) {
                     int size = Integer.parseInt(edAddAppearance.getText().toString().trim());
                     llAdsPeriods.removeAllViews();
@@ -250,8 +364,8 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
                             if (i < adsList.size()) {
                                 adsPeriods = adsList.get(i);
                                 llAdsPeriods.addView(getItem(i, adsPeriods));
-                            }else
-                            llAdsPeriods.addView(getItem(i, null));
+                            } else
+                                llAdsPeriods.addView(getItem(i, null));
                         }
                     } else {
                         llAdsPeriods.removeAllViews();
@@ -261,27 +375,9 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
                             Log.i("///*: size ", adsList.size() + "");
                             tittleA.setVisibility(View.VISIBLE);
                             adsPeriods = adsList.get(i);
-                                llAdsPeriods.addView(getItem(i, adsPeriods));
+                            llAdsPeriods.addView(getItem(i, adsPeriods));
                         }
                     }
-//                    items = llAdsPeriods.getChildCount();
-//                    if (size < items) {
-//                        if (size < checkList.size()) {
-//                            Utils.showCustomToast(activity, "تم إضافة فترة الاعلان مسبقا لا تستطيع حذف الفترة ");
-//                        } else {
-//                            Utils.showCustomToast(activity, "تجاهل اضافة في باقي الفترات ");
-//                            //remove
-////                            for (int x=0;x<items;x++){
-////                                if (!checkList.contains(x))
-////                                 if (llAdsPeriods.getChildAt(x)!=null)
-////                                     llAdsPeriods.removeViewAt(x);//.removeViewAt(x);
-////                            }
-//                        }
-//                    } else {
-//                        for (int i = items; i < size; i++) {
-//                            llAdsPeriods.addView(getItem(i));
-//                        }
-//                    }
                 } else {
 //                        int size = checkList.size();
 //                        edAddAppearance.setText(size+"");
@@ -305,6 +401,8 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
         CheckBox cbTh = (CheckBox) ll.findViewById(R.id.cbThu);
         CheckBox cbFr = (CheckBox) ll.findViewById(R.id.cbFri);
         Button btnCheck = (Button) ll.findViewById(R.id.btnCheck);
+        Button btnDelete = (Button) ll.findViewById(R.id.btnDelete);
+        Button btnUpdate = (Button) ll.findViewById(R.id.btnUpdate);
         if (adsPeriods != null) {
             if (adsPeriods.getDays().contains("1"))
                 cbSa.setChecked(true);
@@ -320,20 +418,19 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
                 cbTh.setChecked(true);
             if (adsPeriods.getDays().contains("7"))
                 cbFr.setChecked(true);
-            cbSa.setEnabled(false);
-            cbSu.setEnabled(false);
-            cbMo.setEnabled(false);
-            cbTu.setEnabled(false);
-            cbWe.setEnabled(false);
-            cbTh.setEnabled(false);
-            cbFr.setEnabled(false);
             ed_startTime.setText(adsPeriods.getStartTime());
             ed_endTime.setText(adsPeriods.getEndTime());
-            ed_endTime.setEnabled(false);
-            ed_startTime.setEnabled(false);
+//            btnCheck.setText(getString(R.string.edit));
             btnCheck.setVisibility(View.GONE);
-
+            btnUpdate.setVisibility(View.VISIBLE);
+            btnDelete.setVisibility(View.VISIBLE);
+        } else {
+//            btnCheck.setText(getString(R.string.add));
+            btnCheck.setVisibility(View.VISIBLE);
+            btnUpdate.setVisibility(View.GONE);
+            btnDelete.setVisibility(View.GONE);
         }
+
         ed_startTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -347,6 +444,32 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
                 Utils.hideSoftKeyboard(activity);
 //                showDateTimePicker(ed_endTime);
                 showDateTimePicker((EditText) ((llAdsPeriods.getChildAt(pos)).findViewById(R.id.ed_end)));
+            }
+        });
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (adsList.size() == 1) {
+                    deleteAds();
+                } else {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(activity).setTitle(getString(R.string.confirm_delete))
+                            .setMessage(getString(R.string.tv_delMsg))
+                            .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    deletePeriods(pos, adsList.get(pos));
+                                    dialogInterface.dismiss();
+                                }
+                            }).setNegativeButton(getString(R.string.cancel_delete), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                }
+                            }).setCancelable(false);
+                    AlertDialog dialog = alert.create();
+                    dialog.show();
+                    dialog.setCanceledOnTouchOutside(false);
+                }
             }
         });
         btnCheck.setOnClickListener(new View.OnClickListener() {
@@ -364,6 +487,8 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
                 cbThu = (CheckBox) v.findViewById(R.id.cbThu);
                 cbFri = (CheckBox) v.findViewById(R.id.cbFri);
                 Button btn = (Button) v.findViewById(R.id.btnCheck);
+                Button btnUp = (Button) v.findViewById(R.id.btnUpdate);
+                Button btnD = (Button) v.findViewById(R.id.btnDelete);
                 isConflictAds = false;
                 edAdsTitle.setError(null);
                 edAdsText.setError(null);
@@ -372,28 +497,48 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
                 edStartTime.setError(null);
                 edEndTime.setError(null);
                 if (TextUtils.isEmpty(edAdsTitle.getText().toString().toString())) {
-                    edAdsTitle.setError(getString(R.string.required));
-                    return;
+                    if (TextUtils.isEmpty(adv.getTitle())) {
+                        edAdsTitle.setError(getString(R.string.required));
+                        return;
+                    } else edAdsTitle.setText(adv.getTitle());
                 }
                 if (type == 1 && selectedImage == null) {
-                    Utils.showCustomToast(activity, "يجب اختيار صورة للإعلان");
-                    return;
+                    if (TextUtils.isEmpty(adv.getImage())) {
+                        Utils.showCustomToast(activity, "يجب اختيار صورة للإعلان");
+                        return;
+                    }
+                    selectedImagePath = adv.getImage();
+
                 }
                 if (type == 2 && videoData == null) {
-                    Utils.showCustomToast(activity, "يجب اختيار فيديو للإعلان");
-                    return;
+                    if (TextUtils.isEmpty(adv.getVideo())) {
+                        Utils.showCustomToast(activity, "يجب اختيار فيديو للإعلان");
+                        return;
+                    }
+                    selectedVideoPath = adv.getVideo();
                 }
                 if (type == 3 && TextUtils.isEmpty(edAdsText.getText().toString().toString())) {
-                    edAdsText.setError("يجب إدخال نص للإعلان");
-                    Utils.showCustomToast(activity, "يجب إدخال نص للإعلان");
-                    return;
+                    if (TextUtils.isEmpty(adv.getText())) {
+                        Utils.showCustomToast(activity, "يجب إدخال نص للإعلان");
+                        return;
+                    }
+                    edAdsText.setText(adv.getText());
                 }
                 if (TextUtils.isEmpty(ed_start.getText().toString())) {
-                    ed_start.setError("أدخل تاريخ بداية ظهورالإعلان");
+                    if (TextUtils.isEmpty(adv.getStartDate())) {
+                        ed_start.setError("أدخل تاريخ بداية ظهورالإعلان");
+                        return;
+                    }
+                    ed_start.setText(adv.getStartDate());
+
                 }
                 if (TextUtils.isEmpty(ed_end.getText().toString())) {
-                    ed_end.setError("أدخل تاريخ نهاية ظهورالإعلان");
-                    return;
+                    if (TextUtils.isEmpty(adv.getStartDate())) {
+                        ed_end.setError("أدخل تاريخ نهاية ظهورالإعلان");
+                        return;
+                    }
+                    ed_end.setText(adv.getEndDate());
+
                 }
                 if (!Utils.compareDate(ed_start.getText().toString(), ed_end.getText().toString())) {
                     Utils.showCustomToast(activity, getString(R.string.error_date));
@@ -449,7 +594,7 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
                 String days = "";
 
                 for (int x = 0; x < dayList.size(); x++) {
-                    days = dayList.get(x) + ","+days;
+                    days = dayList.get(x) + "," + days;
                     adsPeriods.setDay(dayList.get(x));
 //                    adsPeriodsList.add(adsPeriods);
                     DBO.open();
@@ -483,6 +628,7 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
                                 selectedVideoPath = "";
                             }
                             Ads ads = new Ads();
+                            ads.setId(adv.getId());
                             ads.setMasjedID(sp.getInt("masjedId", -1));
                             ads.setTitle(edAdsTitle.getText().toString().trim());
                             ads.setType(type);
@@ -490,12 +636,11 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
                             ads.setVideo(selectedVideoPath);
                             ads.setText(edAdsText.getText().toString().trim());
                             ads.setStartDate(ed_start.getText().toString().trim());
-                            ads.setStartDate(ed_end.getText().toString().trim());
+                            ads.setEndDate(ed_end.getText().toString().trim());
                             String msg = "تم إضافة الاعلان";
-                            DBO = new DBOperations(activity);
-                            if (advId == -1) {
-                                advId = DBO.insertAds(ads);
-                            }
+//                            if (advId == -1) {
+                            DBO.updateAds(ads);
+//                            }
                             if (advId != -1) {
                                 if (count == 0) {
                                     msg = "تم إضافة الاعلان";
@@ -504,40 +649,24 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
                                     msg = "تم إضافة الفترة إلى  الإعلان";
 
                                 for (int i = 0; i < adsPeriodsList.size(); i++) {
-                                    AdsPeriods advPeriod = adsPeriodsList.get(i);
-                                    advPeriod.setAdvId(advId);
-                                    advPeriod.setAdded(true);
+                                    adsPeriodsList.get(i).setAdvId(advId);
+                                    adsPeriodsList.get(i).setAdded(true);
                                 }
                                 DBO.insertAdsPeriod(adsPeriodsList);
                                 adsPeriods.setDays(days);
-                                adsList.add(new AdsPeriods(adsPeriods.getAdvId(), adsPeriods.getStartTime(), adsPeriods.getEndTime(),
-                                        adsPeriods.getStartDate(), adsPeriods.getEndDate(), adsPeriods.getDays(), true));
+                                DBO.open();
+                                String AdsDay = DBO.getAdvPeriods(advId, adsPeriods.getStartTime(), adsPeriods.getEndTime());
+                                String AdsIds = DBO.getAdvPeriodsIds(advId, adsPeriods.getStartTime(), adsPeriods.getEndTime());
+                                DBO.close();
 
+                                adsList.add(new AdsPeriods(adv.getId(), adsPeriods.getStartTime(), adsPeriods.getEndTime(),
+                                        adsPeriods.getStartDate(), adsPeriods.getEndDate(), adsPeriods.getDays(), AdsIds, true));
                                 btn.setVisibility(View.GONE);
-                                checkList.add(pos);
-//                                down.setEnabled(false);
-//                                down.setClickable(false);
-                                ed_start.setEnabled(false);
-                                ed_end.setEnabled(false);
-                                rbImage.setEnabled(false);
-                                rbText.setEnabled(false);
-                                rbVideo.setEnabled(false);
-                                edAdsText.setEnabled(false);
-                                edAdsTitle.setEnabled(false);
-                                ivSelectImg.setClickable(false);
-                                ivSelectVideo.setClickable(false);
-                                cbSat.setEnabled(false);
-                                cbSun.setEnabled(false);
-                                cbMon.setEnabled(false);
-                                cbTue.setEnabled(false);
-                                cbWed.setEnabled(false);
-                                cbThu.setEnabled(false);
-                                cbFri.setEnabled(false);
-                                edEndTime.setEnabled(false);
-                                edStartTime.setEnabled(false);
+                                btnUp.setVisibility(View.VISIBLE);
+                                btnD.setVisibility(View.VISIBLE);
                                 Utils.showCustomToast(activity, msg);
                             } else {
-                                Utils.showCustomToast(activity, "لم يتم إضافة الإعلان " + advId);
+                                Utils.showCustomToast(activity, "لم يتم إضافة الإعلان ");
                             }
 
 
@@ -548,8 +677,378 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
                 }
             }
         });
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                adsPeriodsList.clear();
+//                AdsPeriods adsPeriods = adsList.get(pos);
+                final View v = llAdsPeriods.getChildAt(pos);
+                EditText edStartTime = ((EditText) (v.findViewById(R.id.ed_start)));
+                EditText edEndTime = ((EditText) (v.findViewById(R.id.ed_end)));
+                cbSat = (CheckBox) v.findViewById(R.id.cbSat);
+                cbSun = (CheckBox) v.findViewById(R.id.cbSun);
+                cbMon = (CheckBox) v.findViewById(R.id.cbMon);
+                cbTue = (CheckBox) v.findViewById(R.id.cbTue);
+                cbWed = (CheckBox) v.findViewById(R.id.cbWed);
+                cbThu = (CheckBox) v.findViewById(R.id.cbThu);
+                cbFri = (CheckBox) v.findViewById(R.id.cbFri);
+                Button btn = (Button) v.findViewById(R.id.btnCheck);
+                Button btnUp = (Button) v.findViewById(R.id.btnUpdate);
+                Button btnD = (Button) v.findViewById(R.id.btnDelete);
+                isConflictAds = false;
+                edAdsTitle.setError(null);
+                edAdsText.setError(null);
+                ed_start.setError(null);
+                ed_end.setError(null);
+                edStartTime.setError(null);
+                edEndTime.setError(null);
+                if (!ed_end.getText().toString().equals(adv.getEndDate()) || !ed_start.getText().toString().equals(adv.getStartDate())) {
+                    if (check(pos)) {
+                        Utils.showCustomToast(activity, "يوجد تعارض مع إعلانات أخرى ");
+                        return;
+                    }
+                }
+                getAdsList();
+                if (TextUtils.isEmpty(edAdsTitle.getText().toString().toString())) {
+                    if (TextUtils.isEmpty(adv.getTitle())) {
+                        edAdsTitle.setError(getString(R.string.required));
+                        return;
+                    } else edAdsTitle.setText(adv.getTitle());
+                }
+                if (type == 1 && selectedImage == null) {
+                    if (TextUtils.isEmpty(adv.getImage())) {
+                        Utils.showCustomToast(activity, "يجب اختيار صورة للإعلان");
+                        return;
+                    }
+                    selectedImagePath = adv.getImage();
+
+                }
+                if (type == 2 && videoData == null) {
+                    if (TextUtils.isEmpty(adv.getVideo())) {
+                        Utils.showCustomToast(activity, "يجب اختيار فيديو للإعلان");
+                        return;
+                    }
+                    selectedVideoPath = adv.getVideo();
+                }
+                if (type == 3 && TextUtils.isEmpty(edAdsText.getText().toString().toString())) {
+                    if (TextUtils.isEmpty(adv.getText())) {
+                        Utils.showCustomToast(activity, "يجب إدخال نص للإعلان");
+                        return;
+                    }
+                    edAdsText.setText(adv.getText());
+                }
+                if (TextUtils.isEmpty(ed_start.getText().toString())) {
+                    if (TextUtils.isEmpty(adv.getStartDate())) {
+                        ed_start.setError("أدخل تاريخ بداية ظهورالإعلان");
+                        return;
+                    }
+                    ed_start.setText(adv.getStartDate());
+
+                }
+                if (TextUtils.isEmpty(ed_end.getText().toString())) {
+                    if (TextUtils.isEmpty(adv.getStartDate())) {
+                        ed_end.setError("أدخل تاريخ نهاية ظهورالإعلان");
+                        return;
+                    }
+                    ed_end.setText(adv.getEndDate());
+
+                }
+                if (!Utils.compareDate(ed_start.getText().toString(), ed_end.getText().toString())) {
+                    Utils.showCustomToast(activity, getString(R.string.error_date));
+                    ed_end.setError(getString(R.string.error_date));
+                    return;
+                }
+                if (TextUtils.isEmpty(edStartTime.getText().toString())) {
+                    edStartTime.setError("أدخل وقت بداية ظهورالإعلان");
+                }
+                if (TextUtils.isEmpty(edEndTime.getText().toString())) {
+                    edEndTime.setError("أدخل وقت نهاية ظهورالإعلان");
+                    return;
+                }
+                if (!Utils.compareTimes(edStartTime.getText().toString(), edEndTime.getText().toString())) {
+                    Utils.showCustomToast(activity, getString(R.string.error_time));
+                    edEndTime.setError(getString(R.string.error_time));
+                    return;
+                }
+                if (!cbSat.isChecked() && !cbSun.isChecked() && !cbMon.isChecked() && !cbTue.isChecked() && !cbWed.isChecked()
+                        && !cbThu.isChecked() && !cbFri.isChecked()) {
+                    Utils.showCustomToast(activity, "يجب إدخال أيام ظهور الإعلان");
+                    return;
+                }
+                Log.i("/////: ", edStartTime.getText().toString().trim());
+//                adsPeriods.setStartTime(edStartTime.getText().toString().trim());
+//                adsPeriods.setEndTime(edEndTime.getText().toString().trim());
+//                adsPeriods.setStartDate(ed_start.getText().toString().trim());
+//                adsPeriods.setEndDate(ed_end.getText().toString().trim());
+                List<Integer> dayList = new ArrayList<>();
+                dayList.clear();
+                if (cbSat.isChecked()) {
+                    dayList.add(1);
+                }
+                if (cbSun.isChecked()) {
+                    dayList.add(2);
+                }
+                if (cbMon.isChecked()) {
+                    dayList.add(3);
+                }
+                if (cbTue.isChecked()) {
+                    dayList.add(4);
+                }
+                if (cbWed.isChecked()) {
+                    dayList.add(5);
+                }
+                if (cbThu.isChecked()) {
+                    dayList.add(6);
+                }
+                if (cbFri.isChecked()) {
+                    dayList.add(7);
+                }
+                String days = "";
+
+                for (int x = 0; x < dayList.size(); x++) {
+                    days = dayList.get(x) + "," + days;
+                    AdsPeriods adsPeriods = new AdsPeriods();
+                    adsPeriods.setStartTime(edStartTime.getText().toString().trim());
+                    adsPeriods.setEndTime(edEndTime.getText().toString().trim());
+                    adsPeriods.setStartDate(ed_start.getText().toString().trim());
+                    adsPeriods.setEndDate(ed_end.getText().toString().trim());
+                    adsPeriods.setAdvId(adv.getId());
+                    adsPeriods.setDay(dayList.get(x));
+//                    adsPeriodsList.add(adsPeriods);
+                    boolean hasConflict = false;
+//                    List<String> arrayList = new ArrayList<String>
+//                            (Arrays.asList(adsList.get(pos).getPeriodsId().split(",")));
+//                    List<Integer> idsList = new ArrayList<Integer>();
+//                    for(String ids:arrayList){
+//                        idsList.add(Integer.parseInt(ids.trim()));
+//
+////                        if (hasConflict)break;
+//                    }
+                    DBO.open();
+                    hasConflict = DBO.itHasConflict(sp.getInt("masjedId", -1), adsPeriods
+                            , adsList.get(pos));
+                    DBO.close();
+                    if (hasConflict) {
+                        isConflictAds = true;
+                        Utils.showCustomToast(activity, "يوجد تعارض في الوقت مع إعلان آخر");
+                        break;
+                    }
+                    if (inPrayPeriod(prayerTimes, adsPeriods)) {
+                        Utils.showCustomToast(activity, "يوجد تعارض مع مواعيد الصلاة");
+                        break;
+                    }
+                    adsPeriodsList.add(adsPeriods);
+                    if (x == dayList.size() - 1) {
+                        if (!isConflictAds) {
+                            int repeatNo = Integer.parseInt(edAddAppearance.getText().toString().trim());
+                            if (type == 1) {
+                                videoData = null;
+                                selectedVideoPath = "";
+                                edAdsText.setText("");
+                            } else if (type == 2) {
+                                selectedImage = null;
+                                selectedImagePath = "";
+                                edAdsText.setText("");
+                            } else if (type == 3) {
+                                selectedImage = null;
+                                selectedImagePath = "";
+                                videoData = null;
+                                selectedVideoPath = "";
+                            }
+                            Ads ads = new Ads();
+                            ads.setId(adv.getId());
+                            ads.setMasjedID(sp.getInt("masjedId", -1));
+                            ads.setTitle(edAdsTitle.getText().toString().trim());
+                            ads.setType(type);
+                            ads.setImage(selectedImagePath);
+                            ads.setVideo(selectedVideoPath);
+                            ads.setText(edAdsText.getText().toString().trim());
+                            ads.setStartDate(ed_start.getText().toString().trim());
+                            ads.setEndDate(ed_end.getText().toString().trim());
+                            String msg = "تم تعديل فترة الاعلان";
+//                            if (advId == -1) {
+                            DBO.updateAds(ads);
+//                            }
+//                            if (advId != -1) {
+                            if (count == 0) {
+                                msg = "تم تعديل فترة الاعلان";
+                                count++;
+                            } else
+                                msg = "تم تعديل فترة الاعلان";
+
+                            for (int i = 0; i < adsPeriodsList.size(); i++) {
+                                adsPeriodsList.get(i).setAdvId(advId);
+                                adsPeriodsList.get(i).setAdded(true);
+                            }
+                            DBO.open();
+                            DBO.delAdvPeriod(adv.getId(), adsList.get(pos));
+                            DBO.close();
+
+                            DBO.insertAdsPeriod(adsPeriodsList);
+                            adsPeriods.setDays(days);
+                            getAdsList();
+//                            DBO.open();
+//                            String AdsDay = DBO.getAdvPeriods(advId, adsPeriods.getStartTime(), adsPeriods.getEndTime());
+//                            String AdsIds = DBO.getAdvPeriodsIds(advId, adsPeriods.getStartTime(), adsPeriods.getEndTime());
+//                            DBO.close();
+//
+//                            adsList.add(new AdsPeriods(adv.getId(), adsPeriods.getStartTime(), adsPeriods.getEndTime(),
+//                                    adsPeriods.getStartDate(), adsPeriods.getEndDate(), adsPeriods.getDays(), AdsIds, true));
+                            btn.setVisibility(View.GONE);
+                            btnUp.setVisibility(View.VISIBLE);
+                            btnD.setVisibility(View.VISIBLE);
+                            Utils.showCustomToast(activity, msg);
+//                            } else {
+//                                Utils.showCustomToast(activity, "لم يتم تعديل فترة الإعلان ");
+//                            }
+
+
+//                            if (checkList.size() >= repeatNo)
+//                                tvSave.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            }
+        });
+
         return ll;
     }
+
+    private boolean check(int pos) {
+        getAdsList();
+        if (adsList.size() >= 0) adsList.remove(pos);
+//                DBO.open();
+//                ArrayList<AdsPeriods> list = DBO.getAdvPeriods(adv.getId());
+//                DBO.close();
+        Log.i("//list size: ", "" + adsList.size());
+        for (int i = 0; i < adsList.size(); i++) {
+            AdsPeriods adsPeriods = adsList.get(i);
+//                    adsPeriodsList.clear();
+            isConflictAds = false;
+            String edStartTime = adsPeriods.getStartTime();
+            String edEndTime = adsPeriods.getEndTime();
+            int day = adsPeriods.getDay();
+            String days = adsPeriods.getDays();
+            AdsPeriods advPeriod = new AdsPeriods();
+            Log.i("/////: ", edStartTime + " : " + edEndTime);
+            advPeriod.setAdvId(adv.getId());
+            advPeriod.setStartTime(edStartTime);
+            advPeriod.setEndTime(edEndTime);
+            advPeriod.setStartDate(ed_start.getText().toString().trim());
+            advPeriod.setEndDate(ed_end.getText().toString().trim());
+            advPeriod.setDays(days);
+            List<Integer> dayList = new ArrayList<>();
+            dayList.clear();
+            if (adsPeriods.getDays().contains("1")) {
+                dayList.add(1);
+            }
+            if (adsPeriods.getDays().contains("2")) {
+                dayList.add(2);
+            }
+            if (adsPeriods.getDays().contains("3")) {
+                dayList.add(3);
+            }
+            if (adsPeriods.getDays().contains("4")) {
+                dayList.add(4);
+            }
+            if (adsPeriods.getDays().contains("5")) {
+                dayList.add(5);
+            }
+            if (adsPeriods.getDays().contains("6")) {
+                dayList.add(6);
+            }
+            if (adsPeriods.getDays().contains("7")) {
+                dayList.add(7);
+            }
+//                    String days = "";
+
+            for (int x = 0; x < dayList.size(); x++) {
+//                        days = dayList.get(x) + "," + days;
+                advPeriod.setDay(dayList.get(x));
+//                        adsPeriodsList.add(advPeriod);
+                DBO.open();
+                boolean hasConflict = DBO.itHasConflict(sp.getInt("masjedId", -1), advPeriod, adsList.get(i));
+                DBO.close();
+                conflictList.add(hasConflict);
+                if (hasConflict) {
+                    isConflictAds = true;
+                    Utils.showCustomToast(activity, "يوجد تعارض في الوقت مع إعلان آخر");
+                    break;
+                }
+                if (inPrayPeriod(prayerTimes, adsPeriods)) {
+                    isConflictAds = true;
+                    Utils.showCustomToast(activity, "يوجد تعارض مع مواعيد الصلاة");
+                    break;
+                }
+                DBO.open();
+                int advPeriodId = DBO.getAdvPeriodsId(adv.getId(), adsList.get(i));
+                DBO.close();
+                advPeriod.setId(advPeriodId);
+                adsPeriodsList.add(advPeriod);
+            }
+            if (i == adsList.size() - 1) {
+                if (conflictList.contains(true)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void deletePeriods(int pos, AdsPeriods advPeriods) {
+        DBO.open();
+        DBO.delAdvPeriods(advPeriods);
+        DBO.close();
+        Utils.showCustomToast(activity, getString(R.string.success_delete));
+        adsList.remove(pos);
+        int size = adsList.size();
+        checkList.clear();
+        for (int i = 0; i < adsList.size(); i++) {
+            checkList.add(i);
+        }
+        if (size < checkList.size()) {
+            size = checkList.size();
+            edAddAppearance.setText(size + "");
+        }
+        size = Integer.parseInt(edAddAppearance.getText().toString().trim());
+        if (size > 0) {
+            llAdsPeriods.removeAllViews();
+            for (int i = 0; i < size; i++) {
+                AdsPeriods adsPeriods = null;
+                Log.i("///*: size ", adsList.size() + "");
+                if (i < adsList.size()) {
+                    adsPeriods = adsList.get(i);
+                    llAdsPeriods.addView(getItem(i, adsPeriods));
+                } else
+                    llAdsPeriods.addView(getItem(i, null));
+            }
+        }
+    }
+
+    private void deleteAds() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(activity).setTitle(getString(R.string.confirm_delete))
+                .setMessage(getString(R.string.tv_delMsg))
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                        DBO.open();
+                        DBO.delAdvertisement(advId, sp.getInt("masjedId", -1));
+                        DBO.close();
+                        Utils.showCustomToast(activity, getString(R.string.success_delete));
+                        finish();
+                    }
+                }).setNegativeButton(getString(R.string.cancel_delete), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                }).setCancelable(false);
+        AlertDialog dialog = alert.create();
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);
+    }
+
 
     public static boolean inPrayPeriod(ArrayList<String> list, AdsPeriods adsPeriods) {
         DateFormat df = new SimpleDateFormat("HH:mm");
@@ -565,6 +1064,19 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
             } catch (ParseException e) {
                 e.printStackTrace();
                 return false;
+            }
+
+        }
+        return false;
+    }
+
+    public static boolean isContain(ArrayList<AdsPeriods> list, AdsPeriods adsPeriods) {
+        for (AdsPeriods object : list) {
+            String startTime = adsPeriods.getStartTime();
+            String endTime = adsPeriods.getEndTime();
+            String days = adsPeriods.getDays();
+            if (object.getStartTime().equals(startTime) && object.getEndTime().equals(endTime) && object.getDays().equals(days)) {
+                return true;
             }
 
         }
@@ -636,113 +1148,218 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
         if (view == iv_back) {
             finish();
         } else if (view == tvSave) {
-//            edAdsTitle.setError(null);
-//            edAdsText.setError(null);
-//            ed_start.setError(null);
-//            ed_end.setError(null);
-//            if (TextUtils.isEmpty(edAdsTitle.getText().toString().toString())) {
-//                edAdsTitle.setError(getString(R.string.required));
-//                return;
-//            }
-//            if (type == 1 && selectedImage == null) {
-//                Utils.showCustomToast(activity, "يجب اختيار صورة للإعلان");
-//                return;
-//            }
-//            if (type == 2 && videoData == null) {
-//                Utils.showCustomToast(activity, "يجب اختيار فيديو للإعلان");
-//                return;
-//            }
-//            if (type == 3 && TextUtils.isEmpty(edAdsText.getText().toString().toString())) {
-//                edAdsText.setError("يجب إدخال نص للإعلان");
-//                Utils.showCustomToast(activity, "يجب إدخال نص للإعلان");
-//                return;
-//            }
-//            if (TextUtils.isEmpty(ed_start.getText().toString())) {
-//                ed_start.setError("أدخل وقت بداية ظهورالإعلان");
-//                return;
-//            }
-//            if (TextUtils.isEmpty(ed_end.getText().toString())) {
-//                ed_end.setError("أدخل وقت نهاية ظهورالإعلان");
-//                return;
-//            }
-//            if (!Utils.compareTimes(ed_start.getText().toString(), ed_end.getText().toString())) {
-//                Utils.showCustomToast(activity, getString(R.string.error_date));
-//                ed_end.setError(getString(R.string.error_date));
-//                return;
-//            }
-//            if (!cbSat.isChecked() && !cbSun.isChecked() && !cbMon.isChecked() && !cbTue.isChecked() && !cbWed.isChecked()
-//                    && !cbThu.isChecked() && !cbFri.isChecked()) {
-//                Utils.showCustomToast(activity, "يجب إدخال أيام ظهور الإعلان");
-//                return;
-//            }
-//            if (type == 1) {
-//                videoData = null;
-//                selectedVideoPath = "";
-//                edAdsText.setText("");
-//            } else if (type == 2) {
-//                selectedImage = null;
-//                selectedImagePath = "";
-//                edAdsText.setText("");
-//            } else if (type == 3) {
-//                selectedImage = null;
-//                selectedImagePath = "";
-//                videoData = null;
-//                selectedVideoPath = "";
-//            }
-//            Ads ads = new Ads();
-//            ads.setMasjedID(sp.getInt("masjedId", -1));
-//            ads.setTitle(edAdsTitle.getText().toString().trim());
-//            ads.setType(type);
-//            ads.setImage(selectedImagePath);
-//            ads.setVideo(selectedVideoPath);
-//            ads.setText(edAdsText.getText().toString().trim());
-//            ads.setStartDate(ed_start.getText().toString().trim());
-//            ads.setStartDate(ed_end.getText().toString().trim());
-//
-//            DBO = new DBOperations(this);
-//            DBO.createDatabase();
-//            DBO.open();
-//            ArrayList<Ads> adsList = DBO.getAdsListByDay(sp.getInt("masjedId", -1), ads);
-//            Log.i("+++ads", adsList.size() + "  ");
-//            DBO.close();
-//            if (adsList.size() > 0) {
-//                for (int i = 0; i < adsList.size(); i++) {
-//                    Ads adv = adsList.get(i);
-//                    String oldAdvStart = adv.getStartDate();
-//                    String oldAdvEnd = adv.getEndDate();
-//                    SimpleDateFormat df = new SimpleDateFormat("HH:mm", new Locale("en"));
-//                    try {
-//                        Date oldAdvStartDate = df.parse(oldAdvStart);//From1
-//                        Date oldAdvEndDate = df.parse(oldAdvEnd);//To1
-//                        Date newAdvStartDate = df.parse(ads.getStartTime());//From2
-//                        Date newAdvEndDate = df.parse(ads.getEndTime());//To2
-//                        if (((oldAdvStartDate.after(newAdvStartDate) || (oldAdvStartDate.equals(newAdvStartDate))
-//                                && oldAdvStartDate.before(newAdvEndDate)) ||
-//                                (oldAdvEndDate.after(newAdvStartDate) && (oldAdvEndDate.before(newAdvEndDate)) || oldAdvEndDate.equals(newAdvEndDate))
-//                                || (newAdvStartDate.after(oldAdvStartDate) && newAdvStartDate.before(oldAdvEndDate))
-//                                || (newAdvEndDate.after(oldAdvStartDate) && newAdvEndDate.before(oldAdvEndDate)))) {
-//
-//                            isConflict = true;
-//                        }
-//                        if (i == adsList.size() - 1) {
-//                            if (isConflict) {
-//                                Utils.showCustomToast(activity, "يوجد تعارض في الوقت مع إعلان آخر");
-//                            } else {
-//                                DBO.insertAds(ads);
-//                                Utils.showCustomToast(activity, "تم إضافة الإعلان");
-//                            }
-//                        }
-////                        }
-//
-//                    } catch (ParseException e) {
-//                        Utils.showCustomToast(activity, "حدث خطأ");
-//                    }
-//                }
-//            } else {
-//                DBO.insertAds(ads);
-//                Utils.showCustomToast(activity, "تم إضافة الإعلان");
-//            }
+            adsPeriodsList.clear();
+            edAdsTitle.setError(null);
+            edAdsText.setError(null);
+            ed_start.setError(null);
+            ed_end.setError(null);
+            if (TextUtils.isEmpty(edAdsTitle.getText().toString().toString())) {
+                if (TextUtils.isEmpty(adv.getTitle())) {
+                    edAdsTitle.setError(getString(R.string.required));
+                    return;
+                } else edAdsTitle.setText(adv.getTitle());
+            }
+            if (type == 1 && selectedImage == null) {
+                if (TextUtils.isEmpty(adv.getImage())) {
+                    Utils.showCustomToast(activity, "يجب اختيار صورة للإعلان");
+                    return;
+                }
+                selectedImagePath = adv.getImage();
 
+            }
+            if (type == 2 && videoData == null) {
+                if (TextUtils.isEmpty(adv.getVideo())) {
+                    Utils.showCustomToast(activity, "يجب اختيار فيديو للإعلان");
+                    return;
+                }
+                selectedVideoPath = adv.getVideo();
+            }
+            if (type == 3 && TextUtils.isEmpty(edAdsText.getText().toString().toString())) {
+                if (TextUtils.isEmpty(adv.getText())) {
+                    Utils.showCustomToast(activity, "يجب إدخال نص للإعلان");
+                    return;
+                }
+                edAdsText.setText(adv.getText());
+            }
+            if (TextUtils.isEmpty(ed_start.getText().toString())) {
+                if (TextUtils.isEmpty(adv.getStartDate())) {
+                    ed_start.setError("أدخل تاريخ بداية ظهورالإعلان");
+                    return;
+                }
+                ed_start.setText(adv.getStartDate());
+
+            }
+            if (TextUtils.isEmpty(ed_end.getText().toString())) {
+                if (TextUtils.isEmpty(adv.getStartDate())) {
+                    ed_end.setError("أدخل تاريخ نهاية ظهورالإعلان");
+                    return;
+                }
+                ed_end.setText(adv.getEndDate());
+
+            }
+            if (!Utils.compareDate(ed_start.getText().toString(), ed_end.getText().toString())) {
+                Utils.showCustomToast(activity, getString(R.string.error_date));
+                ed_end.setError(getString(R.string.error_date));
+                return;
+            }
+            if (adv.getStartDate().equals(ed_start.getText().toString().trim())
+                    && adv.getEndDate().endsWith(ed_end.getText().toString().trim())) {
+                if (type == 1) {
+                    videoData = null;
+                    selectedVideoPath = "";
+                    edAdsText.setText("");
+                } else if (type == 2) {
+                    selectedImage = null;
+                    selectedImagePath = "";
+                    edAdsText.setText("");
+                } else if (type == 3) {
+                    selectedImage = null;
+                    selectedImagePath = "";
+                    videoData = null;
+                    selectedVideoPath = "";
+                }
+                Log.i("///: ", type + "");
+                Ads ads = new Ads();
+                ads.setId(adv.getId());
+                ads.setMasjedID(sp.getInt("masjedId", -1));
+                ads.setTitle(edAdsTitle.getText().toString().trim());
+                ads.setType(type);
+                ads.setImage(selectedImagePath);
+                ads.setVideo(selectedVideoPath);
+                ads.setText(edAdsText.getText().toString().trim());
+                ads.setStartDate(ed_start.getText().toString().trim());
+                ads.setEndDate(ed_end.getText().toString().trim());
+                boolean c=DBO.updateAds(ads);
+                Log.i("////: ",c+"");
+                String msg = "تم تعديل الاعلان";
+                Utils.showCustomToast(activity, msg);
+            } else {
+                getAdsList();
+//                DBO.open();
+//                ArrayList<AdsPeriods> list = DBO.getAdvPeriods(adv.getId());
+//                DBO.close();
+                Log.i("//list size: ", "" + adsList.size());
+                for (int i = 0; i < adsList.size(); i++) {
+                    AdsPeriods adsPeriods = adsList.get(i);
+//                    adsPeriodsList.clear();
+                    isConflictAds = false;
+                    String edStartTime = adsPeriods.getStartTime();
+                    String edEndTime = adsPeriods.getEndTime();
+                    int day = adsPeriods.getDay();
+                    String days = adsPeriods.getDays();
+                    AdsPeriods advPeriod = new AdsPeriods();
+                    Log.i("/////: ", edStartTime + " : " + edEndTime);
+                    advPeriod.setAdvId(adv.getId());
+                    advPeriod.setStartTime(edStartTime);
+                    advPeriod.setEndTime(edEndTime);
+                    advPeriod.setStartDate(ed_start.getText().toString().trim());
+                    advPeriod.setEndDate(ed_end.getText().toString().trim());
+                    advPeriod.setDays(days);
+                    List<Integer> dayList = new ArrayList<>();
+                    dayList.clear();
+                    if (adsPeriods.getDays().contains("1")) {
+                        dayList.add(1);
+                    }
+                    if (adsPeriods.getDays().contains("2")) {
+                        dayList.add(2);
+                    }
+                    if (adsPeriods.getDays().contains("3")) {
+                        dayList.add(3);
+                    }
+                    if (adsPeriods.getDays().contains("4")) {
+                        dayList.add(4);
+                    }
+                    if (adsPeriods.getDays().contains("5")) {
+                        dayList.add(5);
+                    }
+                    if (adsPeriods.getDays().contains("6")) {
+                        dayList.add(6);
+                    }
+                    if (adsPeriods.getDays().contains("7")) {
+                        dayList.add(7);
+                    }
+//                    String days = "";
+
+                    for (int x = 0; x < dayList.size(); x++) {
+//                        days = dayList.get(x) + "," + days;
+                        advPeriod.setDay(dayList.get(x));
+//                        adsPeriodsList.add(advPeriod);
+                        DBO.open();
+                        boolean hasConflict = DBO.itHasConflict(sp.getInt("masjedId", -1), advPeriod, adsList.get(i));
+                        DBO.close();
+                        if (hasConflict) {
+                            isConflictAds = true;
+                            Utils.showCustomToast(activity, "يوجد تعارض في الوقت مع إعلان آخر");
+                            conflictList.add(hasConflict);
+                            break;
+                        }
+                        if (inPrayPeriod(prayerTimes, adsPeriods)) {
+                            isConflictAds = true;
+                            Utils.showCustomToast(activity, "يوجد تعارض مع مواعيد الصلاة");
+                            conflictList.add(true);
+                            break;
+                        }
+                        conflictList.add(hasConflict);
+                        DBO.open();
+                        int advPeriodId = DBO.getAdvPeriodsId(adv.getId(), adsList.get(i));
+                        DBO.close();
+                        advPeriod.setId(advPeriodId);
+                        adsPeriodsList.add(advPeriod);
+                    }
+                    if (i == adsList.size() - 1) {
+                        if (!conflictList.contains(true)) {
+                            int repeatNo = Integer.parseInt(edAddAppearance.getText().toString().trim());
+                            if (type == 1) {
+                                videoData = null;
+                                selectedVideoPath = "";
+                                edAdsText.setText("");
+                            } else if (type == 2) {
+                                selectedImage = null;
+                                selectedImagePath = "";
+                                edAdsText.setText("");
+                            } else if (type == 3) {
+                                selectedImage = null;
+                                selectedImagePath = "";
+                                videoData = null;
+                                selectedVideoPath = "";
+                            }
+                            Ads ads = new Ads();
+                            ads.setId(adv.getId());
+                            ads.setMasjedID(sp.getInt("masjedId", -1));
+                            ads.setTitle(edAdsTitle.getText().toString().trim());
+                            ads.setType(type);
+                            ads.setImage(selectedImagePath);
+                            ads.setVideo(selectedVideoPath);
+                            ads.setText(edAdsText.getText().toString().trim());
+                            ads.setStartDate(ed_start.getText().toString().trim());
+                            ads.setEndDate(ed_end.getText().toString().trim());
+                            DBO.updateAds(ads);
+
+//                           for (int xx=0;xx<adsList.size();xx++)
+                            DBO.open();
+                            DBO.delAdsPeriods(adv.getId());
+                            DBO.close();
+
+                            DBO.insertAdsPeriod(adsPeriodsList);
+                            adsPeriods.setDays(days);
+                            getAdsList();
+//                                if (advId != -1) {
+                            String msg = "تم تعديل الاعلان";
+                            Utils.showCustomToast(activity, msg);
+
+                        } else {
+                            String message = "يوجد تعارض في الوقت مع إعلان آخر";
+                            for (int y = 0; y < adsPeriodsList.size(); y++) {
+                                if (inPrayPeriod(prayerTimes, adsPeriodsList.get(y))) {
+                                    message = "يوجد تعارض مع مواعيد الصلاة";
+                                }
+                                if (y == adsPeriodsList.size() - 1)
+                                    Utils.showCustomToast(activity, " * " + message);
+                            }
+                        }
+                    }
+                }
+            }
         } else if (view == ivSelectImg) {
             selectImage();
         } else if (view == ivSelectVideo) {
@@ -754,6 +1371,28 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
                 intent.putExtra("videoURI", videoData);
                 startActivity(intent);
             }
+        }
+    }
+
+    private void getAdsList() {
+        DBO.open();
+        ArrayList<AdsPeriods> list = DBO.getAdvPeriods(adv.getId());
+        DBO.close();
+        int size = list.size();
+        String day = "";
+        String ids = "";
+        adsList.clear();
+        for (int i = 0; i < size; i++) {
+            DBO.open();
+            AdsPeriods periods = list.get(i);
+            day = DBO.getAdvPeriods(adv.getId(), periods.getStartTime(), periods.getEndTime());
+            ids = DBO.getAdvPeriodsIds(adv.getId(), periods.getStartTime(), periods.getEndTime());
+            DBO.close();
+            AdsPeriods newAdsPeriod = new AdsPeriods(periods.getAdvId(), periods.getStartTime(), periods.getEndTime(),
+                    periods.getStartDate(), periods.getEndDate(), day, ids, true);
+            Log.i("//list day int: ", day + " : ids: " + ids);
+            if (!isContain(adsList, newAdsPeriod))
+                adsList.add(newAdsPeriod);
         }
     }
 

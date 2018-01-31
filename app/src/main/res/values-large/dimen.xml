@@ -6,7 +6,7 @@
     <!--40dp-->
     <dimen name="no_l_font_size">60dp</dimen>
     <dimen name="no_l_font_size1">64dp</dimen>
-    <dimen name="pray_font_size">72dp</dimen>
+    <dimen name="pray_font_size">75dp</dimen>
     <dimen name="iqama_font_size">70dp</dimen>
     <!--40dp-->
     <dimen name="no_font_size">30dp</dimen>

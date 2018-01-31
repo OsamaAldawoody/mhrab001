@@ -216,12 +216,12 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:gravity="center"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
             android:text="السبت | 5 ديسمبر 2015 | 24 صفر1437 هـ"
             android:textColor="@color/white"
             android:textDirection="ltr"
-            android:textSize="30dp" />
+            android:textSize="28dp" />
     </LinearLayout>
 
     <View

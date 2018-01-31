@@ -12,8 +12,18 @@ public class AdsPeriods implements Serializable {
     String StartTime;
     String EndTime;
 
+    public String getPeriodsId() {
+        return periodsId;
+    }
+
+    public void setPeriodsId(String periodsId) {
+        this.periodsId = periodsId;
+    }
+
+    String periodsId;
+
     public AdsPeriods(int advId, String startTime, String endTime, String startDate, String endDate,
-                      String days, boolean added) {
+                      String days,String periodsId, boolean added) {
         this.StartDate=startDate;
         this.StartTime=startTime;
         this.EndTime=endTime;
@@ -21,6 +31,7 @@ public class AdsPeriods implements Serializable {
         this.isAdded=added;
         this.advId=advId;
         this.days=days;
+        this.periodsId=periodsId;
     }
 
     public String getDays() {

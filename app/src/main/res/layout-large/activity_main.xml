@@ -15,6 +15,7 @@
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:layout_alignParentRight="true"
+        android:background="@color/adv_brown"
         android:layout_alignParentTop="true"
         android:layout_margin="30dp"
         android:onClick="dispMenu"
@@ -214,7 +215,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:gravity="center"
-            android:paddingBottom="5dp"
+            android:paddingBottom="4dp"
             android:text="السبت | 5 ديسمبر 2015 | 24 صفر1437 هـ"
             android:textColor="@color/white"
             android:textDirection="ltr"
@@ -526,7 +527,7 @@
                         android:layout_centerVertical="true"
                         android:text="المتبقي للإقامة"
                         android:textColor="@color/span"
-                        android:textSize="@dimen/font_size" />
+                        android:textSize="@dimen/smallFont_size" />
 
                     <TextView
                         android:id="@+id/tvIqRemaingTime"
@@ -545,11 +546,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:layout_marginRight="4dp"
+                        android:layout_marginRight="2dp"
                         android:layout_toLeftOf="@+id/tvIqRemaingTime"
                         android:text="دقيقة"
                         android:textColor="@color/span"
-                        android:textSize="@dimen/font_size" />
+                        android:textSize="@dimen/smallFont_size" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -571,7 +572,7 @@
                         android:text="المتبقي لأذان"
                         android:textAlignment="center"
                         android:textColor="@color/white"
-                        android:textSize="30dp" />
+                        android:textSize="28dp" />
 
                     <TextView
                         android:id="@+id/tvPrayName"
@@ -716,7 +717,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="33dp"
+                    android:layout_height="35dp"
                     android:layout_gravity="right|center_vertical"
                     android:gravity="right|center_vertical"
                     android:paddingBottom="1dp"

@@ -4,8 +4,8 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:background="@drawable/back3"
+    android:fitsSystemWindows="true"
     android:layoutDirection="rtl"
     android:rotation="0"
     android:textDirection="rtl">
@@ -19,8 +19,8 @@
         android:layout_margin="30dp"
         android:onClick="dispMenu"
         android:padding="18dp"
-        app:srcCompat="@drawable/ic_menu_button"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_menu_button" />
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/sound_stop"
@@ -32,11 +32,12 @@
         android:padding="10dp"
         android:src="@drawable/ic_volume_up_white_24dp"
         android:visibility="gone" />
+
     <LinearLayout
+        android:id="@+id/ll_showTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:id="@+id/ll_showTime"
         android:orientation="vertical">
 
         <LinearLayout
@@ -63,9 +64,9 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_marginLeft="5dp"
+                android:gravity="bottom"
                 android:paddingBottom="10dp"
                 android:text="م"
-                android:gravity="bottom"
                 android:textColor="@color/white"
                 android:textSize="30dp"
                 android:visibility="visible" />
@@ -106,14 +107,14 @@
                         android:layout_alignRight="@id/outMasgedasged"
                         android:layout_alignTop="@id/outMasgedasged"
                         android:layout_marginRight="-15dp"
-                        app:srcCompat="@drawable/ic_circle_shape_outline"
-                        android:gravity="center" />
+                        android:gravity="center"
+                        app:srcCompat="@drawable/ic_circle_shape_outline" />
                 </RelativeLayout>
 
                 <TextView
+                    android:id="@+id/tvOut"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tvOut"
                     android:layout_marginRight="3dp"
                     android:text="خارج المسجد"
                     android:textColor="@color/colorPrimary"
@@ -157,18 +158,18 @@
                         android:layout_alignRight="@id/in_masged"
                         android:layout_alignTop="@id/in_masged"
                         android:layout_marginRight="-15dp"
-                        app:srcCompat="@drawable/ic_circle_shape_outline"
                         android:gravity="center"
-                        android:textColor="@color/backLogo" />
+                        android:textColor="@color/backLogo"
+                        app:srcCompat="@drawable/ic_circle_shape_outline" />
                 </RelativeLayout>
 
                 <TextView
+                    android:id="@+id/tvIn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="داخل المسجد"
-                    android:id="@+id/tvIn"
                     android:layout_marginLeft="3dp"
                     android:layout_marginRight="3dp"
+                    android:text="داخل المسجد"
                     android:textColor="@color/colorPrimary"
                     android:textSize="15dp" />
             </LinearLayout>
@@ -197,11 +198,11 @@
                     android:textSize="30dp" />
 
                 <TextView
+                    android:id="@+id/tvHum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
                     android:text="درجة الرطوبة"
-                    android:id="@+id/tvHum"
                     android:textColor="@color/colorPrimary"
                     android:textSize="15dp" />
             </LinearLayout>
@@ -221,40 +222,41 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:gravity="center"
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
                 android:text="السبت | 5 ديسمبر 2015 | 24 صفر1437 هـ"
                 android:textColor="@color/white"
                 android:textDirection="ltr"
-                android:textSize="30dp" />
+                android:textSize="28dp" />
         </LinearLayout>
     </LinearLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:layout_below="@id/ll_showTime"
         android:layout_centerInParent="true"
+        android:layout_marginTop="15dp"
         android:orientation="vertical">
 
 
         <LinearLayout
             android:id="@+id/dates"
-            android:layout_height="wrap_content"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            android:layout_centerHorizontal="true">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/show_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="30dp"
                 android:layout_marginBottom="15dp"
+                android:layout_marginTop="30dp"
                 android:text="صلاة الظهر"
                 android:textColor="@color/white"
                 android:textSize="70dp" />
@@ -268,22 +270,23 @@
                 android:layout_marginRight="30dp"
                 android:background="@drawable/corner_rect"
                 android:gravity="center"
-                android:visibility="visible"
                 android:paddingLeft="40dp"
                 android:paddingRight="40dp"
                 android:text="الركعة الأولى"
                 android:textColor="@color/backLogo"
-                android:textSize="60dp" />
+                android:textSize="60dp"
+                android:visibility="visible" />
+
             <ProgressBar
+                android:id="@+id/progressBar"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/progressBar"
                 android:layout_gravity="center"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
                 android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"/>
+                android:layout_marginTop="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp" />
         </LinearLayout>
 
     </RelativeLayout>

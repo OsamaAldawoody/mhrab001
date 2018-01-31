@@ -720,7 +720,7 @@ public class DBOperations {
     }
 
     public int insertAds(Ads object) {
-        long rowId=0;
+        long rowId = 0;
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         db.enableWriteAheadLogging();
         db.beginTransaction();
@@ -736,13 +736,61 @@ public class DBOperations {
         values.put("StartDate", object.getStartDate());
         values.put("EndDate", object.getEndDate());
 
-         rowId=db.insert("Advertisement", null, values);
+        rowId = db.insert("Advertisement", null, values);
         Log.d("Sync service", "# of set inserted in Advertisement: " + count);
         db.setTransactionSuccessful();
         db.endTransaction();
         db.close();
-        return (int)rowId;
+        return (int) rowId;
     }
+
+//    public void updateAds(Ads object) {
+//        long rowId = 0;
+//        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+//        db.enableWriteAheadLogging();
+//        db.beginTransaction();
+//        int count = 0;
+//        ContentValues values = new ContentValues();
+////        values.put("id", object.getId());
+//        values.put("MasjedID", object.getMasjedID());
+//        values.put("Type", object.getType());
+//        values.put("Title", object.getTitle());
+//        values.put("Text", object.getText());
+//        values.put("Image", object.getImage());
+//        values.put("Video", object.getVideo());
+//        values.put("StartDate", object.getStartDate());
+//        values.put("EndDate", object.getEndDate());
+//
+//        db.update("Advertisement", values, "id=" + object.getId(), null);
+//        Log.d("Sync service", "# of set inserted in Advertisement: " + count);
+//        db.setTransactionSuccessful();
+//        db.endTransaction();
+//        db.close();
+////        return (int) rowId;
+//    }
+    public boolean updateAds(Ads object) {
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        db.enableWriteAheadLogging();
+        db.beginTransaction();
+        ContentValues values = new ContentValues();
+//        values.put("id", object.getId());
+        values.put("MasjedID", object.getMasjedID());
+        values.put("Type", object.getType());
+        values.put("Title", object.getTitle());
+        values.put("Text", object.getText());
+        values.put("Image", object.getImage());
+        values.put("Video", object.getVideo());
+        values.put("StartDate", object.getStartDate());
+        values.put("EndDate", object.getEndDate());
+
+        long rowid =  db.update("Advertisement", values, "id=" + object.getId(), null);
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
+        return rowid != -1 ? true : false;
+
+    }
+
     public void insertAdsPeriod(ArrayList<AdsPeriods> a) {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         db.enableWriteAheadLogging();
@@ -755,7 +803,7 @@ public class DBOperations {
         for (int i = 0; i < len; i++) {
             AdsPeriods current = a.get(i);
             AddAdsPeriod(db, current);
-                count++;
+            count++;
 
         }
         Log.d("Sync service", "# of New Azkar inserted : " + count);
@@ -771,8 +819,8 @@ public class DBOperations {
         values.put("StartTime", object.getStartTime());
         values.put("EndTime", object.getEndTime());
         values.put("day", object.getDay());
-        values.put("StartDate", object.getStartDate() );
-        values.put("EndDate", object.getEndDate() );
+        values.put("StartDate", object.getStartDate());
+        values.put("EndDate", object.getEndDate());
         //db.insert("Service_Provider", null, values);
         long rowid = db.insert("AdsPeriods", null, values);
         // db.close();
@@ -801,14 +849,15 @@ public class DBOperations {
         return object;
     }
 
-    public AdsPeriods getAdvPeriods(int advId) {
-        AdsPeriods object = new AdsPeriods();
-        String selectQuery = "SELECT * FROM AdsPeriods WHERE AdvId=" + advId + " LIMIT 1";
+    public ArrayList<AdsPeriods> getAdvPeriods(int advId) {
+        ArrayList<AdsPeriods> list = new ArrayList<>();
+        String selectQuery = "SELECT * FROM AdsPeriods WHERE AdvId=" + advId + "";
         Log.i("Quert", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("Qu dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
             do {
+                AdsPeriods object = new AdsPeriods();
                 object.setId(cursor.getInt(cursor.getColumnIndex("id")));
                 object.setAdvId(cursor.getInt(cursor.getColumnIndex("AdvId")));
                 object.setStartTime(cursor.getString(cursor.getColumnIndex("StartTime")));
@@ -816,10 +865,83 @@ public class DBOperations {
                 object.setStartDate(cursor.getString(cursor.getColumnIndex("StartDate")));
                 object.setEndDate(cursor.getString(cursor.getColumnIndex("EndDate")));
                 object.setDay(cursor.getInt(cursor.getColumnIndex("day")));
-
+                list.add(object);
             } while (cursor.moveToNext());
-        } else object = null;
-        return object;
+        }
+        return list;
+    }
+
+    public String getAdvPeriods(int advId, String StartTime, String EndTime) {
+        String day = "";
+        String selectQuery = "SELECT day FROM AdsPeriods WHERE AdvId=" + advId
+                + " and  strftime('%H:%M',StartTime)=strftime('%H:%M','" + StartTime + "') "
+                +" and strftime('%H:%M',EndTime)=strftime('%H:%M','" + EndTime + "') ORDER By day ASC";
+        Log.i("Quert", selectQuery);
+        Cursor cursor = mDb.rawQuery(selectQuery, null);
+        Log.i("Qu dataBase", "" + cursor.getCount());
+        if (cursor.moveToFirst()) {
+            do {
+                day = cursor.getInt(cursor.getColumnIndex("day")) + "," + day;
+//                int AdvId=cursor.getInt(cursor.getColumnIndex("AdvId"));
+//                Log.i("//list days: ", day+ "");
+//                AdsPeriods object = new AdsPeriods();
+//                object.setId(cursor.getInt(cursor.getColumnIndex("id")));
+//                object.setAdvId(cursor.getInt(cursor.getColumnIndex("AdvId")));
+//                object.setStartTime(cursor.getString(cursor.getColumnIndex("StartTime")));
+//                object.setEndTime(cursor.getString(cursor.getColumnIndex("EndTime")));
+//                object.setStartDate(cursor.getString(cursor.getColumnIndex("StartDate")));
+//                object.setEndDate(cursor.getString(cursor.getColumnIndex("EndDate")));
+//                object.setDay(cursor.getInt(cursor.getColumnIndex("day")));
+//                list.add(object);
+            } while (cursor.moveToNext());
+        }
+        return day;
+    }
+
+    public int getAdvPeriodsId(int advId, AdsPeriods adsPeriods) {
+        int id = 0;
+        String selectQuery = "SELECT id FROM AdsPeriods WHERE AdvId=" + advId
+                + " and  strftime('%H:%M',StartTime)=strftime('%H:%M','" + adsPeriods.getStartTime() + "') "
+                +" and strftime('%H:%M',EndTime)=strftime('%H:%M','" + adsPeriods.getStartTime() + "') "
+                + " and  strftime('%Y-%m-%d',StartDate)= strftime('%Y-%m-%d','" + adsPeriods.getStartDate() + "') "
+                + " and strftime('%Y-%m-%d',EndDate) =strftime('%Y-%m-%d','" + adsPeriods.getEndDate() + "') "
+                + " and day=" + adsPeriods.getDay() + "";
+        Log.i("Quert", selectQuery);
+        Cursor cursor = mDb.rawQuery(selectQuery, null);
+        Log.i("Qu dataBase", "" + cursor.getCount());
+        if (cursor.moveToFirst()) {
+            do {
+                id = cursor.getInt(cursor.getColumnIndex("id"));
+//                int AdvId=cursor.getInt(cursor.getColumnIndex("AdvId"));
+//                Log.i("//list days: ", day+ "");
+//                AdsPeriods object = new AdsPeriods();
+//                object.setId(cursor.getInt(cursor.getColumnIndex("id")));
+//                object.setAdvId(cursor.getInt(cursor.getColumnIndex("AdvId")));
+//                object.setStartTime(cursor.getString(cursor.getColumnIndex("StartTime")));
+//                object.setEndTime(cursor.getString(cursor.getColumnIndex("EndTime")));
+//                object.setStartDate(cursor.getString(cursor.getColumnIndex("StartDate")));
+//                object.setEndDate(cursor.getString(cursor.getColumnIndex("EndDate")));
+//                object.setDay(cursor.getInt(cursor.getColumnIndex("day")));
+//                list.add(object);
+            } while (cursor.moveToNext());
+        }
+        return id;
+    }
+
+    public String getAdvPeriodsIds(int advId, String StartTime, String EndTime) {
+        String ids = "";
+        String selectQuery = "SELECT id FROM AdsPeriods WHERE AdvId=" + advId
+                + " and  strftime('%H:%M',StartTime)=strftime('%H:%M','" + StartTime + "') "
+                +" and strftime('%H:%M',EndTime)=strftime('%H:%M','" + EndTime + "') ORDER By day ASC";
+        Log.i("Quert", selectQuery);
+        Cursor cursor = mDb.rawQuery(selectQuery, null);
+        Log.i("Qu dataBase", "" + cursor.getCount());
+        if (cursor.moveToFirst()) {
+            do {
+                ids = cursor.getInt(cursor.getColumnIndex("id")) + "," + ids;
+            } while (cursor.moveToNext());
+        }
+        return ids;
     }
 
     public ArrayList<Ads> getAdsByTime(int masjedID, String time) {
@@ -951,26 +1073,67 @@ public class DBOperations {
         }
         return adsList;
     }
+
     public boolean itHasConflict(int masjedId, AdsPeriods ads) {
         boolean hasConflict = false;
-     String startDate=ads.getStartDate();
-     String endDate=ads.getEndDate();
-     String startTime=ads.getStartTime();
-     String endTime=ads.getEndTime();
-     int day=ads.getDay();
+        String startDate = ads.getStartDate();
+        String endDate = ads.getEndDate();
+        String startTime = ads.getStartTime();
+        String endTime = ads.getEndTime();
+        int day = ads.getDay();
 
-        String selectQuery =" select * from Advertisement left join  AdsPeriods on\n" +
-                " (Advertisement.id = AdsPeriods.AdvId) where Advertisement.MasjedID="+masjedId+" and (\n" +
-                " (strftime('%Y-%m-%d', AdsPeriods.StartDate)  between  strftime('%Y-%m-%d','"+startDate+"')  and strftime('%Y-%m-%d','"+endDate+"')) \n" +
-                "or ( strftime('%Y-%m-%d', AdsPeriods.EndDate)  between  strftime('%Y-%m-%d','"+startDate+"')  and strftime('%Y-%m-%d','"+endDate+"')) \n" +
-                " or (strftime('%Y-%m-%d','"+startDate+"') between strftime('%Y-%m-%d', AdsPeriods.StartDate) and strftime('%Y-%m-%d', AdsPeriods.EndDate) ) \n" +
-                " or( strftime('%Y-%m-%d','"+endDate+"') between strftime('%Y-%m-%d', AdsPeriods.StartDate) and strftime('%Y-%m-%d', AdsPeriods.EndDate))\n" +
-                " ) and  (AdsPeriods.day ="+day+") and ( (strftime('%H:%M', AdsPeriods.StartTime) between  strftime('%H:%M','"+startTime+"') " +
-                " and  strftime('%H:%M','"+endTime+"') )\n" +
-                " or(  strftime('%H:%M', AdsPeriods.EndTime)  between  strftime('%H:%M','"+startTime+"')  and  strftime('%H:%M','"+endTime+"'))\n" +
-                " or ( strftime('%H:%M','"+startTime+"') between strftime('%H:%M', AdsPeriods.StartTime) and strftime('%H:%M', AdsPeriods.EndTime))\n" +
-                " or (  strftime('%H:%M','"+endTime+"') between strftime('%H:%M', AdsPeriods.StartTime) and strftime('%H:%M', AdsPeriods.EndTime))\n" +
+        String selectQuery = " select * from Advertisement left join  AdsPeriods on\n" +
+                " (Advertisement.id = AdsPeriods.AdvId) where Advertisement.MasjedID=" + masjedId + " and (\n" +
+                " (strftime('%Y-%m-%d', AdsPeriods.StartDate)  between  strftime('%Y-%m-%d','" + startDate + "')  and strftime('%Y-%m-%d','" + endDate + "')) \n" +
+                "or ( strftime('%Y-%m-%d', AdsPeriods.EndDate)  between  strftime('%Y-%m-%d','" + startDate + "')  and strftime('%Y-%m-%d','" + endDate + "')) \n" +
+                " or (strftime('%Y-%m-%d','" + startDate + "') between strftime('%Y-%m-%d', AdsPeriods.StartDate) and strftime('%Y-%m-%d', AdsPeriods.EndDate) ) \n" +
+                " or( strftime('%Y-%m-%d','" + endDate + "') between strftime('%Y-%m-%d', AdsPeriods.StartDate) and strftime('%Y-%m-%d', AdsPeriods.EndDate))\n" +
+                " ) and  (AdsPeriods.day =" + day + ") and ( (strftime('%H:%M', AdsPeriods.StartTime) between  strftime('%H:%M','" + startTime + "') " +
+                " and  strftime('%H:%M','" + endTime + "') )\n" +
+                " or(  strftime('%H:%M', AdsPeriods.EndTime)  between  strftime('%H:%M','" + startTime + "')  and  strftime('%H:%M','" + endTime + "'))\n" +
+                " or ( strftime('%H:%M','" + startTime + "') between strftime('%H:%M', AdsPeriods.StartTime) and strftime('%H:%M', AdsPeriods.EndTime))\n" +
+                " or (  strftime('%H:%M','" + endTime + "') between strftime('%H:%M', AdsPeriods.StartTime) and strftime('%H:%M', AdsPeriods.EndTime))\n" +
                 " )";
+        Log.i("Quert", selectQuery);
+        Cursor cursor = mDb.rawQuery(selectQuery, null);
+        Log.i("Qu dataBase", "" + cursor.getCount());
+        if (cursor.getCount() > 0 && cursor.moveToFirst()) {
+            do {
+                AdsPeriods object = new AdsPeriods();
+                object.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                object.setAdvId(cursor.getInt(cursor.getColumnIndex("AdvId")));
+                object.setDay(cursor.getInt(cursor.getColumnIndex("day")));
+                object.setStartTime(cursor.getString(cursor.getColumnIndex("StartTime")));
+                object.setEndTime(cursor.getString(cursor.getColumnIndex("EndTime")));
+                hasConflict = true;
+                Log.i("Qu dataBase", "" + object.getAdvId() + " : " + object.getDay());
+            } while (cursor.moveToNext());
+        }
+        return hasConflict;
+    }
+
+    public boolean itHasConflict(int masjedId, AdsPeriods ads, AdsPeriods lastObject) {
+        boolean hasConflict = false;
+        String startDate = ads.getStartDate();
+        String endDate = ads.getEndDate();
+        String startTime = ads.getStartTime();
+        String endTime = ads.getEndTime();
+        int day = ads.getDay();
+
+        String selectQuery = " select * from Advertisement left join  AdsPeriods on\n" +
+                " (Advertisement.id = AdsPeriods.AdvId) where Advertisement.MasjedID=" + masjedId + " and (\n" +
+                " (strftime('%Y-%m-%d', AdsPeriods.StartDate)  between  strftime('%Y-%m-%d','" + startDate + "')  and strftime('%Y-%m-%d','" + endDate + "')) \n" +
+                "or ( strftime('%Y-%m-%d', AdsPeriods.EndDate)  between  strftime('%Y-%m-%d','" + startDate + "')  and strftime('%Y-%m-%d','" + endDate + "')) \n" +
+                " or (strftime('%Y-%m-%d','" + startDate + "') between strftime('%Y-%m-%d', AdsPeriods.StartDate) and strftime('%Y-%m-%d', AdsPeriods.EndDate) ) \n" +
+                " or( strftime('%Y-%m-%d','" + endDate + "') between strftime('%Y-%m-%d', AdsPeriods.StartDate) and strftime('%Y-%m-%d', AdsPeriods.EndDate))\n" +
+                " ) and  (AdsPeriods.day =" + day + ") and ( (strftime('%H:%M', AdsPeriods.StartTime) between  strftime('%H:%M','" + startTime + "') " +
+                " and  strftime('%H:%M','" + endTime + "') )\n" +
+                " or(  strftime('%H:%M', AdsPeriods.EndTime)  between  strftime('%H:%M','" + startTime + "')  and  strftime('%H:%M','" + endTime + "'))\n" +
+                " or ( strftime('%H:%M','" + startTime + "') between strftime('%H:%M', AdsPeriods.StartTime) and strftime('%H:%M', AdsPeriods.EndTime))\n" +
+                " or (  strftime('%H:%M','" + endTime + "') between strftime('%H:%M', AdsPeriods.StartTime) and strftime('%H:%M', AdsPeriods.EndTime))\n" +
+                " ) and AdsPeriods.id not in " + "( SELECT id FROM AdsPeriods WHERE AdvId=" + lastObject.getAdvId()
+                + " and  strftime('%H:%M', AdsPeriods.StartTime)=strftime('%H:%M','" + lastObject.getStartTime() + "')"
+                + " and  strftime('%H:%M', AdsPeriods.EndTime)=strftime('%H:%M','" + lastObject.getEndTime() + "')" +")";
         Log.i("Quert", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("Qu dataBase", "" + cursor.getCount());
@@ -994,8 +1157,39 @@ public class DBOperations {
         // open();
         mDb.execSQL("DELETE  FROM Advertisement where id=" + id + " AND MasjedID=" + MasjedID + "");
         mDb.execSQL("DELETE  FROM AdsPeriods where AdvId=" + id + "");
-
         Log.i("DBOperations", "DELETE  FROM Advertisement where id=" + id + " AND MasjedID=" + MasjedID + "");
+
+    }
+
+    public void delAdsPeriods(int id) {
+        Log.d("DBOperations", "table profile data eraser");
+        // open();
+        mDb.execSQL("DELETE  FROM AdsPeriods where AdvId=" + id + "");
+        Log.i("DBOperations", "DELETE  FROM AdsPeriods where AdvId=" + id + "");
+
+    }
+
+    public void delAdvPeriod(int advId, AdsPeriods lastObject) {
+        Log.d("DBOperations", "table profile data eraser");
+        // open();
+//        mDb.execSQL("DELETE  FROM Advertisement where id=" + id + " AND MasjedID=" + MasjedID + "");
+        mDb.execSQL("DELETE  FROM AdsPeriods where AdvId=" + advId + " and id in "
+                + "( SELECT id FROM AdsPeriods WHERE AdvId=" + lastObject.getAdvId() + " and  StartTime='"
+                + lastObject.getStartTime() + "' and EndTime='" + lastObject.getEndTime() + "')");
+        Log.i("DBOperations", "DELETE  FROM AdsPeriods where AdvId=" + advId + " and id in "
+                + "( SELECT id FROM AdsPeriods WHERE AdvId=" + lastObject.getAdvId() + " and  StartTime='"
+                + lastObject.getStartTime() + "' and EndTime='" + lastObject.getEndTime() + "')");
+
+    }
+
+    public void delAdvPeriods(AdsPeriods adv) {
+        Log.d("DBOperations", "table profile data eraser");
+        // open();
+//        mDb.execSQL("DELETE  FROM Advertisement where id=" + id + " AND MasjedID=" + MasjedID + "");
+        mDb.execSQL("DELETE  FROM AdsPeriods  WHERE AdvId=" + adv.getAdvId() + " and  StartTime='"
+                + adv.getStartTime() + "' and EndTime='" + adv.getEndTime() + "'");
+        Log.i("DBOperations", "DELETE  FROM AdsPeriods  WHERE AdvId=" + adv.getAdvId() + " and  StartTime='"
+                + adv.getStartTime() + "' and EndTime='" + adv.getEndTime() + "'");
 
     }
 

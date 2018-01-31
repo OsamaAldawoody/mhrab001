@@ -397,6 +397,7 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 if (TextUtils.isEmpty(ed_start.getText().toString())) {
                     ed_start.setError("أدخل تاريخ بداية ظهورالإعلان");
+                    return;
                 }
                 if (TextUtils.isEmpty(ed_end.getText().toString())) {
                     ed_end.setError("أدخل تاريخ نهاية ظهورالإعلان");
@@ -425,11 +426,11 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
                     return;
                 }
                 Log.i("/////: ", edStartTime.getText().toString().trim());
-                AdsPeriods adsPeriods = new AdsPeriods();
-                adsPeriods.setStartTime(edStartTime.getText().toString().trim());
-                adsPeriods.setEndTime(edEndTime.getText().toString().trim());
-                adsPeriods.setStartDate(ed_start.getText().toString().trim());
-                adsPeriods.setEndDate(ed_end.getText().toString().trim());
+//                AdsPeriods adsPeriods = new AdsPeriods();
+//                adsPeriods.setStartTime(edStartTime.getText().toString().trim());
+//                adsPeriods.setEndTime(edEndTime.getText().toString().trim());
+//                adsPeriods.setStartDate(ed_start.getText().toString().trim());
+//                adsPeriods.setEndDate(ed_end.getText().toString().trim());
                 List<Integer> dayList = new ArrayList<>();
                 dayList.clear();
                 if (cbSat.isChecked()) {
@@ -456,6 +457,11 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
                 String days = "";
 
                 for (int x = 0; x < dayList.size(); x++) {
+                    AdsPeriods adsPeriods = new AdsPeriods();
+                    adsPeriods.setStartTime(edStartTime.getText().toString().trim());
+                    adsPeriods.setEndTime(edEndTime.getText().toString().trim());
+                    adsPeriods.setStartDate(ed_start.getText().toString().trim());
+                    adsPeriods.setEndDate(ed_end.getText().toString().trim());
                     days = dayList.get(x) + ","+days;
                     adsPeriods.setDay(dayList.get(x));
 //                    adsPeriodsList.add(adsPeriods);
@@ -517,8 +523,12 @@ public class AddAdsActivity extends AppCompatActivity implements View.OnClickLis
                                 }
                                 DBO.insertAdsPeriod(adsPeriodsList);
                                 adsPeriods.setDays(days);
+                                DBO.open();
+                                String AdsDay = DBO.getAdvPeriods(advId, adsPeriods.getStartTime(), adsPeriods.getEndTime());
+                                String AdsIds = DBO.getAdvPeriodsIds(advId, adsPeriods.getStartTime(), adsPeriods.getEndTime());
+                                DBO.close();
                                 adsList.add(new AdsPeriods(adsPeriods.getAdvId(), adsPeriods.getStartTime(), adsPeriods.getEndTime(),
-                                        adsPeriods.getStartDate(), adsPeriods.getEndDate(), adsPeriods.getDays(), true));
+                                        adsPeriods.getStartDate(), adsPeriods.getEndDate(), adsPeriods.getDays(),AdsIds, true));
 
                                 btn.setVisibility(View.GONE);
                                 checkList.add(pos);

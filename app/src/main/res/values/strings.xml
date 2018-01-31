@@ -136,6 +136,7 @@
     <string name="azkar"> الأذكار والأدعية</string>
     <string name="advertisement"> الإعلانات</string>
     <string name="ads"> إضافة إعلان</string>
+    <string name="ads_edit"> تعديل إعلان</string>
     <string name="adv_settings">إضافة ,تعديل, حذف الأخبار</string>
     <string name="azkar_settings">إضافة ,تعديل, حذف الأذكار</string>
     <string name="NewAds_settings">إضافة إعلان يظهر في وقت محددة</string>
@@ -177,9 +178,11 @@
     <string name="azkar_t">أَصْـبَحْنا وَأَصْـبَحَ المُـلْكُ لله وَالحَمدُ لله ، لا إلهَ إلاّ اللّهُ وَحدَهُ لا شَريكَ لهُ، لهُ المُـلكُ ولهُ الحَمْـد، وهُوَ على كلّ شَيءٍ قدير ، رَبِّ أسْـأَلُـكَ خَـيرَ ما في هـذا اليوم وَخَـيرَ ما بَعْـدَه ، وَأَعـوذُ بِكَ مِنْ شَـرِّ ما في هـذا اليوم وَشَرِّ ما بَعْـدَه، رَبِّ أَعـوذُبِكَ مِنَ الْكَسَـلِ وَسـوءِ الْكِـبَر ، رَبِّ أَعـوذُ بِكَ مِنْ عَـذابٍ في النّـارِ وَعَـذابٍ في القَـبْر.</string>
     <string name="cancel_delete">إلغاء</string>
     <string name="ok">موافق</string>
-    <string name="confirm_logout">هل أنت متأكد أنك تريج تسجيل الخروج؟ </string>
+    <string name="confirm_logout">هل أنت متأكد أنك تريد تسجيل الخروج؟ </string>
     <string name="confirm_delete">حذف</string>
-    <string name="tv_delTitle">حذف خبر</string>
+    <string name="tv_delTitle">حذف الخبر</string>
+    <string name="tv_delMsg">هذه الفترة الوحيدة للاعلان سيتم حذف كل الاعلان, هل تريد الاستمرار؟</string>
+    <string name="tv_delMsg1">هل أنت متأكد أنك تريد حذف هذه الفترة؟</string>
     <string name="tv_delAttention">هل أنت متأكد أنك تريد حذف هذا الخبر؟</string>
     <string name="tv_delAttention1">هل أنت متأكد أنك تريد حذف هذا الذكر؟</string>
     <string name="success_delete">تم الحذف بنجاح</string>

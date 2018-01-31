@@ -4,8 +4,8 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:background="@drawable/backgraund2"
+    android:fitsSystemWindows="true"
     android:layoutDirection="rtl"
     android:rotation="0"
     android:textDirection="rtl">
@@ -207,7 +207,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/percent"
         android:gravity="center">
-
         <TextView
             android:id="@+id/dateToday"
             android:layout_width="match_parent"
@@ -215,12 +214,12 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:gravity="center"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp"
+            android:paddingBottom="4dp"
+            android:paddingTop="4dp"
             android:text="السبت | 5 ديسمبر 2015 | 24 صفر1437 هـ"
             android:textColor="@color/white"
             android:textDirection="ltr"
-            android:textSize="30dp" />
+            android:textSize="28dp" />
     </LinearLayout>
 
     <View
@@ -523,8 +522,7 @@
                 android:background="@drawable/buttom_corner"
                 android:gravity="center_vertical"
                 android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-            >
+                android:paddingRight="20dp">
 
                 <TextView
                     android:id="@+id/tvIqama"
@@ -587,12 +585,14 @@
             android:gravity="center"
             android:layoutDirection="rtl"
             android:orientation="horizontal">
+
             <RelativeLayout
                 android:id="@+id/rlNews"
                 android:layout_width="match_parent"
-                android:background="@color/back_text"
                 android:layout_height="match_parent"
+                android:background="@color/back_text"
                 android:visibility="visible">
+
                 <RelativeLayout
                     android:id="@+id/rlMasjedTitle"
                     android:layout_width="220dp"
@@ -622,18 +622,20 @@
                         android:layout_marginRight="2dp"
                         android:layout_toLeftOf="@+id/ivMasjedLogo"
                         android:background="@color/back_text"
-                        android:lineSpacingMultiplier="0.75"
                         android:gravity="center"
+                        android:lineSpacingMultiplier="0.75"
                         android:text="مسجد عائشة أم المؤمنين"
                         android:textColor="@color/white"
                         android:textSize="15dp" />
                 </RelativeLayout>
+
                 <View
                     android:id="@+id/view"
                     android:layout_width="3dp"
                     android:layout_height="60dp"
                     android:layout_toLeftOf="@+id/rlMasjedTitle"
                     android:background="@color/span" />
+
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
@@ -642,6 +644,7 @@
                     android:layout_toRightOf="@+id/view1"
                     android:background="@color/back_span"
                     android:gravity="center">
+
                     <TextView
                         android:id="@+id/advText"
                         android:layout_width="match_parent"
@@ -659,6 +662,7 @@
                         android:textDirection="rtl"
                         android:textSize="28dp" />
                 </LinearLayout>
+
                 <View
                     android:id="@+id/view1"
                     android:layout_width="7dp"
@@ -666,23 +670,24 @@
                     android:layout_alignParentLeft="true"
                     android:background="@color/span" />
             </RelativeLayout>
+
             <LinearLayout
                 android:id="@+id/rlTitle"
                 android:layout_width="400dp"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
-                android:orientation="horizontal"
-                android:visibility="gone"
                 android:background="@drawable/name_back"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/ivLogo"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:gravity="center"
                     android:layout_gravity="center"
+                    android:gravity="center"
                     android:visibility="gone"
                     app:srcCompat="@drawable/ic_mosque" />
 
@@ -690,11 +695,11 @@
                     android:id="@+id/tvName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:singleLine="true"
                     android:layout_gravity="center"
+                    android:layout_marginRight="10dp"
                     android:ellipsize="end"
                     android:gravity="center"
+                    android:singleLine="true"
                     android:text="بلال بن رباح"
                     android:textColor="@color/span"
                     android:textSize="28dp" />
