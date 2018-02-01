@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Environment;
@@ -26,15 +27,21 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Chronometer;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerView;
 import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.Constants;
 import com.newsolution.almhrab.AppConstants.DateHigri;
+import com.newsolution.almhrab.AppConstants.DeveloperKey;
 import com.newsolution.almhrab.Helpar.PlaySound;
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Interface.OnLoadedFinished;
@@ -48,21 +55,35 @@ import com.streamaxia.android.handlers.RecordHandler;
 import com.streamaxia.android.handlers.RtmpHandler;
 import com.streamaxia.android.utils.Size;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.SocketException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class FridayActivity extends AppCompatActivity implements RtmpHandler.RtmpListener, RecordHandler.RecordListener,
+public class FridayActivity extends YouTubeFailureRecoveryActivity implements RtmpHandler.RtmpListener, RecordHandler.RecordListener,
         EncoderHandler.EncodeListener {
 
     private final String TAG = FridayActivity.class.getSimpleName();
@@ -112,6 +133,8 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
     private CountDownTimer countDownTimer;
     private boolean showLive = true;
     public static final String BROADCAST = Constants.PACKAGE_NAME + ".Activity.android.action.broadcast";
+    private Uri uriYouTube;
+    private YouTubePlayerView youtube_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,6 +179,8 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
 
         rlLivingStream = (RelativeLayout) findViewById(R.id.rlLivingStream);
         vvVideo = (VideoView) findViewById(R.id.vvAdsVideo);
+        youtube_view = (YouTubePlayerView) findViewById(R.id.youtube_view);
+        youtube_view.initialize(DeveloperKey.DEVELOPER_KEY, this);
         tvUrdText = (TextView) findViewById(R.id.tvUrdText);
         tvEngText = (TextView) findViewById(R.id.tvEngText);
         tvTitle = (TextView) findViewById(R.id.tvTitle);
@@ -182,7 +207,7 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
     }
 
     private void isStreaming() {
-        WS.isStreaming(activity,khotab.getTimeExpected(), new OnLoadedFinished() {
+        WS.isStreaming(activity, khotab.getTimeExpected(), new OnLoadedFinished() {
             @Override
             public void onSuccess(String response) {
 
@@ -224,38 +249,37 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
         tvTitle.setText(khotbaTitle);
         if (sp.getBoolean("IsDeaf", false)) {
             if (!TextUtils.isEmpty(khotab.getUrlVideoDeaf())) {
-                vvVideo.setVisibility(View.VISIBLE);
+                youtube_view.setVisibility(View.VISIBLE);
+//                youtube_view.initialize(DeveloperKey.DEVELOPER_KEY, this);
+//                vvVideo.setVisibility(View.VISIBLE);
                 rlLivingStream.setVisibility(View.GONE);
                 showLive = false;
-                vvVideo.setVideoURI(Uri.parse(khotab.getUrlVideoDeaf()));
-                vvVideo.start();
+//                vvVideo.setVideoURI(Uri.parse(khotab.getUrlVideoDeaf()));
+//                vvVideo.start();
+//                RTSPUrlTask truitonTask = new RTSPUrlTask();
+//                truitonTask.execute(khotab.getUrlVideoDeaf());
+
             } else {
                 showLive = true;
                 vvVideo.setVisibility(View.GONE);
+                youtube_view.setVisibility(View.GONE);
                 rlLivingStream.setVisibility(View.VISIBLE);
             }
         } else {
             showLive = true;
             vvVideo.setVisibility(View.GONE);
+            youtube_view.setVisibility(View.GONE);
             rlLivingStream.setVisibility(View.VISIBLE);
         }
-        vvVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                vvVideo.start();
-            }
-        });
-//        new Handler().postDelayed(new Runnable() {
+//        vvVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 //            @Override
-//            public void run() {
-//                if (!showLive) {
-//                    vvVideo.setVideoURI(Uri.parse(khotab.getUrlVideoDeaf()));
-//                    vvVideo.start();
-//                }
+//            public void onCompletion(MediaPlayer mediaPlayer) {
+//                vvVideo.start();
+//            }
+//        });
+
         animTranslation();
         startKhotbaTimer();
-//            }
-//        }, 30000);
     }
 
     private void animTranslation() {
@@ -283,7 +307,7 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
                 Log.i("999999", "rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
             } else {
                 finish();
-                Toast.makeText(this, "You need to grant persmissions in order to begin streaming.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "يجب السماح باستخدام الكاميرا", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -402,7 +426,7 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                 Log.i("////*: ", "[" + msg + "]");
+                    Log.i("////*: ", "[" + msg + "]");
                     Toast.makeText(activity, "[" + msg + "]", Toast.LENGTH_LONG).show();
                 }
             });
@@ -454,12 +478,12 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
 
     @Override
     public void onRecordFinished(String s) {
-        try {
-            Toast.makeText(activity, "[" + s + "]", Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            e.printStackTrace();
-            finish();
-        }
+//        try {
+//            Toast.makeText(activity, "[" + s + "]", Toast.LENGTH_LONG).show();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            finish();
+//        }
     }
 
     @Override
@@ -554,7 +578,7 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
     private void handleException(Exception e) {
         try {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            Log.i("streaming: ",e.getMessage());
+            Log.i("streaming: ", e.getMessage());
             mPublisher.stopPublish();
             mPublisher.stopRecord();
         } catch (Exception e1) {
@@ -566,5 +590,144 @@ public class FridayActivity extends AppCompatActivity implements RtmpHandler.Rtm
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+
+    void startPlaying(String url) {
+        Log.i("/////url: ", url + "");
+        uriYouTube = Uri.parse(url);
+        vvVideo.setVideoURI(uriYouTube);
+        vvVideo.start();
+    }
+
+    @Override
+    public void onInitializationSuccess(YouTubePlayer.Provider provider, final YouTubePlayer player,
+                                        boolean wasRestored) {
+        if (sp.getBoolean("IsDeaf", false)) {
+            if (!TextUtils.isEmpty(khotab.getUrlVideoDeaf())) {
+                player.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
+                    @Override
+                    public void onLoading() {
+
+                    }
+
+                    @Override
+                    public void onLoaded(String s) {
+                        player.play();
+                    }
+
+                    @Override
+                    public void onAdStarted() {
+
+                    }
+
+                    @Override
+                    public void onVideoStarted() {
+
+                    }
+
+                    @Override
+                    public void onVideoEnded() {
+
+                    }
+
+                    @Override
+                    public void onError(YouTubePlayer.ErrorReason errorReason) {
+
+                    }
+                });
+                if (!wasRestored) {
+                    String id = null;
+                    try {
+                        String prefix = "https://youtu.be/";
+                        String prefix1 = "http://youtu.be/";
+                        if (khotab.getUrlVideoDeaf().contains(prefix) || khotab.getUrlVideoDeaf().contains(prefix1)) {
+                            id = khotab.getUrlVideoDeaf().split("youtu.be/")[1];
+                        } else id = extractYoutubeId(khotab.getUrlVideoDeaf());
+                        player.cueVideo(id);
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                        rlLivingStream.setVisibility(View.VISIBLE);
+                        youtube_view.setVisibility(View.GONE);
+                    }
+
+                }
+            }
+        }
+    }
+
+    @Override
+    protected YouTubePlayer.Provider getYouTubePlayerProvider() {
+        return (YouTubePlayerView) findViewById(R.id.youtube_view);
+    }
+
+
+    private class RTSPUrlTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+            String response = getRTSPVideoUrl(urls[0]);
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            startPlaying(result);
+        }
+
+        public String getRTSPVideoUrl(String urlYoutube) {
+            try {
+                String gdy = "http://gdata.youtube.com/feeds/api/videos/";
+                DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance()
+                        .newDocumentBuilder();
+                String id = extractYoutubeId(urlYoutube);
+                Log.i("/////id: ", id);
+                URL url = new URL(gdy + id);
+                Log.i("/////id: ", url + "");
+
+                HttpURLConnection connection = (HttpURLConnection) url
+                        .openConnection();
+                Document doc = dBuilder.parse(connection.getInputStream());
+                Element el = doc.getDocumentElement();
+                NodeList list = el.getElementsByTagName("media:content");
+                String cursor = urlYoutube;
+                for (int i = 0; i < list.getLength(); i++) {
+                    Node node = list.item(i);
+                    if (node != null) {
+                        NamedNodeMap nodeMap = node.getAttributes();
+                        HashMap<String, String> maps = new HashMap<String, String>();
+                        for (int j = 0; j < nodeMap.getLength(); j++) {
+                            Attr att = (Attr) nodeMap.item(j);
+                            maps.put(att.getName(), att.getValue());
+                        }
+                        if (maps.containsKey("yt:format")) {
+                            String f = maps.get("yt:format");
+                            if (maps.containsKey("url"))
+                                cursor = maps.get("url");
+                            if (f.equals("1"))
+                                return cursor;
+                        }
+                    }
+                }
+                return cursor;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                return urlYoutube;
+            }
+        }
+
+
+    }
+
+    public String extractYoutubeId(String url) throws MalformedURLException {
+        String query = new URL(url).getQuery();
+        String[] param = query.split("&");
+        String id = null;
+        for (String row : param) {
+            String[] param1 = row.split("=");
+            if (param1[0].equals("v")) {
+                id = param1[1];
+            }
+        }
+        return id;
     }
 }

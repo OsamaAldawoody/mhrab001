@@ -882,15 +882,17 @@ public class ClosePhone extends Activity {
             if (diffHours < 10)
                 fh = "0" + fh;
             val=fh;
-        }   else if (diffMinutes > 0) {
+        } else if (diffMinutes > 0) {
+            diffMinutes = diffMinutes + 1;
+            fm = "" + diffMinutes;
             if (diffMinutes < 10)
                 fm = "0" + fm;
             val = fm;
-            if (diffMinutes==1) val = "60";
-        }  else if (diffSeconds > 0) {
-          if(diffSeconds<10)
-              fs="0"+fs;
-            val = fs;// + " " + getString(R.string.s);
+//            if (diffMinutes==1) val = "60";
+        } else if (diffSeconds > 0) {
+            if (diffSeconds < 10)
+                fs = "0" + fs;
+            val = fs;
         } //else if (diffSeconds == 0) val = "60";
         else val = "";
         return val;

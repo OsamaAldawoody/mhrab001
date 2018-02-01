@@ -15,6 +15,26 @@ public class Ads implements Serializable {
     String Video;
     String StartDate;
     String EndDate;
+
+    public String getStartTime() {
+        return StartTime;
+    }
+
+    public void setStartTime(String startTime) {
+        StartTime = startTime;
+    }
+
+    public String getEndTime() {
+        return EndTime;
+    }
+
+    public void setEndTime(String endTime) {
+        EndTime = endTime;
+    }
+
+    String StartTime;
+    String EndTime;
+
     public Ads() {
     }
 

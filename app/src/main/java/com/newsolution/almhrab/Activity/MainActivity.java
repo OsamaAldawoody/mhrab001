@@ -487,7 +487,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                     String recPath = extras.getString("recPath");
                     String DateKhotab = extras.getString("DateKhotab");
                     int IdKhotab = extras.getInt("IdKhotab");
-                    Log.d("Received Msg : ", recPath);
+                    Log.i("Sermon path  : ", recPath);
                     new uploadSermonToServer().execute(recPath, IdKhotab + "", DateKhotab);
 
                 }
@@ -529,6 +529,8 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 
 //        getWeather();
 //        Scan();
+//        playSermon();
+
     }
 
 
@@ -1422,15 +1424,22 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 if (khotba.getIsException() == 0) {
                     if (Utils.isOnline(activity)) {
                         stopTimer = true;
-                        timer.cancel();
-                        timer.purge();
+                        if (timer != null) {
+                            timer.cancel();
+                            timer.purge();
+                        }
                         Log.i("***voice1", "countDown");
                         iqamatime = "";
-                        Intent cp = new Intent(activity, FridayActivity.class);
-                        cp.putExtra("khotba", khotba);
-                        startActivity(cp);
-                        isOpenSermon = true;
-                        Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent cp = new Intent(activity, FridayActivity.class);
+                                cp.putExtra("khotba", khotba);
+                                startActivity(cp);
+                                isOpenSermon = true;
+                                Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
+                            }
+                        }, 60000);
 
 //                        new Handler().postDelayed(new Runnable() {
 //                            @Override
@@ -1457,6 +1466,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                     return true;
                 }
             } catch (Exception e) {
+                Log.i("Sermon excionept  : ", e.getMessage());
                 e.printStackTrace();
                 return false;
             }
@@ -1483,7 +1493,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         String upLoadServerUri = Constants.Main_URL + "SaveKhotabVideo?IdSubscribe=" + masjedId
                 + "&GUID=" + GUID + "&DeviceNo=" + DeviceNo + "&IdKhotab=" + IdKhotab + "&DateKhotab=" + DateKhotab;
         // String [] string = sourceFileUri;
-        Log.i("/// test: ", upLoadServerUri + "");
+        Log.i("///test: ", upLoadServerUri + "");
         String fileName = sourceFileUri;
 
         HttpURLConnection conn = null;
@@ -1797,13 +1807,15 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         rlIqRemainingT.setVisibility(View.VISIBLE);
         rlPrayRemainingT.setVisibility(View.GONE);
         rlIsPrayTime.setVisibility(View.GONE);
-
+        Log.i("mint: ", diffMinutes + "");
         if (diffHours > 0) {
             if (diffHours < 10)
                 fh = "0" + fh;
             tvIqRemaingTime.setText(" " + fh + " ");
             tvUnit.setText(getString(R.string.h));
         } else if (diffMinutes > 0) {
+            diffMinutes = diffMinutes + 1;
+            fm = "" + diffMinutes;
             if (diffMinutes < 10)
                 fm = "0" + fm;
             tvIqRemaingTime.setText(" " + fm + " ");
@@ -2254,49 +2266,79 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     }
 
     private void checkAds() {
-     /*   SimpleDateFormat df = new SimpleDateFormat("HH:mm", new Locale("en"));
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm", new Locale("en"));
+        SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd", new Locale("en"));
         Date date = new Date();
         String currentTime = df.format(date);
+        String currentDate = dfDate.format(date);
+        int day = 0;
+        if (Utils.isSaturday())
+            day = 1;
+        if (Utils.isSunday())
+            day = 2;
+        if (Utils.isMonday())
+            day = 3;
+        if (Utils.isTuesday())
+            day = 4;
+        if (Utils.isWednesday())
+            day = 5;
+        if (Utils.isThursday())
+            day = 6;
+        if (Utils.isFriday())
+            day = 7;
+
         DBO.open();
-        ArrayList<Ads> adsList = DBO.getAdsByTime(sp.getInt("masjedId", -1), currentTime);
+        ArrayList<Ads> adsList = DBO.getAdsByDate(sp.getInt("masjedId", -1), currentDate, currentTime, day);
         DBO.close();
         if (adsList.size() > 0) {
             for (int i = 0; i < adsList.size(); i++) {
                 Ads ads = adsList.get(i);
-                String adsStartTime = ads.getStartTime();
-                String adsEndTime = ads.getStartTime();
-                try {
-                    Date start = df.parse(adsStartTime);
-                    Date end = df.parse(adsEndTime);
-                    Date now = df.parse(currentTime);
-                    if (start.equals(now)) {
-                        if ((Utils.isSaturday() && ads.isSaturday()) || (Utils.isSunday() && ads.isSunday())
-                                || (Utils.isMonday() && ads.isMonday()) || (Utils.isTuesday() && ads.isTuesday())
-                                || (Utils.isWednesday() && ads.isWednesday()) || (Utils.isThursday() && ads.isThursday())
-                                || (Utils.isFriday() && ads.isFriday())) {
-                            if (!isOpenAds) {
-                                isOpenAds = true;
-                                Intent intent = new Intent(activity, ShowAdsActivity.class);
-                                intent.putExtra("ads", ads);
-                                intent.setAction("main");
-                                startActivity(intent);
-                            }
-                            break;
-                        }
-                    }
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                if (!isOpenAds) {
+                    isOpenAds = true;
+                    Intent intent = new Intent(activity, ShowAdsActivity.class);
+                    intent.putExtra("ads", ads);
+                    intent.setAction("main");
+                    startActivity(intent);
                 }
+//                String adsStartTime = ads.getStartTime();
+//                String adsEndTime = ads.getStartTime();
+//                try {
+//                    Date start = df.parse(adsStartTime);
+//                    Date end = df.parse(adsEndTime);
+//                    Date now = df.parse(currentTime);
+//                    if (start.equals(now)) {
+//                        if ((Utils.isSaturday() && ads.isSaturday()) || (Utils.isSunday() && ads.isSunday())
+//                                || (Utils.isMonday() && ads.isMonday()) || (Utils.isTuesday() && ads.isTuesday())
+//                                || (Utils.isWednesday() && ads.isWednesday()) || (Utils.isThursday() && ads.isThursday())
+//                                || (Utils.isFriday() && ads.isFriday())) {
+//                            if (!isOpenAds) {
+//                                isOpenAds = true;
+//                                Intent intent = new Intent(activity, ShowAdsActivity.class);
+//                                intent.putExtra("ads", ads);
+//                                intent.setAction("main");
+//                                startActivity(intent);
+//                            }
+//                            break;
+//                        }
+//                    }
+//                } catch (ParseException e) {
+//                    e.printStackTrace();
+//                }
             }
         }
-        adsRunnable = new Runnable() {
-            @Override
-            public void run() {
-                checkAds();
-            }
-        };
+
+        adsRunnable = new
+
+                Runnable() {
+                    @Override
+                    public void run() {
+                        checkAds();
+                    }
+                }
+
+        ;
         AdsHandler.postDelayed(adsRunnable, 1000);
-  */
+
     }
 
     private void openAds() {
@@ -2831,10 +2873,10 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 
     @Override
     protected void onPause() {
-        if (myReceiver != null) {
-            unregisterReceiver(myReceiver);
-            myReceiver = null;
-        }
+//        if (myReceiver != null) {
+//            unregisterReceiver(myReceiver);
+//            myReceiver = null;
+//        }
         super.onPause();
         stopTimer = true;
         timer.cancel();
@@ -3188,6 +3230,10 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 
     protected void onDestroy() {
         try {
+            if (myReceiver != null) {
+                unregisterReceiver(myReceiver);
+                myReceiver = null;
+            }
             if (this._Timer != null) this._Timer.cancel();
             if (this._BroadcastService != null) {
                 this._BroadcastService.StopScan();

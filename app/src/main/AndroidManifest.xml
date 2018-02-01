@@ -159,11 +159,15 @@
         <activity
             android:name=".Activity.EditAdsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeAct" />
+            android:theme="@style/AppThemeAct"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
         <activity
             android:name=".Activity.AddAdsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeAct" />
+            android:theme="@style/AppThemeAct"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
         <activity
             android:name=".Activity.VideoViewActivity"
             android:theme="@style/AppThemeAct"

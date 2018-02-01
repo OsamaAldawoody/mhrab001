@@ -120,7 +120,7 @@ public class SettingsActivity extends Activity {
 
         setContentView(R.layout.activity_settings);
 //        Utils.showCustomToast(activity,sp.getString("masjedPW","")+"  99");
-//        checkLogin();
+        checkLogin();
         DBO = new DBOperations(this);
         gv = (GlobalVars) getApplicationContext();
         DBO.open();

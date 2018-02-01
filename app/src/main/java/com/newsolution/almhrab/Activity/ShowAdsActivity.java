@@ -280,7 +280,7 @@ public class ShowAdsActivity extends AppCompatActivity {
     }
 
     private void checkAds() {
-      /*  if (ads != null) {
+       if (ads != null) {
             String adsStartTime = ads.getStartTime();
             String adsEndTime = ads.getEndTime();
             SimpleDateFormat df = new SimpleDateFormat("HH:mm", new Locale("en"));
@@ -306,7 +306,7 @@ public class ShowAdsActivity extends AppCompatActivity {
             }
         };
         AdsHandler.postDelayed(adsRunnable, 1000);
-   */ }
+    }
 
     private void checkTime() {
         DateHigri hd = new DateHigri();
