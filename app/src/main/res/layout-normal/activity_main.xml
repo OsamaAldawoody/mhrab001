@@ -835,23 +835,25 @@
                         <!--android:layoutDirection="rtl"-->
                         <!--android:textSize="12dp"-->
                         <!--android:gravity="center_vertical|right"   />-->
+                        <!--<com.newsolution.almhrab.Helpar.ScrollTextView-->
                         <TextView
                             android:id="@+id/advText"
                             android:layout_width="match_parent"
                             android:layout_height="fill_parent"
                             android:layout_gravity="bottom"
-                            android:ellipsize="marquee"
-                            android:focusable="true"
-                            android:focusableInTouchMode="true"
                             android:gravity="center_vertical|right"
-                            android:marqueeRepeatLimit="marquee_forever"
-                            android:scrollHorizontally="true"
                             android:singleLine="true"
                             android:text="مسجد بلال بن رباح يهنئى الشبل محمد أحمد لحفظه القران الكريـم ونسـأل الله الكريـم أن ينفـع بـه الإسـلام والمسلميــن"
                             android:textColor="@color/white"
+                            android:ellipsize="marquee"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:marqueeRepeatLimit="marquee_forever"
+                            android:scrollHorizontally="true"
                             android:textDirection="rtl"
                             android:textSize="12dp"
                             android:visibility="visible" />
+
                     </LinearLayout>
 
                     <View

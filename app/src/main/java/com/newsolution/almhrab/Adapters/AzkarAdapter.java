@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,14 +89,14 @@ public class AzkarAdapter extends RecyclerView.Adapter<AzkarAdapter.AdsViewHolde
         int viewType;
 
         TextView tv_adsText;
-        ImageView iv_delete,iv_edit;
+        AppCompatImageView iv_delete,iv_edit;
         public AdsViewHolder(View itemView, int viewType) {
             super(itemView);
             this.viewType = viewType;
 
             tv_adsText = (TextView) itemView.findViewById(R.id.tv_adsText);
-            iv_edit = (ImageView) itemView.findViewById(R.id.iv_edit);
-            iv_delete = (ImageView) itemView.findViewById(R.id.iv_delete);
+            iv_edit = (AppCompatImageView) itemView.findViewById(R.id.iv_edit);
+            iv_delete = (AppCompatImageView) itemView.findViewById(R.id.iv_delete);
 
 
         }

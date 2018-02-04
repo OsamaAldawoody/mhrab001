@@ -22,7 +22,7 @@
             android:textColor="@color/light_black"
             android:textSize="15dp" />
 
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
             android:id="@+id/iv_edit"
             android:layout_width="24dp"
             android:layout_height="24dp"
@@ -33,7 +33,7 @@
             android:layout_centerVertical="true"
             app:srcCompat="@drawable/ic_edit_black_24px" />
 
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
             android:id="@+id/iv_delete"
             android:layout_width="24dp"
             android:layout_height="24dp"

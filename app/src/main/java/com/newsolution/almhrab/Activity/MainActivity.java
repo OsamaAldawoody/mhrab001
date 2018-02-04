@@ -42,6 +42,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.AppCompatImageView;
+import android.support.v7.widget.AppCompatTextView;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -76,6 +77,7 @@ import com.newsolution.almhrab.AppConstants.DateHigri;
 import com.newsolution.almhrab.GlobalVars;
 import com.newsolution.almhrab.Helpar.CustomTypefaceSpan;
 import com.newsolution.almhrab.Helpar.PlaySound;
+import com.newsolution.almhrab.Helpar.ScrollTextView;
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Hijri_Cal_Tools;
 import com.newsolution.almhrab.Interface.OnLoadedFinished;
@@ -130,6 +132,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -2399,6 +2402,60 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 
         return outputIslamicDate;
     }
+    protected void setMarqueeSpeed(TextView tv, float speed, boolean speedIsMultiplier) {
+        try {
+            Field f = tv.getClass().getDeclaredField("mMarquee");
+            f.setAccessible(true);
+
+            Object marquee = f.get(tv);
+            if (marquee != null) {
+
+                String scrollSpeedFieldName = "mScrollUnit";
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                    scrollSpeedFieldName = "mPixelsPerSecond";
+
+                Field mf = marquee.getClass().getDeclaredField(scrollSpeedFieldName);
+                mf.setAccessible(true);
+
+                float newSpeed = speed;
+                if (speedIsMultiplier)
+                    newSpeed = mf.getFloat(marquee) * speed;
+                mf.setFloat(marquee, newSpeed);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void setMarqueeSpeed(TextView tv, float speed) {
+        if (tv != null) {
+            try {
+                Field f = null;
+                if (tv instanceof AppCompatTextView) {
+                    f = tv.getClass().getSuperclass().getDeclaredField("mMarquee");
+                } else {
+                    f = tv.getClass().getDeclaredField("mMarquee");
+                }
+                if (f != null) {
+                    f.setAccessible(true);
+                    Object marquee = f.get(tv);
+                    if (marquee != null) {
+                        String scrollSpeedFieldName = "mScrollUnit";
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            scrollSpeedFieldName = "mPixelsPerSecond";
+                        }
+                        Field mf = marquee.getClass().getDeclaredField(scrollSpeedFieldName);
+                        mf.setAccessible(true);
+                        mf.setFloat(marquee, speed);
+                    }
+                } else {
+                    Log.e("Marquee", "mMarquee object is null.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     private void animAdvs() {
         TextView advTitle;
@@ -2423,6 +2480,10 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         advTitle.setText(padText(advText, advTitle.getPaint(), advTitle.getWidth()) /*+ repeated*/);
         advTitle.setTypeface(fontDroidkufi);
         advTitle.setSelected(true);
+//        setMarqueeSpeed(advTitle, 5000,true);
+
+//        advTitle.setText(advText);
+//        advTitle.startScroll();
 //        MarqueeViewSingle marquee = (MarqueeViewSingle) findViewById(R.id.advTxt);
 //        marquee.setText1(advText);
 //        marquee.setTextDirection(View.LAYOUT_DIRECTION_RTL);

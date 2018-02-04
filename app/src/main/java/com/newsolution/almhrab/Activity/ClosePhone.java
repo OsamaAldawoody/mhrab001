@@ -842,6 +842,7 @@ public class ClosePhone extends Activity {
         return val;
     }
 
+
     private String getDifTime(String cdate, String ctime, String tdate, String ttime) {
         String val = "";
         String dateStart = cdate + " " + ctime;
@@ -882,22 +883,19 @@ public class ClosePhone extends Activity {
             if (diffHours < 10)
                 fh = "0" + fh;
             val=fh;
-        } else if (diffMinutes > 0) {
-            diffMinutes = diffMinutes + 1;
-            fm = "" + diffMinutes;
+        }   else if (diffMinutes > 0) {
             if (diffMinutes < 10)
                 fm = "0" + fm;
             val = fm;
-//            if (diffMinutes==1) val = "60";
-        } else if (diffSeconds > 0) {
-            if (diffSeconds < 10)
-                fs = "0" + fs;
-            val = fs;
+            if (diffMinutes==1) val = "60";
+        }  else if (diffSeconds > 0) {
+            if(diffSeconds<10)
+                fs="0"+fs;
+            val = fs;// + " " + getString(R.string.s);
         } //else if (diffSeconds == 0) val = "60";
         else val = "";
         return val;
     }
-
     private String convTime(String time) {
         String intime[] = time.split(":");
         int hour = Integer.parseInt(intime[0]);
