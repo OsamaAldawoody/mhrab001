@@ -236,7 +236,7 @@ public class ShowAdsActivity extends AppCompatActivity {
         String end = ads.getEndDate();
         String text = ads.getText();
         String image = ads.getImage();
-        String video = ads.getVideo();
+        final String video = ads.getVideo();
         tvTitle.setText(title);
         try {
             if (type == 1) {
@@ -266,6 +266,7 @@ public class ShowAdsActivity extends AppCompatActivity {
             vvAdsVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
+                    vvAdsVideo.setVideoURI(Uri.parse(video));
                     vvAdsVideo.start();
                 }
             });

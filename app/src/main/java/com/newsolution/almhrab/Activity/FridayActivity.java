@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
+//import android.lib.widget.verticalmarqueetextview.VerticalMarqueeTextView;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -19,18 +22,27 @@ import android.os.SystemClock;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatTextView;
+import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.RelativeSizeSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Chronometer;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,9 +54,14 @@ import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.Constants;
 import com.newsolution.almhrab.AppConstants.DateHigri;
 import com.newsolution.almhrab.AppConstants.DeveloperKey;
+import com.newsolution.almhrab.Helpar.AutoScrollingTextView;
+import com.newsolution.almhrab.Helpar.MarqueeLayout;
 import com.newsolution.almhrab.Helpar.PlaySound;
+import com.newsolution.almhrab.Helpar.ScrollTextView;
 import com.newsolution.almhrab.Helpar.Utils;
+import com.newsolution.almhrab.HorizontalMarqueeTextView;
 import com.newsolution.almhrab.Interface.OnLoadedFinished;
+import com.newsolution.almhrab.MarqueeViewSingle;
 import com.newsolution.almhrab.Model.Khotab;
 import com.newsolution.almhrab.R;
 import com.newsolution.almhrab.WebServices.WS;
@@ -64,6 +81,7 @@ import org.w3c.dom.NodeList;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketException;
@@ -79,6 +97,7 @@ import java.util.Locale;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import asia.ivity.android.marqueeview.MarqueeView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -135,6 +154,9 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
     public static final String BROADCAST = Constants.PACKAGE_NAME + ".Activity.android.action.broadcast";
     private Uri uriYouTube;
     private YouTubePlayerView youtube_view;
+    private HorizontalMarqueeTextView tvTra1, tvTra2;
+    private WebView wvEngText;
+    private WebView wvUrdText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,11 +211,17 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
         time = (TextView) findViewById(R.id.Time);
         amPm = (TextView) findViewById(R.id.amPm);
         amPm.setVisibility(View.VISIBLE);
+        wvEngText = (WebView) findViewById(R.id.wvEngText);
+        wvUrdText = (WebView) findViewById(R.id.wvUrdText);
         tvTitle.setTypeface(fontBangla_mn_bold);
         time.setTypeface(fontRoboto);
         date1.setTypeface(font);
         tvUrdText.setTypeface(fontDroidkufi);//fontBangla_mn_bold
         tvEngText.setTypeface(fontDroidkufi);
+//        Utils.applyFontBold(activity, wvEngText);
+//        Utils.applyFontBold(activity, wvUrdText);
+//        Utils.applyFontBold(activity, tvTra2);
+
         tvEngText.setText("");
         tvUrdText.setText("");
         tvName.setText(sp.getString("masjedName", ""));
@@ -283,12 +311,97 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
     }
 
     private void animTranslation() {
-        String body1 = khotab.getBody1();
+        final String body1 = khotab.getBody1();
         String body2 = khotab.getBody2();
-        tvEngText.setText(body1 + "");
-        tvUrdText.setText(body2 + "");
-        tvEngText.setSelected(true);
-        tvUrdText.setSelected(true);
+        int speed = khotab.getTranslationSpeed();
+        WebSettings settings1 = wvUrdText.getSettings();
+        WebSettings settings = wvEngText.getSettings();
+        settings1.setDefaultTextEncodingName("utf-8");
+        settings.setDefaultTextEncodingName("utf-8");
+        setScrollText(wvEngText, body1, khotab.isDirection1RTL() ? "right" : "left", speed);
+        setScrollText(wvUrdText, body2, khotab.isDirection2RTL() ? "right" : "left", speed);
+
+//        tvEngText.setVisibility(View.GONE);
+//        tvUrdText.setVisibility(View.GONE);
+//        tvEngText.setText(body1 + "");
+//        tvUrdText.setText(body2 + "");
+//        tvEngText.setSelected(true);
+//        tvUrdText.setSelected(true);
+    }
+
+    private void setScrollTextLeft(WebView wv, String body) {
+        wv.setBackgroundColor(Color.TRANSPARENT);
+        String fontSize = getResources().getDimensionPixelSize(R.dimen.textSize) + "px";
+        String htmlS = "<html><FONT style=font-size:" + fontSize + "; padding-bottom:10px; @font-face {font-family: MyFont;src: url(\"file:///android_asset/fonts/droidkufi_regular.ttf\")}; color='#ffffff' FACE='courier'><marquee behavior='scroll' direction='left' scrollamount=7>" + body + "</marquee></FONT></html>";
+        wv.loadData(htmlS, "text/html", "utf-8"); // Set focus to the textview
+    }
+
+    private void setScrollText(WebView wv, String body, String dir, int speed) {
+        wv.setBackgroundColor(Color.TRANSPARENT);
+
+        String fontSize = getResources().getDimensionPixelSize(R.dimen.translateFont) + "px";
+//        String htmlS = "<html><head><style type='text/css'>@font-face {font-family: 'droid_kufi_bold';src: url('file:///android_asset/fonts/bangla_mn_bold.ttf');} body {font-family: droid_kufi_bold;background-color: transparent;border: 0px;margin: 0px;padding-bottom: 8px; font-size: " + fontSize + ";color: #ffffff;}</style></head><body><marquee behavior=\"scroll\" direction=\"" + dir + "\" scrollamount=\"" + speed + "\">&nbsp;&nbsp;&nbsp;" + body + "</a>&nbsp;&nbsp;&nbsp;&nbsp;</marquee></body></html>";
+        String htmlS = "<html><head><style type='text/css'>@font-face {font-family: 'droid_kufi_bold';src: url('file:///android_asset/fonts/droid_kufi_bold.ttf');} body {font-family: droid_kufi_bold;background-color: transparent;border: 0px;margin: 0px;padding-bottom: 8px; font-size: " + fontSize + ";color: #ffffff;}</style></head><body><marquee behavior=\"scroll\" direction=\"" + dir + "\" scrollamount=\"" + speed + "\">&nbsp;&nbsp;&nbsp;" + body + "</a>&nbsp;&nbsp;&nbsp;&nbsp;</marquee></body></html>";
+//        String htmlS = "<html><FONT style=font-size:" + fontSize + "; padding-bottom:10px; color='#ffffff' FACE='courier'><marquee behavior='scroll' direction='"+dir+"' scrollamount="+speed+">" + body + "</marquee></FONT></html>";
+        wv.loadData(htmlS, "text/html; charset=utf-8", "utf-8");
+//        wv.loadData(htmlS, "text/html", "UTF-8"); // Set focus to the textview
+    }
+
+    public static void setMarqueeSpeed(TextView tv, float speed) {
+        if (tv != null) {
+            try {
+                Field f = null;
+                if (tv instanceof AppCompatTextView) {
+                    f = tv.getClass().getSuperclass().getDeclaredField("mMarquee");
+                } else {
+                    f = tv.getClass().getDeclaredField("mMarquee");
+                }
+                if (f != null) {
+                    f.setAccessible(true);
+                    Object marquee = f.get(tv);
+                    if (marquee != null) {
+                        String scrollSpeedFieldName = "mScrollUnit";
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            scrollSpeedFieldName = "mPixelsPerSecond";
+                        }
+                        Field mf = marquee.getClass().getDeclaredField(scrollSpeedFieldName);
+                        mf.setAccessible(true);
+                        mf.setFloat(marquee, speed);
+                    }
+                } else {
+                    Log.e("Marquee", "mMarquee object is null.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void animateUrd(TextView tvEngText) {
+        Paint textPaint = tvEngText.getPaint();
+        String text = tvEngText.getText().toString();//get text
+        int width = Math.round(textPaint.measureText(text));//measure the text size
+        ViewGroup.LayoutParams params = tvEngText.getLayoutParams();
+        params.width = width;
+        tvEngText.setLayoutParams(params); //refine
+
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getRealMetrics(displaymetrics);
+        int screenWidth = displaymetrics.widthPixels;
+
+        //this is optional. do not scroll if text is shorter than screen width
+        //remove this won't effect the scroll
+        if (width <= screenWidth) {
+            //All text can fit in screen.
+            return;
+        }
+        //set the animation
+        TranslateAnimation slide = new TranslateAnimation(0, -width, 0, 0);
+        slide.setDuration(20000);
+        slide.setRepeatCount(Animation.INFINITE);
+        slide.setRepeatMode(Animation.RESTART);
+        slide.setInterpolator(new LinearInterpolator());
+        tvEngText.startAnimation(slide);
     }
 
     @Override

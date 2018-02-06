@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:example="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -79,11 +79,13 @@
         android:layout_marginTop="5dp"
         android:background="@drawable/title_back"
         android:gravity="center"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:text="ميلاد خير البشر - اچھے لوگوں کی پیدائش - ভালো মানুষদের জন্ম"
+        android:lineSpacingMultiplier="0.8"
+        android:maxLines="2"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:text=" اچھے لوگوں کی پیدائش - ভালো মানুষদের জন্ম"
         android:textColor="@color/white"
-        android:textSize="12dp" />
+        android:textSize="20dp" />
 
     <RelativeLayout
         android:id="@+id/llLive"
@@ -170,16 +172,33 @@
     <LinearLayout
         android:id="@+id/llFridayText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_above="@+id/tvName"
         android:layout_below="@+id/llLive"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:layout_marginBottom="3dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:gravity="center"
         android:orientation="vertical">
+
+        <WebView
+            android:id="@+id/wvEngText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/white"
+            android:visibility="visible" />
+
+        <WebView
+            android:id="@+id/wvUrdText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/white"
+            android:visibility="visible" />
 
         <TextView
             android:id="@+id/tvEngText"
@@ -189,13 +208,16 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:gravity="center"
+            android:layoutDirection="ltr"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:text="ایک اچھا آدمی محمد بن عبداللہ
- کی پیدائش اس پر ہے"
+        کی پیدائش اس پر ہے"
             android:textColor="@color/white"
-            android:textSize="24dp" />
+            android:textDirection="ltr"
+            android:textSize="22dp"
+            android:visibility="visible" />
 
         <TextView
             android:id="@+id/tvUrdText"
@@ -213,7 +235,8 @@
  আবদুল্লাহ এটা জন্ম হয় এটা একজন ভাল মানুষ মুহাম্মদ ইবনে
  আবদুল্লাহ এটা জন্ম হয় এটা"
             android:textColor="@color/white"
-            android:textSize="24dp" />
+            android:textSize="22dp"
+            android:visibility="visible" />
 
     </LinearLayout>
 

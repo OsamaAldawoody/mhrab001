@@ -62,7 +62,7 @@ public class Utils {
     public static String PREFS = "AlMhrabApp";
     public static final String ENGLISH = "English";
     public static final String ARABIC = "Arabic";
-    public static String FONT_NAME_B = "fonts/neosansarabic.ttf";
+    public static String FONT_NAME_B = "fonts/droidkufi_regular.ttf";
     public static String FONT_NAME_EB = "fonts/droid_kufi_bold.ttf";
     public static String FONT_NAME = "fonts/ae_battar.ttf";
     public static String FONT_LOGO = "fonts/deco_naskh_special.ttf";

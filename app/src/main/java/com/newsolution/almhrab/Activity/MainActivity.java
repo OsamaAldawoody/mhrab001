@@ -491,7 +491,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                     String DateKhotab = extras.getString("DateKhotab");
                     int IdKhotab = extras.getInt("IdKhotab");
                     Log.i("Sermon path  : ", recPath);
-                    new uploadSermonToServer().execute(recPath, IdKhotab + "", DateKhotab);
+//                    new uploadSermonToServer().execute(recPath, IdKhotab + "", DateKhotab);
 
                 }
             }
@@ -532,7 +532,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 
 //        getWeather();
 //        Scan();
-//        playSermon();
+        playSermon();
 
     }
 
@@ -1442,7 +1442,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                                 isOpenSermon = true;
                                 Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
                             }
-                        }, 60000);
+                        }, 1000);
 
 //                        new Handler().postDelayed(new Runnable() {
 //                            @Override
@@ -2402,30 +2402,6 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 
         return outputIslamicDate;
     }
-    protected void setMarqueeSpeed(TextView tv, float speed, boolean speedIsMultiplier) {
-        try {
-            Field f = tv.getClass().getDeclaredField("mMarquee");
-            f.setAccessible(true);
-
-            Object marquee = f.get(tv);
-            if (marquee != null) {
-
-                String scrollSpeedFieldName = "mScrollUnit";
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                    scrollSpeedFieldName = "mPixelsPerSecond";
-
-                Field mf = marquee.getClass().getDeclaredField(scrollSpeedFieldName);
-                mf.setAccessible(true);
-
-                float newSpeed = speed;
-                if (speedIsMultiplier)
-                    newSpeed = mf.getFloat(marquee) * speed;
-                mf.setFloat(marquee, newSpeed);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public static void setMarqueeSpeed(TextView tv, float speed) {
         if (tv != null) {
@@ -2480,8 +2456,6 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         advTitle.setText(padText(advText, advTitle.getPaint(), advTitle.getWidth()) /*+ repeated*/);
         advTitle.setTypeface(fontDroidkufi);
         advTitle.setSelected(true);
-//        setMarqueeSpeed(advTitle, 5000,true);
-
 //        advTitle.setText(advText);
 //        advTitle.startScroll();
 //        MarqueeViewSingle marquee = (MarqueeViewSingle) findViewById(R.id.advTxt);

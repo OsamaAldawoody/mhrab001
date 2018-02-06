@@ -2,24 +2,34 @@ package com.newsolution.almhrab.Helpar;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Build;
+import android.support.v7.widget.AppCompatTextView;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.animation.LinearInterpolator;
 import android.widget.Scroller;
 import android.widget.TextView;
 
+import java.lang.reflect.Field;
+
 /**
  * Created by hp on 2/3/2018.
  */
-@SuppressLint("AppCompatCustomView")
+
+/**
+ * Created by riteshb on 5/17/2017.
+ */
+
 public class ScrollTextView extends TextView {
 
     // scrolling feature
     private Scroller mSlr;
 
     // milliseconds for a round of scrolling
-    private int mRndDuration = 10000;
+    private int mRndDuration = 20000;
 
     // the X offset when paused
     private int mXPaused = 0;

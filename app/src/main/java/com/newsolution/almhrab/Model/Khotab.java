@@ -21,6 +21,11 @@ public class Khotab implements Serializable{
     public String UrlVideoDeaf; // رابط فيديو لغة الاشارة ،، اذا موجود بكون في فيديو ، واذا فاضي اذا لا يحتوي على لغة اشارة
     public int TimeExpected;// وقت الخطبة المقدر ،، الوقت بالدقائق ،،، يستخدم ل زمن اظهار الترجمة على الشاشة وزمن تسجيل الخطبة من بعد الاذان ب 2 دقيقة مثلا
     public int isException;
+    public int TranslationSpeed;
+    public boolean Direction1RTL;
+    public boolean Direction2RTL;
+
+
     public Khotab(){}
     public Khotab(int Id, String Title, String Body, String DateKhotab, String UpdatedAt, int isDeleted, String Description
             , String Title1, String Body1, String Title2, String Body2, String UrlVideoDeaf, int TimeExpected, int isException) {
@@ -38,6 +43,29 @@ public class Khotab implements Serializable{
         this.UrlVideoDeaf = UrlVideoDeaf;
         this.TimeExpected = TimeExpected;
         this.isException = isException;
+    }
+    public int getTranslationSpeed() {
+        return TranslationSpeed;
+    }
+
+    public void setTranslationSpeed(int translationSpeed) {
+        TranslationSpeed = translationSpeed;
+    }
+
+    public boolean isDirection1RTL() {
+        return Direction1RTL;
+    }
+
+    public void setDirection1RTL(boolean direction1RTL) {
+        Direction1RTL = direction1RTL;
+    }
+
+    public boolean isDirection2RTL() {
+        return Direction2RTL;
+    }
+
+    public void setDirection2RTL(boolean direction2RTL) {
+        Direction2RTL = direction2RTL;
     }
 
     public int getId() {

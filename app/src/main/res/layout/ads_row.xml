@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@+id/iv_edit"
+            android:layout_toRightOf="@+id/iv_view"
             android:layoutDirection="rtl"
             android:orientation="vertical">
 
@@ -26,6 +26,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical|right"
                 android:padding="5dp"
+
                 android:textColor="@color/light_black"
                 android:textSize="@dimen/textSize" />
 
@@ -51,15 +52,28 @@
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/iv_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_toRightOf="@+id/iv_edit"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="5dp"
+            app:srcCompat="@drawable/ic_icon_views_line" />
+
+        <ImageView
             android:id="@+id/iv_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackground"
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:layout_toRightOf="@+id/iv_delete"
+            android:background="?android:attr/selectableItemBackground"
             android:padding="5dp"
             app:srcCompat="@drawable/ic_edit_black_24px" />
 
@@ -68,11 +82,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:background="?android:attr/selectableItemBackground"
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
+            android:background="?android:attr/selectableItemBackground"
             android:padding="5dp"
             app:srcCompat="@drawable/ic_clear_black_24px" />
     </RelativeLayout>

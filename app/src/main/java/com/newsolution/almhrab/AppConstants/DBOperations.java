@@ -499,6 +499,10 @@ public class DBOperations {
         values.put("TimeExpected", object.getTimeExpected());
         values.put("isDeleted", object.getIsDeleted());
         values.put("isException", object.getIsException());
+        values.put("TranslationSpeed", object.getTranslationSpeed());
+        values.put("TranslationSpeed", object.getTranslationSpeed());
+        values.put("Direction1RTL", object.isDirection1RTL()?1:0);
+        values.put("Direction2RTL", object.isDirection2RTL()?1:0);
         //db.insert("Service_Provider", null, values);
         long rowid = db.insert("Khotab", null, values);
         // db.close();
@@ -527,7 +531,10 @@ public class DBOperations {
                 object.setTimeExpected(cursor.getInt(cursor.getColumnIndex("TimeExpected")));
                 object.setIsDeleted(cursor.getInt(cursor.getColumnIndex("isDeleted")));
                 object.setIsException(cursor.getInt(cursor.getColumnIndex("isException")));
-                Log.d("Khotab", "" + object.getUrlVideoDeaf());
+                object.setTranslationSpeed(cursor.getInt(cursor.getColumnIndex("TranslationSpeed")));
+                object.setDirection1RTL(cursor.getInt(cursor.getColumnIndex("Direction1RTL"))==1?true:false);
+                object.setDirection2RTL(cursor.getInt(cursor.getColumnIndex("Direction2RTL"))==1?true:false);
+                Log.d("Khotab", "" + object.getBody2());
             } while (cursor.moveToNext());
         } else object = null;
         return object;

@@ -232,6 +232,7 @@ public class Splash extends Activity {
         if (mBluetoothAdapter == null) {
             Toast.makeText(this, getString(R.string.lan_7), 0).show();
             finish();
+            return;
         }
         if (mBluetoothAdapter.isEnabled()) {
             isNotificationEnabled();
@@ -632,8 +633,8 @@ public class Splash extends Activity {
             long wsendDate = new Date().getTime();
 //            Log.d(LOG_TAG, "Sync service End : " + wsendDate);
 //            Log.d(LOG_TAG, "Sync service WS elapsed : " + (wsendDate - wsstartDate));
-
-            if (result != null && result.optBoolean("Status")) {
+            if (result != null){
+            if ( result.optBoolean("Status")) {
                 serverTime = result.optLong("ResultNumber ") + "";//Utils.getFormattedCurrentDate();
                 long dbstartDate = new Date().getTime();
                 Log.d(LOG_TAG, "Sync service DB Insert start : " + dbstartDate);
@@ -646,6 +647,7 @@ public class Splash extends Activity {
                     Log.d(LOG_TAG, "Sync service Insert Data Success");
                     return true;
                 }
+            }else   return false;
             }
             return false;
         }

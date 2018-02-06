@@ -87,6 +87,11 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.AdsViewHolder> {
             public void onClick(View view) {
                 listener.onItemClick(view, i);
             }
+        }); holder.iv_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onView(view, i);
+            }
         });
 
     }
@@ -107,7 +112,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.AdsViewHolder> {
         TextView tv_adsText;
         TextView tv_adsPeriod;
         TextView tv_adsDays;
-        ImageView iv_delete, iv_edit;
+        ImageView iv_delete, iv_edit,iv_view;
 
         public AdsViewHolder(View itemView, int viewType) {
             super(itemView);
@@ -118,6 +123,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.AdsViewHolder> {
             tv_adsDays = (TextView) itemView.findViewById(R.id.tv_adsDays);
             iv_edit = (ImageView) itemView.findViewById(R.id.iv_edit);
             iv_delete = (ImageView) itemView.findViewById(R.id.iv_delete);
+            iv_view = (ImageView) itemView.findViewById(R.id.iv_view);
 
 
         }
@@ -166,6 +172,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.AdsViewHolder> {
         public void onItemClicked(View view, int position);
 
         public void onItemClick(View view, int position);
+        public void onView(View view, int position);
     }
 
 //    public interface OnItemClickListener {

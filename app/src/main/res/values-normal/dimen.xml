@@ -20,5 +20,6 @@
     <dimen name="titleImageHeight1">50dp</dimen>
     <dimen name="viewWidth">60dp</dimen>
 
+    <dimen name="translateFont">17dp</dimen>
 
 </resources>

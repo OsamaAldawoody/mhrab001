@@ -184,6 +184,9 @@ public class JsonHelper {
         object.setTimeExpected(o.optInt("TimeExpected"));
         object.setIsException((o.optBoolean("isException"))?1:0);
         object.setIsDeleted((o.optBoolean("isDeleted"))?1:0);
+        object.setDirection1RTL((o.optBoolean("Direction1RTL")));
+        object.setDirection2RTL((o.optBoolean("Direction2RTL")));
+        object.setTranslationSpeed(o.optInt("TranslationSpeed"));
         return object;
     }
 

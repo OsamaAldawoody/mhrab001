@@ -123,6 +123,11 @@ public class AdsActivity extends AppCompatActivity {
                 editAds(list.get(position));
 //                showAds(list.get(position));
             }
+
+            @Override
+            public void onView(View view, int position) {
+                showAds(list.get(position));
+            }
         });
         rv_ads.setAdapter(adsAdapter);
         adsAdapter.notifyDataSetChanged();
