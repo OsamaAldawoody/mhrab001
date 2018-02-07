@@ -2,12 +2,14 @@ package com.newsolution.almhrab.Activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,13 +17,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.Path;
-import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -30,36 +27,20 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.speech.RecognitionListener;
-import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.internal.view.SupportMenu;
-import android.support.v4.print.PrintHelper;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.AppCompatTextView;
-import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
-import android.text.style.TypefaceSpan;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -75,13 +56,10 @@ import com.newsolution.almhrab.AppConstants.Constants;
 import com.newsolution.almhrab.AppConstants.DBOperations;
 import com.newsolution.almhrab.AppConstants.DateHigri;
 import com.newsolution.almhrab.GlobalVars;
-import com.newsolution.almhrab.Helpar.CustomTypefaceSpan;
 import com.newsolution.almhrab.Helpar.PlaySound;
-import com.newsolution.almhrab.Helpar.ScrollTextView;
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Hijri_Cal_Tools;
 import com.newsolution.almhrab.Interface.OnLoadedFinished;
-import com.newsolution.almhrab.MarqueeViewSingle;
 import com.newsolution.almhrab.Model.Ads;
 import com.newsolution.almhrab.Model.City;
 import com.newsolution.almhrab.Model.Khotab;
@@ -106,23 +84,18 @@ import com.newsolution.almhrab.R;
 //import com.newsolution.almhrab.TZONE.Core.ReportHelper;
 //import com.newsolution.almhrab.TZONE.Model.Report;
 //import com.newsolution.almhrab.TZONE.Model.ReportData;
-import com.newsolution.almhrab.Tempreture.AppConfig;
+import com.newsolution.almhrab.scheduler.SleepBroadcastReciever;
 import com.newsolution.almhrab.Tempreture.BLE;
 import com.newsolution.almhrab.Tempreture.BroadcastService;
 import com.newsolution.almhrab.Tempreture.ConfigService;
-import com.newsolution.almhrab.Tempreture.DateUtil;
 import com.newsolution.almhrab.Tempreture.Device;
 import com.newsolution.almhrab.Tempreture.ILocalBluetoothCallBack;
 import com.newsolution.almhrab.Tempreture.StringUtil;
-import com.newsolution.almhrab.Tempreture.TemperatureUnitUtil;
-import com.newsolution.almhrab.Weather.JSONWeatherParser;
-import com.newsolution.almhrab.Weather.Weather;
-import com.newsolution.almhrab.WebServices.UserOperations;
 import com.newsolution.almhrab.WebServices.WS;
 //import com.newsolution.almhrab.harmony.java.awt.color.ColorSpace;
 import com.newsolution.almhrab.scheduler.SalaatAlarmReceiver;
+import com.newsolution.almhrab.scheduler.SleepService;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -130,9 +103,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -142,16 +113,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Queue;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -208,6 +176,9 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     public static boolean isOpenSermon = false;
     public static boolean isOpenAds = false;
     private Runnable adsRunnable;
+    private String recPath = "";
+    private int IdKhotab;
+    private String DateKhotab = "";
 
     class C05785 implements ILocalBluetoothCallBack {
         C05785() {
@@ -487,11 +458,11 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 // TODO Auto-generated method stub
                 Bundle extras = intent.getExtras();
                 if (extras != null) {
-                    String recPath = extras.getString("recPath");
-                    String DateKhotab = extras.getString("DateKhotab");
-                    int IdKhotab = extras.getInt("IdKhotab");
+                    recPath = extras.getString("recPath");
+                    DateKhotab = extras.getString("DateKhotab");
+                    IdKhotab = extras.getInt("IdKhotab");
                     Log.i("Sermon path  : ", recPath);
-//                    new uploadSermonToServer().execute(recPath, IdKhotab + "", DateKhotab);
+                    new uploadSermonToServer().execute(recPath, IdKhotab + "", DateKhotab);
 
                 }
             }
@@ -782,8 +753,50 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         if (Utils.isOnline(activity)) {
             getAllKhotab();
         }
-        changeSettings();
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(cal.getTimeInMillis());
         setSleepPeriod();
+        Intent intent = new Intent(activity, SleepService.class);
+        activity.startService(intent);
+//        Intent intent = new Intent(this, SleepBroadcastReciever.class);
+//        PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
+//        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 1 * 1000, pintent);
+
+
+//        Intent intent1 = new Intent(activity, SleepBroadcastReciever.class);
+//        PendingIntent pintent1 = PendingIntent.getService(this, 0, intent1, 0);
+//        AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+//        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 1000, pintent1);
+
+//        AlarmManager alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//        Intent intent = new Intent(this, SleepBroadcastReciever.class);
+//        PendingIntent alarmIntent = PendingIntent.getService(this, 0, intent, 0);
+//
+////        alarmIntent = PendingIntent.getBroadcast(context, ALARM_ID, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+//
+//        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+//            //lollipop_mr1 is 22, this is only 23 and above
+//            alarmMgr.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), alarmIntent);
+//        } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2) {
+//            //JB_MR2 is 18, this is only 19 and above.
+//            alarmMgr.setExact(AlarmManager.RTC_WAKEUP,1000, alarmIntent);
+//        } else {
+//            //available since api1
+//            alarmMgr.set(AlarmManager.RTC_WAKEUP, 1000, alarmIntent);
+//        }
+//        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, 1000, 1000, alarmIntent);
+//        // Enable {@code SampleBootReceiver} to automatically restart the alarm when the
+//        // device is rebooted.
+//        ComponentName receiver = new ComponentName(activity, SleepBroadcastReciever.class);
+//        PackageManager pm = activity.getPackageManager();
+//
+//        pm.setComponentEnabledSetting(receiver,
+//                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+//                PackageManager.DONT_KILL_APP);
+
+        changeSettings();
+
 
 //        else {
 //            DBO.open();
@@ -1482,9 +1495,20 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             Log.i("result: ", "server response: " + result);
             if (!result) {
                 Utils.showCustomToast(activity, "لم يتم رفع تسجيل الخطبة");
+//                new uploadSermonToServer().execute(recPath, IdKhotab + "", DateKhotab);
             } else {
                 Utils.showCustomToast(activity, "تم حفظ الملف بنجاح");
-
+                try {
+                    if (!TextUtils.isEmpty(recPath)) {
+                        File file = new File(getRealPathFromURI(Uri.parse(recPath)));
+                        boolean isDeleted=false;
+                        if (file.exists())
+                           isDeleted= file.delete();
+                        Log.i("aaa deleted:",isDeleted+"");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -2172,7 +2196,6 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         //  return time;
     }
 
-
     private String getIqama(String time) {
 //       time=time.replace("ص","").replace("م","");
         String intime[] = time.split(":");
@@ -2189,7 +2212,6 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         // Log.e("pray + iqama = ", time + " -- " + Iqama);
         return Iqama;
     }
-
 
     private String getIqamaTime() {
         String iqamatime = "00";
@@ -2224,7 +2246,6 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 
         return iqamatime;
     }
-
 
     private void syncData() {
         timerPray = new Timer();
@@ -2335,7 +2356,11 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 Runnable() {
                     @Override
                     public void run() {
-                        checkAds();
+                        try {
+                            checkAds();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 
@@ -2377,60 +2402,6 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 checkTime();
             }
         }, 1000);
-    }
-
-    public String writeIslamicDate(DateHigri hd) {
-        String[] wdNames = {getString(R.string.sun), getString(R.string.mon), getString(R.string.tus), getString(R.string.wes)
-                , getString(R.string.ths), getString(R.string.fri), getString(R.string.sat)};
-        String[] iMonthNames = {"محرم", "صفر", "ربيع الأول",
-                "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة", "رجب",
-                "شعبان", "شعبان", "شوال", "ذو القعدة"
-                , " ذو الحجة"};
-        String[] MonthNames = {getString(R.string.em1), getString(R.string.em2), getString(R.string.em3),
-                getString(R.string.em4), getString(R.string.em5), getString(R.string.em6), getString(R.string.em7),
-                getString(R.string.em8), getString(R.string.em9), getString(R.string.em10), getString(R.string.em11)
-                , getString(R.string.em12)};
-        boolean dayTest = true;
-        Calendar today = Calendar.getInstance();
-        double day = today.get(Calendar.DAY_OF_MONTH);
-        double month = today.get(Calendar.MONTH);
-        double year = today.get(Calendar.YEAR);
-        double[] iDate = hd.kuwaiticalendar(sp.getInt("hijriDiff", 0), dayTest);
-        // String outputIslamicDate = wdNames[(int) iDate[4]] + " " + (int)day + " " +MonthNames[(int) month] + " " + (int)year + " م " + (int)iDate[5] + " "+ iMonthNames[(int) iDate[6]] + " " + (int)iDate[7] + " هـ ";
-        String outputIslamicDate = wdNames[(int) iDate[4]] + " | " + (int) day + " " + MonthNames[(int) month] + " " + (int) year + " | " + (int) iDate[5] + " " + iMonthNames[(int) iDate[6]] + " " +
-                (int) iDate[7] + " " + getString(R.string.mt);
-
-        return outputIslamicDate;
-    }
-
-    public static void setMarqueeSpeed(TextView tv, float speed) {
-        if (tv != null) {
-            try {
-                Field f = null;
-                if (tv instanceof AppCompatTextView) {
-                    f = tv.getClass().getSuperclass().getDeclaredField("mMarquee");
-                } else {
-                    f = tv.getClass().getDeclaredField("mMarquee");
-                }
-                if (f != null) {
-                    f.setAccessible(true);
-                    Object marquee = f.get(tv);
-                    if (marquee != null) {
-                        String scrollSpeedFieldName = "mScrollUnit";
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            scrollSpeedFieldName = "mPixelsPerSecond";
-                        }
-                        Field mf = marquee.getClass().getDeclaredField(scrollSpeedFieldName);
-                        mf.setAccessible(true);
-                        mf.setFloat(marquee, speed);
-                    }
-                } else {
-                    Log.e("Marquee", "mMarquee object is null.");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private void animAdvs() {
@@ -2777,8 +2748,10 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     private void setSleepPeriod() {
         String sleepOn = Utils.addToTime(sp.getString("isha", ""), settings.getCloseScreenAfterIsha()/* sp.getInt("sleepOn", 0) */ + "");
         String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), settings.getRunScreenBeforeFajr()/*sp.getInt("sleepOff", 0) */ + "");
-        Log.e("**//sleepOn", sleepOn + "  **");
-        Log.e("**//sleepOff", sleepOff);
+//        Log.e("**//sleepOn", sleepOn + "  **");
+//        Log.e("**//sleepOff", sleepOff);
+//        sleepOn = "13:15:00";
+//        sleepOff = "13:20:00";
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             Date start = sdf.parse(sleepOn);

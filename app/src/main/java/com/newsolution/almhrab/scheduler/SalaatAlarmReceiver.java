@@ -146,49 +146,50 @@ public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Con
 //        Log.e("**//sleep", sp.getBoolean("sleep", false)+"");
         Calendar then = Calendar.getInstance(TimeZone.getDefault());
         then.setTimeInMillis(System.currentTimeMillis());
-        KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Activity.KEYGUARD_SERVICE);
-        KeyguardManager.KeyguardLock lock = keyguardManager.newKeyguardLock(context.KEYGUARD_SERVICE);
-        if (sp.getBoolean("sleep", false)) {
-//            String sleepOn = Utils.addToTime(sp.getString("isha", ""), sp.getInt("sleepOn", 0) + "");
-//            String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), sp.getInt("sleepOff", 0) + "");
-            try {
-                Date mToday = new Date();
-                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-
-                String curTime = sdf.format(mToday);
-                Date cur = sdf.parse(curTime);
-
-                String curTime1 = df.format(cur);
-                Date userDate = df.parse(curTime1);
-                Log.e("**//curTime", curTime);
-                Log.e("**//cur", cur.toString());
-
-                Date start = df.parse(sp.getString("startTime", userDate + ""));
-                Date end = df.parse(sp.getString("endTime", userDate + ""));
-                Log.e("**//curTime", userDate.toString());
-                Log.e("**//start", start.toString());
-                Log.e("**//end", end.toString());
-                if (userDate.after(start) && userDate.before(end)) {
-                    Log.e("**//result", "falls between start and end , go to screen 1 ");
-                    lock.reenableKeyguard();
-                    Settings.System.putInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, 1000);
-                    return;
-                } else {
-                    WakeLocker.acquire(context);
-                    WakeLocker.release();
-                    lock.disableKeyguard();
-                    Settings.System.putInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, (3 * 24 * 60 * 60 * 1000));
-                    Log.e("**//result", "does not fall between start and end , go to screen 2 ");
-                }
-            } catch (ParseException e) {
-
-                e.printStackTrace();
-            }
-        }
-        WakeLocker.acquire(context);
-        WakeLocker.release();
-        lock.disableKeyguard();
+//        KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Activity.KEYGUARD_SERVICE);
+//        KeyguardManager.KeyguardLock lock = keyguardManager.newKeyguardLock(context.KEYGUARD_SERVICE);
+//        if (sp.getBoolean("sleep", false)) {
+////            String sleepOn = Utils.addToTime(sp.getString("isha", ""), sp.getInt("sleepOn", 0) + "");
+////            String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), sp.getInt("sleepOff", 0) + "");
+//            try {
+//                Date mToday = new Date();
+//                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+//                DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+//
+//                String curTime = sdf.format(mToday);
+//                Date cur = sdf.parse(curTime);
+//
+//                String curTime1 = df.format(cur);
+//                Date userDate = df.parse(curTime1);
+//                Log.e("**//curTime", curTime);
+//                Log.e("**//cur", cur.toString());
+//
+//                Date start = df.parse(sp.getString("startTime", userDate + ""));
+//                Date end = df.parse(sp.getString("endTime", userDate + ""));
+//                Log.e("**//curTime", userDate.toString());
+//                Log.e("**//start", start.toString());
+//                Log.e("**//end", end.toString());
+//                if ((userDate.after(start) || userDate.equals(start)) && userDate.before(end)) {
+//                    Log.e("**//result", "falls between start and end , go to screen 1 ");
+//                    lock.reenableKeyguard();
+//                    Settings.System.putInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, 1000);
+////                    return;
+//                } else {
+//                    WakeLocker.acquire(context);
+//                    WakeLocker.release();
+//                    lock.disableKeyguard();
+//                    Settings.System.putInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, (3 * 24 * 60 * 60 * 1000));
+//                    Log.e("**//result", "does not fall between start and end , go to screen 2 ");
+//                }
+//            } catch (ParseException e) {
+//
+//                e.printStackTrace();
+//            }
+//        } else {
+//            WakeLocker.acquire(context);
+//            WakeLocker.release();
+//            lock.disableKeyguard();
+//        }
 
 //    LinkedHashMap<String, String> prayerTimes = PrayTime.getPrayerTimes(context, alarmIndex, lat, lng, PrayTime.TIME_24);
         Map<String, String> prayerTimes = new HashMap<>();
@@ -476,7 +477,7 @@ public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Con
             else if (prayer.equalsIgnoreCase(context.getString(R.string.pa))) {
                 return sp.getBoolean("close_screen", true);
             } else return true;
-        }else{
+        } else {
             if (prayer.equalsIgnoreCase(context.getString(R.string.pa))) {
                 return sp.getBoolean("close_screen", true);
             } else return true;

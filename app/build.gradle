@@ -67,12 +67,9 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
         transitive = true;
     }
-//    compile 'ly.kite:kite-print-sdk:5.7.3'
     compile project(':streamaxia-opensdk')
-    compile project(':marquee')
-//    compile 'android.lib.verticalmarqueetextview:VerticalMarqueeTextView:+'
 
-//    compile 'asia.ivity.android:marqueeview:1.1.5@aar'
+
     compile 'uk.co.chrisjenx:calligraphy:2.3.0'
     compile 'com.google.android.gms:play-services-plus:8.4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -81,5 +78,4 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.5.1'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
-
 }

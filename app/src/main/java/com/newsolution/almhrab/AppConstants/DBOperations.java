@@ -534,7 +534,7 @@ public class DBOperations {
                 object.setTranslationSpeed(cursor.getInt(cursor.getColumnIndex("TranslationSpeed")));
                 object.setDirection1RTL(cursor.getInt(cursor.getColumnIndex("Direction1RTL"))==1?true:false);
                 object.setDirection2RTL(cursor.getInt(cursor.getColumnIndex("Direction2RTL"))==1?true:false);
-                Log.d("Khotab", "" + object.getBody2());
+                Log.d("Khotab", "" + object.getTranslationSpeed());
             } while (cursor.moveToNext());
         } else object = null;
         return object;
@@ -967,7 +967,7 @@ public class DBOperations {
                 + " and ( strftime('%H:%M', AdsPeriods.StartTime) =  strftime('%H:%M','" + time + "')) LIMIT 1";
         Log.i("Quert", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
-        Log.i("Qu dataBase", "" + cursor.getCount());
+//        Log.i("Qu dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
             do {
                 Ads object = new Ads();

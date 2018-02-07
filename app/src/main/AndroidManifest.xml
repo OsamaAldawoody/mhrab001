@@ -106,12 +106,28 @@
             </intent-filter>
         </receiver>
 
+        <service
+            android:name=".scheduler.SleepService"
+            android:enabled="true" />
+        <!--<receiver-->
+            <!--android:name=".scheduler.SleepBroadcastReciever"-->
+            <!--android:enabled="false">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
+                <!--<action android:name="android.intent.action.TIMEZONE_CHANGED" />-->
+                <!--<action android:name="android.intent.action.TIME_SET" />-->
+                <!--<action android:name="android.intent.action.MY_PACKAGE_REPLACED" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
+
         <service android:name=".scheduler.SalaatSchedulingService" />
+
         <receiver android:name=".SermonReceiver">
             <intent-filter>
                 <action android:name="com.newsolution.almhrab.android.action.broadcast" />
             </intent-filter>
         </receiver>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="3ee3bbe22ea5a5a974f94d5e8e909c87875dbee2" />
@@ -161,13 +177,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeAct"
             android:windowSoftInputMode="stateAlwaysHidden" />
-
         <activity
             android:name=".Activity.AddAdsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeAct"
             android:windowSoftInputMode="stateAlwaysHidden" />
-
         <activity
             android:name=".Activity.VideoViewActivity"
             android:theme="@style/AppThemeAct"
