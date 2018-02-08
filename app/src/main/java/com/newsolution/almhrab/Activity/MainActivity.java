@@ -179,6 +179,8 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     private String recPath = "";
     private int IdKhotab;
     private String DateKhotab = "";
+    private Timer timerSleep;
+    private TimerTask asyncSleep;
 
     class C05785 implements ILocalBluetoothCallBack {
         C05785() {
@@ -491,19 +493,27 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         } catch (Exception e) {
             Log.e("checkTime Error : ", "" + e);
         }
+        setSleepPeriod();
 
+//        timerSleep = new Timer();
+//        asyncSleep = new TimerTask() {
+//            @Override
+//            public void run() {
+//                try {
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            setSleepPeriod();
+//                        }
+//                    });
+//                } catch (NullPointerException e) {
+//                    Log.i("exception", "" + e.getMessage());
+//                }
+//            }
+//        };
+//        timerSleep.schedule(asyncSleep, 0, 2*24*60*60*1000);
 
-//        speech = SpeechRecognizer.createSpeechRecognizer(this);
-//        speech.setRecognitionListener(this);
-//        recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-//        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "ar");
-//        recognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, this.getPackageName());
-//        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
-//        recognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 20);
-
-//        getWeather();
-//        Scan();
-        playSermon();
+//        playSermon();
 
     }
 
@@ -707,7 +717,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 //        buildTheme();
 //        getWeather(-1);
 //        Scan();
-    }
+       }
 
     @Override
     protected void onResume() {
@@ -755,7 +765,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         }
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(cal.getTimeInMillis());
-        setSleepPeriod();
+//        setSleepPeriod();
         Intent intent = new Intent(activity, SleepService.class);
         activity.startService(intent);
 //        Intent intent = new Intent(this, SleepBroadcastReciever.class);
@@ -1156,6 +1166,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             }
             if ((c2.getTime().before(now) || c2.getTime().equals(now))
                     && ((c22.getTime().after(now)) || c22.getTime().equals(now))) {
+                setSleepPeriod();
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t22));
                 iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t22));
                 currentPray = "dhuhr";
@@ -2748,8 +2759,8 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     private void setSleepPeriod() {
         String sleepOn = Utils.addToTime(sp.getString("isha", ""), settings.getCloseScreenAfterIsha()/* sp.getInt("sleepOn", 0) */ + "");
         String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), settings.getRunScreenBeforeFajr()/*sp.getInt("sleepOff", 0) */ + "");
-//        Log.e("**//sleepOn", sleepOn + "  **");
-//        Log.e("**//sleepOff", sleepOff);
+        Log.e("**//sleepOn", sleepOn + "  **");
+        Log.e("**//sleepOff", sleepOff);
 //        sleepOn = "13:15:00";
 //        sleepOff = "13:20:00";
         try {

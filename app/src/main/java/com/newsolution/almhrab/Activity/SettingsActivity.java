@@ -44,8 +44,11 @@ import com.newsolution.almhrab.Model.OptionSiteClass;
 import com.newsolution.almhrab.R;
 import com.newsolution.almhrab.WebServices.WS;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -610,6 +613,7 @@ public class SettingsActivity extends Activity {
 //                spedit.putString("sleepOnTime", sleepOnTime).commit();
 //                spedit.putString("sleepOffTime", sleepOffTime).commit();
                                 Utils.showCustomToast(activity, getString(R.string.saved));
+                                setSleepPeriod();
                             }
 
                             @Override
@@ -627,6 +631,7 @@ public class SettingsActivity extends Activity {
                     spedit.putInt("sleepOn", Integer.parseInt(ed_play.getText().toString().trim())).commit();
                     spedit.putInt("sleepOff", Integer.parseInt(ed_stop.getText().toString().trim())).commit();
                     Utils.showCustomToast(activity, getString(R.string.saved));
+                    setSleepPeriod();
                 }
             }
         });
@@ -657,6 +662,32 @@ public class SettingsActivity extends Activity {
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         window.setAttributes(lp);
+    }
+    private void setSleepPeriod() {
+        String sleepOn = Utils.addToTime(sp.getString("isha", ""), settings.getCloseScreenAfterIsha()/* sp.getInt("sleepOn", 0) */ + "");
+        String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), settings.getRunScreenBeforeFajr()/*sp.getInt("sleepOff", 0) */ + "");
+//        Log.e("**//sleepOn", sleepOn + "  **");
+//        Log.e("**//sleepOff", sleepOff);
+//        sleepOn = "13:15:00";
+//        sleepOff = "13:20:00";
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            Date start = sdf.parse(sleepOn);
+            Date end = sdf.parse(sleepOff);
+            if (end.before(start)) {
+                Calendar mCal = Calendar.getInstance();
+                mCal.setTime(end);
+                mCal.add(Calendar.DAY_OF_YEAR, 1);
+                end.setTime(mCal.getTimeInMillis());
+            }
+            DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+            String startDate = df.format(start);
+            String endDate = df.format(end);
+            spedit.putString("startTime", startDate).commit();
+            spedit.putString("endTime", endDate).commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initiat(final ArrayList<String> list) {

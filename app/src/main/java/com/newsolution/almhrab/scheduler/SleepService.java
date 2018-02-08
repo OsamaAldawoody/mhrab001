@@ -87,16 +87,15 @@ public class SleepService extends Service {
 
                         String curTime1 = df.format(cur);
                         Date userDate = df.parse(curTime1);
-                        Log.e("**//curTime", curTime);
-                        Log.e("**//cur", cur.toString());
-
+//                        Log.e("**//curTime", curTime);
+//                        Log.e("**//cur", cur.toString());
                         Date start = df.parse(sp.getString("startTime", userDate + ""));
                         Date end = df.parse(sp.getString("endTime", userDate + ""));
                         Log.e("**//curTime", userDate.toString());
                         Log.e("**//start", start.toString());
                         Log.e("**//end", end.toString());
                         if ((userDate.after(start) || userDate.equals(start)) && userDate.before(end)) {
-                            Log.e("**//result", "falls between start and end , go to screen 1 ");
+                            Log.e("**//result", "falls between start and end , sleep ");
                             lock.reenableKeyguard();
                             Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, 1000);
 //                    return;
@@ -105,7 +104,7 @@ public class SleepService extends Service {
                             WakeLocker.release();
                             lock.disableKeyguard();
                             Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, (3 * 24 * 60 * 60 * 1000));
-                            Log.e("**//result", "does not fall between start and end , go to screen 2 ");
+                            Log.e("**//result", "does not fall between start and end , wake ");
                         }
                     } catch (ParseException e) {
 
