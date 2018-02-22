@@ -757,12 +757,13 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         showNews();
         checkAds();
         buildTheme();
-        if (sp.getInt("priority", 0) == 1) {
-            syncData();
-        }
         if (Utils.isOnline(activity)) {
             getAllKhotab();
         }
+        if (sp.getInt("priority", 0) == 1) {
+            syncData();
+        }
+
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(cal.getTimeInMillis());
 //        setSleepPeriod();
@@ -1325,10 +1326,13 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 ZoomSelectedView(fajrTime);
                 ZoomSelectedView(fajrIqama);
             } else if (now.after(c1.getTime()) && now.before(c2.getTime())) {
-                nextPray = "dhuhr";
+//                nextPray = "dhuhr";
                 if (!isFriday()) {
+                    nextPray = "dhuhr";
+                    ShowRemainingPrayTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t2)));
                     spedit.putString("phoneAlert", Utils.setPhoneAlert(icdhohr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
                 } else {
+                    nextPray = "juma";
                     spedit.putString("phoneAlert", Utils.setPhoneAlert(cdhohr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
                 }
                 globalVariable.setNextPray("dhuhr");
@@ -1466,7 +1470,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                                 isOpenSermon = true;
                                 Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
                             }
-                        }, 1000);
+                        }, 90000);//90000
 
 //                        new Handler().postDelayed(new Runnable() {
 //                            @Override
@@ -1874,6 +1878,8 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                     tvPrayName.setText(getString(R.string.isTime) + " " + getString(R.string.pn1));
                 else if (nextPray.equals("dhuhr"))
                     tvPrayName.setText(getString(R.string.isTime) + " " + getString(R.string.pn3));
+                else if (nextPray.equals("juma"))
+                    tvPrayName.setText(getString(R.string.isTime) + " " + getString(R.string.pn8));
                 else if (nextPray.equals("asr"))
                     tvPrayName.setText(getString(R.string.isTime) + " " + getString(R.string.pn4));
                 else if (nextPray.equals("magrib"))
@@ -1918,6 +1924,8 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             tvPrayName.setText(getString(R.string.pn1));
         else if (nextPray.equals("dhuhr"))
             tvPrayName.setText(getString(R.string.pn3));
+        else if (nextPray.equals("juma"))
+            tvPrayName.setText(getString(R.string.pn7));
         else if (nextPray.equals("asr"))
             tvPrayName.setText(getString(R.string.pn4));
         else if (nextPray.equals("magrib"))

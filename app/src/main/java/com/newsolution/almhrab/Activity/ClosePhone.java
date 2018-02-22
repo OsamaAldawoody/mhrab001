@@ -705,7 +705,7 @@ public class ClosePhone extends Activity {
                                 startActivity(cp);
                                 isOpenSermon = true;
                             }
-                        }, 120000);
+                        }, 90000);
                     }
                 }
             }

@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 //import android.lib.widget.verticalmarqueetextview.VerticalMarqueeTextView;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -214,7 +215,7 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
         tvName.setText(sp.getString("masjedName", ""));
 //        tvEngText.setTypeface(fontBangla_mn_bold);
 //        tvName.setTypeface(fontDroidkufi);
-
+        mChronometer.setVisibility(View.GONE);
         checkTime();
         fillData();
         isStreaming();
@@ -263,16 +264,13 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
             khotbaTitle.substring(0, khotbaTitle.length() - 2);
         tvTitle.setText(khotbaTitle);
         if (sp.getBoolean("IsDeaf", false)) {
-            if (!TextUtils.isEmpty(khotab.getUrlVideoDeaf())) {
+            if (!khotab.getUrlVideoDeaf().equals("null")) {
                 youtube_view.setVisibility(View.VISIBLE);
-//                youtube_view.initialize(DeveloperKey.DEVELOPER_KEY, this);
-//                vvVideo.setVisibility(View.VISIBLE);
                 rlLivingStream.setVisibility(View.GONE);
                 showLive = false;
+//                vvVideo.setVisibility(View.VISIBLE);
 //                vvVideo.setVideoURI(Uri.parse(khotab.getUrlVideoDeaf()));
 //                vvVideo.start();
-//                RTSPUrlTask truitonTask = new RTSPUrlTask();
-//                truitonTask.execute(khotab.getUrlVideoDeaf());
 
             } else {
                 showLive = true;
@@ -286,12 +284,14 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
             youtube_view.setVisibility(View.GONE);
             rlLivingStream.setVisibility(View.VISIBLE);
         }
-//        vvVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//            @Override
-//            public void onCompletion(MediaPlayer mediaPlayer) {
-//                vvVideo.start();
-//            }
-//        });
+        vvVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                vvVideo.setVisibility(View.GONE);
+                youtube_view.setVisibility(View.GONE);
+                rlLivingStream.setVisibility(View.VISIBLE);
+            }
+        });
 
         animTranslation();
         startKhotbaTimer();
@@ -301,20 +301,13 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
         final String body1 = khotab.getBody1();
         String body2 = khotab.getBody2();
         int speed = khotab.getTranslationSpeed();
-        Log.i("//speed: ",speed+"");
+        Log.i("//speed: ", speed + "");
         WebSettings settings1 = wvUrdText.getSettings();
         WebSettings settings = wvEngText.getSettings();
         settings1.setDefaultTextEncodingName("utf-8");
         settings.setDefaultTextEncodingName("utf-8");
         setScrollText(wvEngText, body1, khotab.isDirection1RTL() ? "right" : "left", speed);
         setScrollText(wvUrdText, body2, khotab.isDirection2RTL() ? "right" : "left", speed);
-
-//        tvEngText.setVisibility(View.GONE);
-//        tvUrdText.setVisibility(View.GONE);
-//        tvEngText.setText(body1 + "");
-//        tvUrdText.setText(body2 + "");
-//        tvEngText.setSelected(true);
-//        tvUrdText.setSelected(true);
     }
 
     private void setScrollTextLeft(WebView wv, String body) {
@@ -402,7 +395,7 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
                 stopChronometer();
                 mChronometer.setBase(SystemClock.elapsedRealtime());
                 mChronometer.start();
-                mPublisher.setVideoBitRate(480);
+                mPublisher.setVideoBitRate(580);
                 mPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
                 mPublisher.startRecord(recPath);
                 Log.i("999999", "rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
@@ -411,6 +404,7 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
                 Toast.makeText(this, "يجب السماح باستخدام الكاميرا", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
+//            Toast.makeText(this, "لا يوجد الكاميرا", Toast.LENGTH_LONG).show();
             e.printStackTrace();
             finish();
         }
@@ -455,21 +449,6 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
             finish();
         }
     }
-
-//    @Override
-//    public void onBackPressed() {
-//        try {
-//            mPublisher.stopPublish();
-//            mPublisher.stopRecord();
-//            if (countDownTimer != null) countDownTimer.cancel();
-//            MainActivity.isOpenSermon = true;
-//            finish();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            finish();
-//        }
-//        super.onBackPressed();
-//    }
 
     private void checkTime() {
         DateHigri hd = new DateHigri();
@@ -528,7 +507,7 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
                 @Override
                 public void run() {
                     Log.i("////*: ", "[" + msg + "]");
-                    Toast.makeText(activity, "[" + msg + "]", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(activity, "[" + msg + "]", Toast.LENGTH_LONG).show();
                 }
             });
         } catch (Exception e) {
@@ -678,7 +657,7 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
 
     private void handleException(Exception e) {
         try {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             Log.i("streaming: ", e.getMessage());
             mPublisher.stopPublish();
             mPublisher.stopRecord();
@@ -693,65 +672,64 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
-
-    void startPlaying(String url) {
-        Log.i("/////url: ", url + "");
-        uriYouTube = Uri.parse(url);
-        vvVideo.setVideoURI(uriYouTube);
-        vvVideo.start();
-    }
-
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, final YouTubePlayer player,
                                         boolean wasRestored) {
+        Log.i("Kh: ",khotab.getUrlVideoDeaf());
         if (sp.getBoolean("IsDeaf", false)) {
-            if (!TextUtils.isEmpty(khotab.getUrlVideoDeaf())) {
-                player.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
-                    @Override
-                    public void onLoading() {
+            if (!khotab.getUrlVideoDeaf().equals("null")) {
+                if (khotab.getUrlVideoDeaf().contains("youtube")) {
+                    player.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
+                        @Override
+                        public void onLoading() {
 
+                        }
+
+                        @Override
+                        public void onLoaded(String s) {
+                            player.play();
+                        }
+
+                        @Override
+                        public void onAdStarted() {
+
+                        }
+
+                        @Override
+                        public void onVideoStarted() {
+
+                        }
+
+                        @Override
+                        public void onVideoEnded() {
+
+                        }
+
+                        @Override
+                        public void onError(YouTubePlayer.ErrorReason errorReason) {
+
+                        }
+                    });
+                    if (!wasRestored) {
+                        String id = null;
+                        try {
+                            String prefix = "https://youtu.be/";
+                            String prefix1 = "http://youtu.be/";
+                            if (khotab.getUrlVideoDeaf().contains(prefix) || khotab.getUrlVideoDeaf().contains(prefix1)) {
+                                id = khotab.getUrlVideoDeaf().split("youtu.be/")[1];
+                            } else id = extractYoutubeId(khotab.getUrlVideoDeaf());
+                            player.cueVideo(id);
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                            rlLivingStream.setVisibility(View.VISIBLE);
+                            youtube_view.setVisibility(View.GONE);
+                        }
                     }
-
-                    @Override
-                    public void onLoaded(String s) {
-                        player.play();
-                    }
-
-                    @Override
-                    public void onAdStarted() {
-
-                    }
-
-                    @Override
-                    public void onVideoStarted() {
-
-                    }
-
-                    @Override
-                    public void onVideoEnded() {
-
-                    }
-
-                    @Override
-                    public void onError(YouTubePlayer.ErrorReason errorReason) {
-
-                    }
-                });
-                if (!wasRestored) {
-                    String id = null;
-                    try {
-                        String prefix = "https://youtu.be/";
-                        String prefix1 = "http://youtu.be/";
-                        if (khotab.getUrlVideoDeaf().contains(prefix) || khotab.getUrlVideoDeaf().contains(prefix1)) {
-                            id = khotab.getUrlVideoDeaf().split("youtu.be/")[1];
-                        } else id = extractYoutubeId(khotab.getUrlVideoDeaf());
-                        player.cueVideo(id);
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                        rlLivingStream.setVisibility(View.VISIBLE);
-                        youtube_view.setVisibility(View.GONE);
-                    }
-
+                } else {
+                    youtube_view.setVisibility(View.GONE);
+                    vvVideo.setVisibility(View.VISIBLE);
+                    vvVideo.setVideoURI(Uri.parse(khotab.getUrlVideoDeaf()));
+                    vvVideo.start();
                 }
             }
         }
@@ -760,63 +738,6 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
     @Override
     protected YouTubePlayer.Provider getYouTubePlayerProvider() {
         return (YouTubePlayerView) findViewById(R.id.youtube_view);
-    }
-
-
-    private class RTSPUrlTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... urls) {
-            String response = getRTSPVideoUrl(urls[0]);
-            return response;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            startPlaying(result);
-        }
-
-        public String getRTSPVideoUrl(String urlYoutube) {
-            try {
-                String gdy = "http://gdata.youtube.com/feeds/api/videos/";
-                DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance()
-                        .newDocumentBuilder();
-                String id = extractYoutubeId(urlYoutube);
-                Log.i("/////id: ", id);
-                URL url = new URL(gdy + id);
-                Log.i("/////id: ", url + "");
-
-                HttpURLConnection connection = (HttpURLConnection) url
-                        .openConnection();
-                Document doc = dBuilder.parse(connection.getInputStream());
-                Element el = doc.getDocumentElement();
-                NodeList list = el.getElementsByTagName("media:content");
-                String cursor = urlYoutube;
-                for (int i = 0; i < list.getLength(); i++) {
-                    Node node = list.item(i);
-                    if (node != null) {
-                        NamedNodeMap nodeMap = node.getAttributes();
-                        HashMap<String, String> maps = new HashMap<String, String>();
-                        for (int j = 0; j < nodeMap.getLength(); j++) {
-                            Attr att = (Attr) nodeMap.item(j);
-                            maps.put(att.getName(), att.getValue());
-                        }
-                        if (maps.containsKey("yt:format")) {
-                            String f = maps.get("yt:format");
-                            if (maps.containsKey("url"))
-                                cursor = maps.get("url");
-                            if (f.equals("1"))
-                                return cursor;
-                        }
-                    }
-                }
-                return cursor;
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                return urlYoutube;
-            }
-        }
-
-
     }
 
     public String extractYoutubeId(String url) throws MalformedURLException {

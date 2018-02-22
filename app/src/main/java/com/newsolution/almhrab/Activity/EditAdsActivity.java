@@ -1457,6 +1457,8 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
                 selectedImagePath = getRealPathFromURI(selectedImage);
                 Log.i("////// path", selectedImagePath + " **//");
                 image_str = makePictureToBase64(checkImg(selectedImagePath), ivAdsImg);
+            } catch (OutOfMemoryError e) {
+                Utils.showCustomToast(activity, "حجم الصورة كبير اختر صورة أخرى");
             } catch (Exception e) {
                 Utils.showCustomToast(activity, "حدث خطأ اختر صورة أخرى");
                 e.printStackTrace();
@@ -1490,7 +1492,7 @@ public class EditAdsActivity extends AppCompatActivity implements View.OnClickLi
         } else return null;
     }
 
-    private String checkImg(String path) {
+    private String checkImg(String path) throws OutOfMemoryError {
         String newPath = path;
         if (!TextUtils.isEmpty(path)) {
             File f = new File(Uri.parse(path).getPath());

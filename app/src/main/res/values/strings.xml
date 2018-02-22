@@ -80,6 +80,8 @@
     <string name="pn4">العصر</string>
     <string name="pn5">المغرب</string>
     <string name="pn6">العشاء</string>
+    <string name="pn7">الجمعة</string>
+    <string name="pn8">صلاة الجمعة</string>
 
     <string name="t1">موعد الأذان</string>
     <string name="t2">موعد الإقامة</string>
