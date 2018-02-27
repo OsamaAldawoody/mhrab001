@@ -116,18 +116,22 @@
             <!--android:background="#362417"-->
             <!--android:scaleType="fitXY"-->
             <!--android:src="@drawable/imam"/>-->
+            <!--<com.streamaxia.android.CameraPreview-->
+                <!--android:id="@+id/preview"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentBottom="true"-->
+                <!--android:layout_alignParentEnd="true"-->
+                <!--android:layout_alignParentLeft="true"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:layout_alignParentStart="true"-->
+                <!--android:layout_alignParentTop="true"-->
+                <!--android:keepScreenOn="true" />-->
             <com.streamaxia.android.CameraPreview
                 android:id="@+id/preview"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
+                android:layout_height="match_parent"
                 android:keepScreenOn="true" />
-
             <Chronometer
                 android:id="@+id/chronometer"
                 android:layout_width="60dp"

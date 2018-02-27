@@ -77,6 +77,7 @@ public class SleepService extends Service {
                 KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Activity.KEYGUARD_SERVICE);
                 KeyguardManager.KeyguardLock lock = keyguardManager.newKeyguardLock(KEYGUARD_SERVICE);
                 if (sp.getBoolean("sleep", false)) {
+                    Log.e("**//service ", "on start");
                     try {
                         Date mToday = new Date();
                         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm",new Locale("en"));
@@ -84,11 +85,18 @@ public class SleepService extends Service {
 
                         String curTime = sdf.format(mToday);
                         Date cur = sdf.parse(curTime);
+                        Date date = new Date();
+                        Calendar calendarCurrent = Calendar.getInstance();
+                        calendarCurrent.setTime(date);
+//                        calendarCurrent.set(Calendar.HOUR_OF_DAY, cur.getHours());
+//                        calendarCurrent.set(Calendar.MINUTE, cur.getMinutes());
+//                        calendarCurrent.set(Calendar.SECOND, 0);// for 0 sec
+                        // System.out.println("***:calendarEnd added "+calendarCurrent.getTime());
+                        Log.e("**//calendarCurrent ",""+calendarCurrent.getTime());
 
-                        String curTime1 = df.format(cur);
+
+                        String curTime1 = df.format(calendarCurrent.getTime());
                         Date userDate = df.parse(curTime1);
-//                        Log.e("**//curTime", curTime);
-//                        Log.e("**//cur", cur.toString());
                         Date start = df.parse(sp.getString("startTime", userDate + ""));
                         Date end = df.parse(sp.getString("endTime", userDate + ""));
                         Log.e("**//curTime", userDate.toString());
@@ -106,11 +114,12 @@ public class SleepService extends Service {
                             Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, (3 * 24 * 60 * 60 * 1000));
                             Log.e("**//result", "does not fall between start and end , wake ");
                         }
-                    } catch (ParseException e) {
-
+                    } catch (Exception e) {
+                        Log.e("**//exception", e.getMessage());
                         e.printStackTrace();
                     }
                 } else {
+                    Log.e("**//result", "sleep off");
                     WakeLocker.acquire(getApplicationContext());
                     WakeLocker.release();
                     lock.disableKeyguard();

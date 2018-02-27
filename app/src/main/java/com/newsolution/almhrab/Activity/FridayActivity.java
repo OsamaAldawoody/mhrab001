@@ -59,6 +59,7 @@ import com.streamaxia.android.StreamaxiaPublisher;
 import com.streamaxia.android.handlers.EncoderHandler;
 import com.streamaxia.android.handlers.RecordHandler;
 import com.streamaxia.android.handlers.RtmpHandler;
+import com.streamaxia.android.utils.ScalingMode;
 import com.streamaxia.android.utils.Size;
 
 import org.w3c.dom.Attr;
@@ -97,6 +98,7 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
 
     // Set default values for the streamer
     public static String streamaxiaStreamName = "AlMhrab_";
+    // Set default values for the streamer
     public final static int bitrate = 500;
     public final static int width = 720;
     public final static int height = 1280;
@@ -165,8 +167,10 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
                 + "_" + Utils.getFormattedCurrentDate() + ".mp4";
         streamaxiaStreamName = streamaxiaStreamName + sp.getInt("masjedId", -1) + "";
         mPublisher = new StreamaxiaPublisher(mCameraView, this);
-
+        mCameraView.setScalingMode(ScalingMode.TRIM);
         try {
+//            mCameraView.getLayoutParams().width= WindowManager.LayoutParams.MATCH_PARENT;
+//            mCameraView.getLayoutParams().height= 200;
             mPublisher.setEncoderHandler(new EncoderHandler(this));
             mPublisher.setRtmpHandler(new RtmpHandler(this));
             mPublisher.setRecordEventHandler(new RecordHandler(this));
@@ -177,7 +181,6 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
         }
 
         setStreamerDefaultValues();
-
 
         sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
         font = Typeface.createFromAsset(getAssets(), droidkufiBold);
@@ -395,7 +398,7 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
                 stopChronometer();
                 mChronometer.setBase(SystemClock.elapsedRealtime());
                 mChronometer.start();
-                mPublisher.setVideoBitRate(580);
+                mPublisher.setVideoBitRate(720);
                 mPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
                 mPublisher.startRecord(recPath);
                 Log.i("999999", "rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
@@ -493,7 +496,8 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
             if (mPublisher != null) {
                 List<Size> sizes = mPublisher.getSupportedPictureSizes(getResources().getConfiguration().orientation);
                 Size resolution = sizes.get(0);
-                mPublisher.setVideoOutputResolution(resolution.width, resolution.height, this.getResources().getConfiguration().orientation);
+                mPublisher.setVideoOutputResolution(resolution.width, resolution.height,
+                        this.getResources().getConfiguration().orientation);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -616,7 +620,13 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
     }
 
     @Override
-    public void onRtmpVideoBitrateChanged(double v) {
+    public void onRtmpVideoBitrateChanged(double bitrate) {
+        int rate = (int) bitrate;
+        if (rate / 1000 > 0) {
+            Log.i(TAG, String.format("Video bitrate: %f kbps", bitrate / 1000));
+        } else {
+            Log.i(TAG, String.format("Video bitrate: %d bps", rate));
+        }
 
     }
 
@@ -675,10 +685,10 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, final YouTubePlayer player,
                                         boolean wasRestored) {
-        Log.i("Kh: ",khotab.getUrlVideoDeaf());
+        Log.i("Kh: ", khotab.getUrlVideoDeaf());
         if (sp.getBoolean("IsDeaf", false)) {
             if (!khotab.getUrlVideoDeaf().equals("null")) {
-                if (khotab.getUrlVideoDeaf().contains("youtube")) {
+                if (khotab.getUrlVideoDeaf().contains("youtube") || khotab.getUrlVideoDeaf().contains("youtu.be")) {
                     player.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
                         @Override
                         public void onLoading() {

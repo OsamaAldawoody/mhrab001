@@ -613,7 +613,8 @@ public class SettingsActivity extends Activity {
 //                spedit.putString("sleepOnTime", sleepOnTime).commit();
 //                spedit.putString("sleepOffTime", sleepOffTime).commit();
                                 Utils.showCustomToast(activity, getString(R.string.saved));
-                                setSleepPeriod();
+                                setSleepModePeriod();
+//                                setSleepPeriod();
                             }
 
                             @Override
@@ -631,7 +632,8 @@ public class SettingsActivity extends Activity {
                     spedit.putInt("sleepOn", Integer.parseInt(ed_play.getText().toString().trim())).commit();
                     spedit.putInt("sleepOff", Integer.parseInt(ed_stop.getText().toString().trim())).commit();
                     Utils.showCustomToast(activity, getString(R.string.saved));
-                    setSleepPeriod();
+                    setSleepModePeriod();
+//                    setSleepPeriod();
                 }
             }
         });
@@ -685,6 +687,43 @@ public class SettingsActivity extends Activity {
             String endDate = df.format(end);
             spedit.putString("startTime", startDate).commit();
             spedit.putString("endTime", endDate).commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void setSleepModePeriod() {
+        String sleepOn = Utils.addToTime(sp.getString("isha", ""), settings.getCloseScreenAfterIsha()/* sp.getInt("sleepOn", 0) */ + "");
+        String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), settings.getRunScreenBeforeFajr()/*sp.getInt("sleepOff", 0) */ + "");
+//        Log.e("**//sleepOn", sleepOn + "  **");
+//        Log.e("**//sleepOff", sleepOff);
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            Date start = sdf.parse(sleepOn);
+            Date end = sdf.parse(sleepOff);
+            Date date = new Date();
+            Calendar calendarStart = Calendar.getInstance();
+            calendarStart.setTime(date);
+            calendarStart.set(Calendar.HOUR_OF_DAY, start.getHours());// for 6 hour
+            calendarStart.set(Calendar.MINUTE, start.getMinutes());// for 0 min
+            calendarStart.set(Calendar.SECOND, 0);// for 0 sec
+            System.out.println("***:calendarStart "+calendarStart.getTime());// print 'Mon Mar 28 06:00:00 ALMT 2016'
+            Calendar calendarEnd = Calendar.getInstance();
+            calendarEnd.setTime(date);
+            calendarEnd.set(Calendar.HOUR_OF_DAY, end.getHours());
+            calendarEnd.set(Calendar.MINUTE, end.getMinutes());
+            calendarEnd.set(Calendar.SECOND, 0);// for 0 sec
+            System.out.println("***:calendarEnd "+calendarEnd.getTime());
+            if (end.before(start)) {
+                calendarEnd.add(Calendar.DAY_OF_YEAR, 1);
+                System.out.println("***:calendarEnd added "+calendarEnd.getTime());
+            }
+            DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+            String startDate = df.format(calendarStart.getTime());
+            String endDate = df.format(calendarEnd.getTime());
+            spedit.putString("startTime", startDate).commit();
+            spedit.putString("endTime", endDate).commit();
+            Log.e("**//startTime", startDate + "  **");
+            Log.e("**//endTime", endDate);
         } catch (Exception e) {
             e.printStackTrace();
         }

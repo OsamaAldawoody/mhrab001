@@ -487,31 +487,13 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         icisha = sp.getString("iqisha", "");
 
         buildUI();
-//        setSleepPeriod();
         try {
             checkTime();
         } catch (Exception e) {
             Log.e("checkTime Error : ", "" + e);
         }
-        setSleepPeriod();
-
-//        timerSleep = new Timer();
-//        asyncSleep = new TimerTask() {
-//            @Override
-//            public void run() {
-//                try {
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            setSleepPeriod();
-//                        }
-//                    });
-//                } catch (NullPointerException e) {
-//                    Log.i("exception", "" + e.getMessage());
-//                }
-//            }
-//        };
-//        timerSleep.schedule(asyncSleep, 0, 2*24*60*60*1000);
+//        setSleepPeriod();
+        setSleepModePeriod();
 
 //        playSermon();
 
@@ -717,7 +699,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 //        buildTheme();
 //        getWeather(-1);
 //        Scan();
-       }
+    }
 
     @Override
     protected void onResume() {
@@ -1167,7 +1149,8 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             }
             if ((c2.getTime().before(now) || c2.getTime().equals(now))
                     && ((c22.getTime().after(now)) || c22.getTime().equals(now))) {
-                setSleepPeriod();
+//                setSleepPeriod();
+                setSleepModePeriod();
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t22));
                 iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t22));
                 currentPray = "dhuhr";
@@ -1470,7 +1453,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                                 isOpenSermon = true;
                                 Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
                             }
-                        }, 90000);//90000
+                        },120000);//120000
 
 //                        new Handler().postDelayed(new Runnable() {
 //                            @Override
@@ -1516,10 +1499,10 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 try {
                     if (!TextUtils.isEmpty(recPath)) {
                         File file = new File(getRealPathFromURI(Uri.parse(recPath)));
-                        boolean isDeleted=false;
+                        boolean isDeleted = false;
                         if (file.exists())
-                           isDeleted= file.delete();
-                        Log.i("aaa deleted:",isDeleted+"");
+                            isDeleted = file.delete();
+                        Log.i("aaa deleted:", isDeleted + "");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2775,8 +2758,11 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             Date start = sdf.parse(sleepOn);
             Date end = sdf.parse(sleepOff);
+            Calendar mCal = Calendar.getInstance();
+            mCal.set(Calendar.HOUR_OF_DAY, start.getHours());
+            mCal.set(Calendar.MINUTE, start.getMinutes());
+//            mCal.set(Calendar.MONTH,mCal.get(C));
             if (end.before(start)) {
-                Calendar mCal = Calendar.getInstance();
                 mCal.setTime(end);
                 mCal.add(Calendar.DAY_OF_YEAR, 1);
                 end.setTime(mCal.getTimeInMillis());
@@ -2786,6 +2772,43 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             String endDate = df.format(end);
             spedit.putString("startTime", startDate).commit();
             spedit.putString("endTime", endDate).commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void setSleepModePeriod() {
+        String sleepOn = Utils.addToTime(sp.getString("isha", ""), settings.getCloseScreenAfterIsha()/* sp.getInt("sleepOn", 0) */ + "");
+        String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), settings.getRunScreenBeforeFajr()/*sp.getInt("sleepOff", 0) */ + "");
+//        Log.e("**//sleepOn", sleepOn + "  **");
+//        Log.e("**//sleepOff", sleepOff);
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            Date start = sdf.parse(sleepOn);
+            Date end = sdf.parse(sleepOff);
+            Date date = new Date();
+            Calendar calendarStart = Calendar.getInstance();
+            calendarStart.setTime(date);
+            calendarStart.set(Calendar.HOUR_OF_DAY, start.getHours());// for 6 hour
+            calendarStart.set(Calendar.MINUTE, start.getMinutes());// for 0 min
+            calendarStart.set(Calendar.SECOND, 0);// for 0 sec
+            System.out.println("***:calendarStart "+calendarStart.getTime());// print 'Mon Mar 28 06:00:00 ALMT 2016'
+            Calendar calendarEnd = Calendar.getInstance();
+            calendarEnd.setTime(date);
+            calendarEnd.set(Calendar.HOUR_OF_DAY, end.getHours());
+            calendarEnd.set(Calendar.MINUTE, end.getMinutes());
+            calendarEnd.set(Calendar.SECOND, 0);// for 0 sec
+            System.out.println("***:calendarEnd "+calendarEnd.getTime());
+            if (end.before(start)) {
+                calendarEnd.add(Calendar.DAY_OF_YEAR, 1);
+                System.out.println("***:calendarEnd added "+calendarEnd.getTime());
+            }
+            DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+            String startDate = df.format(calendarStart.getTime());
+            String endDate = df.format(calendarEnd.getTime());
+            spedit.putString("startTime", startDate).commit();
+            spedit.putString("endTime", endDate).commit();
+            Log.e("**//startTime", startDate + "  **");
+            Log.e("**//endTime", endDate);
         } catch (Exception e) {
             e.printStackTrace();
         }
