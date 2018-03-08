@@ -1453,7 +1453,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                                 isOpenSermon = true;
                                 Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
                             }
-                        },120000);//120000
+                        }, 120000);//120000
 
 //                        new Handler().postDelayed(new Runnable() {
 //                            @Override
@@ -2776,6 +2776,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             e.printStackTrace();
         }
     }
+
     private void setSleepModePeriod() {
         String sleepOn = Utils.addToTime(sp.getString("isha", ""), settings.getCloseScreenAfterIsha()/* sp.getInt("sleepOn", 0) */ + "");
         String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), settings.getRunScreenBeforeFajr()/*sp.getInt("sleepOff", 0) */ + "");
@@ -2791,16 +2792,16 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             calendarStart.set(Calendar.HOUR_OF_DAY, start.getHours());// for 6 hour
             calendarStart.set(Calendar.MINUTE, start.getMinutes());// for 0 min
             calendarStart.set(Calendar.SECOND, 0);// for 0 sec
-            System.out.println("***:calendarStart "+calendarStart.getTime());// print 'Mon Mar 28 06:00:00 ALMT 2016'
+            System.out.println("***:calendarStart " + calendarStart.getTime());// print 'Mon Mar 28 06:00:00 ALMT 2016'
             Calendar calendarEnd = Calendar.getInstance();
             calendarEnd.setTime(date);
             calendarEnd.set(Calendar.HOUR_OF_DAY, end.getHours());
             calendarEnd.set(Calendar.MINUTE, end.getMinutes());
             calendarEnd.set(Calendar.SECOND, 0);// for 0 sec
-            System.out.println("***:calendarEnd "+calendarEnd.getTime());
+            System.out.println("***:calendarEnd " + calendarEnd.getTime());
             if (end.before(start)) {
                 calendarEnd.add(Calendar.DAY_OF_YEAR, 1);
-                System.out.println("***:calendarEnd added "+calendarEnd.getTime());
+                System.out.println("***:calendarEnd added " + calendarEnd.getTime());
             }
             DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
             String startDate = df.format(calendarStart.getTime());

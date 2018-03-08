@@ -24,13 +24,13 @@
         android:gravity="center"
         android:text="السبت | 5 ديسمبر 2015 | 24 صفر1437 هـ"
         android:textColor="@color/white"
-        android:textDirection="ltr"
+        android:layoutDirection="rtl"
         android:textSize="30dp" />
 
     <LinearLayout
         android:id="@+id/clock"
         android:layout_width="wrap_content"
-        android:layout_height="75dp"
+        android:layout_height="85dp"
         android:layout_below="@+id/dateToday"
         android:layout_centerHorizontal="true">
 
@@ -41,7 +41,7 @@
             android:layout_below="@+id/imageView"
             android:text="11:25"
             android:textColor="@color/white"
-            android:textSize="64dp" />
+            android:textSize="75dp" />
 
         <TextView
             android:id="@+id/amPm"

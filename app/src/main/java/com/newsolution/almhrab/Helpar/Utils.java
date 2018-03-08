@@ -1078,7 +1078,7 @@ public class Utils {
                 act.getString(R.string.wes)
                 , act.getString(R.string.ths), act.getString(R.string.fri), act.getString(R.string.sat)};
         String[] iMonthNames = {"محرم","صفر","ربيع الأول",
-                "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة", "رجب",
+                "ربيع الثاني", "جمادى الأولى", "جمادى الآخر", "رجب",
                 "شعبان","شعبان", "شوال", "ذو القعدة"
                 , " ذو الحجة"};
         String[] MonthNames = {act.getString(R.string.em1), act.getString(R.string.em2), act.getString(R.string.em3),
@@ -1106,7 +1106,7 @@ public class Utils {
                 act.getString(R.string.wes)
                 , act.getString(R.string.ths), act.getString(R.string.fri), act.getString(R.string.sat)};
         String[] iMonthNames = {"محرم","صفر","ربيع الأول",
-                "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة", "رجب",
+                "ربيع الثاني", "جمادى الأولى", "جمادى الآخر", "رجب",
                 "شعبان","شعبان", "شوال", "ذو القعدة"
                 , " ذو الحجة"};
 
@@ -1123,7 +1123,7 @@ public class Utils {
                 .getInt("hijriDiff", 0), dayTest);
         int iDayN = hd.date1();
         // String outputIslamicDate = wdNames[(int) iDate[4]] + " " + (int)day + " " +MonthNames[(int) month] + " " + (int)year + " م " + (int)iDate[5] + " "+ iMonthNames[(int) iDate[6]] + " " + (int)iDate[7] + " هـ ";
-        String outputIslamicDate = (int) iDate[5] + " " + iMonthNames[(int) iDate[6]] + " " +
+        String outputIslamicDate = " "+(int) iDate[5] + " " + iMonthNames[(int) iDate[6]] + " " +
                 (int) iDate[7] + " " + act.getString(R.string.mt) + " - " + (int) day + " " + MonthNames[(int) month] + " " + (int) year;
 
         return outputIslamicDate;
@@ -1151,7 +1151,7 @@ public class Utils {
     }
     public static String writeHDate(Activity act, DateHigri hd) {
         String[] iMonthNames = {"محرم","صفر","ربيع الأول",
-                "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة", "رجب",
+                "ربيع الثاني", "جمادى الأولى", "جمادى الآخر", "رجب",
                 "شعبان","شعبان", "شوال", "ذو القعدة"
                 , " ذو الحجة"};
 

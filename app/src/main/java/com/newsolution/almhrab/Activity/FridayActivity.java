@@ -398,7 +398,7 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
                 stopChronometer();
                 mChronometer.setBase(SystemClock.elapsedRealtime());
                 mChronometer.start();
-                mPublisher.setVideoBitRate(720);
+//                mPublisher.setVideoBitRate(720);
                 mPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
                 mPublisher.startRecord(recPath);
                 Log.i("999999", "rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
@@ -496,8 +496,8 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
             if (mPublisher != null) {
                 List<Size> sizes = mPublisher.getSupportedPictureSizes(getResources().getConfiguration().orientation);
                 Size resolution = sizes.get(0);
-                mPublisher.setVideoOutputResolution(resolution.width, resolution.height,
-                        this.getResources().getConfiguration().orientation);
+//                mPublisher.setVideoOutputResolution(resolution.width, resolution.height, this.getResources().getConfiguration().orientation);
+                mPublisher.setVideoOutputResolution(480, 640, this.getResources().getConfiguration().orientation);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -511,7 +511,7 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
                 @Override
                 public void run() {
                     Log.i("////*: ", "[" + msg + "]");
-//                    Toast.makeText(activity, "[" + msg + "]", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, "[" + msg + "]", Toast.LENGTH_LONG).show();
                 }
             });
         } catch (Exception e) {
@@ -667,7 +667,7 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
 
     private void handleException(Exception e) {
         try {
-//            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             Log.i("streaming: ", e.getMessage());
             mPublisher.stopPublish();
             mPublisher.stopRecord();
