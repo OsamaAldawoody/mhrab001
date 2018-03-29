@@ -110,14 +110,14 @@
             android:name=".scheduler.SleepService"
             android:enabled="true" />
         <!--<receiver-->
-            <!--android:name=".scheduler.SleepBroadcastReciever"-->
-            <!--android:enabled="false">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
-                <!--<action android:name="android.intent.action.TIMEZONE_CHANGED" />-->
-                <!--<action android:name="android.intent.action.TIME_SET" />-->
-                <!--<action android:name="android.intent.action.MY_PACKAGE_REPLACED" />-->
-            <!--</intent-filter>-->
+        <!--android:name=".scheduler.SleepBroadcastReciever"-->
+        <!--android:enabled="false">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
+        <!--<action android:name="android.intent.action.TIMEZONE_CHANGED" />-->
+        <!--<action android:name="android.intent.action.TIME_SET" />-->
+        <!--<action android:name="android.intent.action.MY_PACKAGE_REPLACED" />-->
+        <!--</intent-filter>-->
         <!--</receiver>-->
 
         <service android:name=".scheduler.SalaatSchedulingService" />
@@ -169,7 +169,15 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeAct" />
         <activity
+            android:name=".Activity.PreviewLiveStreamActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeAct" />
+        <activity
             android:name=".Activity.ShowAdsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeAct" />
+        <activity
+            android:name=".Activity.ViewEmamActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeAct" />
         <activity

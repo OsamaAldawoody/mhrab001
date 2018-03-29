@@ -9,17 +9,15 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-//import android.lib.widget.verticalmarqueetextview.VerticalMarqueeTextView;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.content.ContextCompat;
-import android.os.Bundle;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -62,17 +60,9 @@ import com.streamaxia.android.handlers.RtmpHandler;
 import com.streamaxia.android.utils.ScalingMode;
 import com.streamaxia.android.utils.Size;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
@@ -80,25 +70,21 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class FridayActivity extends YouTubeFailureRecoveryActivity implements RtmpHandler.RtmpListener, RecordHandler.RecordListener,
+//import android.lib.widget.verticalmarqueetextview.VerticalMarqueeTextView;
+
+public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity implements RtmpHandler.RtmpListener, RecordHandler.RecordListener,
         EncoderHandler.EncodeListener {
 
-    private final String TAG = FridayActivity.class.getSimpleName();
+    private final String TAG = PreviewLiveStreamActivity.class.getSimpleName();
 
-    // Set default values for the streamer
     public static String streamaxiaStreamName = "AlMhrab_";
-    // Set default values for the streamer
     public final static int bitrate = 500;
     public final static int width = 720;
     public final static int height = 1280;
@@ -160,7 +146,7 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
         khotab = (Khotab) getIntent().getSerializableExtra("khotba");
 
         ButterKnife.bind(this);
-//        hideStatusBar();
+
         saveDir = new File(Environment.getExternalStorageDirectory(), "AlMhrab");
         saveDir.mkdirs();
         recPath = saveDir.getAbsolutePath() + "/AlMhrab_" + sp.getInt("masjedId", -1)//+ "_" + khotab.getTitle()
@@ -169,8 +155,6 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
         mPublisher = new StreamaxiaPublisher(mCameraView, this);
         mCameraView.setScalingMode(ScalingMode.TRIM);
         try {
-//            mCameraView.getLayoutParams().width= WindowManager.LayoutParams.MATCH_PARENT;
-//            mCameraView.getLayoutParams().height= 200;
             mPublisher.setEncoderHandler(new EncoderHandler(this));
             mPublisher.setRtmpHandler(new RtmpHandler(this));
             mPublisher.setRecordEventHandler(new RecordHandler(this));
@@ -207,22 +191,16 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
         tvTitle.setTypeface(fontBangla_mn_bold);
         time.setTypeface(fontRoboto);
         date1.setTypeface(font);
-        tvUrdText.setTypeface(fontDroidkufi);//fontBangla_mn_bold
+        tvUrdText.setTypeface(fontDroidkufi);
         tvEngText.setTypeface(fontDroidkufi);
-//        Utils.applyFontBold(activity, wvEngText);
-//        Utils.applyFontBold(activity, wvUrdText);
-//        Utils.applyFontBold(activity, tvTra2);
 
         tvEngText.setText("");
         tvUrdText.setText("");
         tvName.setText(sp.getString("masjedName", ""));
-//        tvEngText.setTypeface(fontBangla_mn_bold);
-//        tvName.setTypeface(fontDroidkufi);
         mChronometer.setVisibility(View.GONE);
         checkTime();
         fillData();
-        isStreaming();
-
+//        isStreaming();
     }
 
     private void isStreaming() {
@@ -266,35 +244,35 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
         if (khotbaTitle.endsWith(" - "))
             khotbaTitle.substring(0, khotbaTitle.length() - 2);
         tvTitle.setText(khotbaTitle);
-        if (sp.getBoolean("IsDeaf", false)) {
-            if (!khotab.getUrlVideoDeaf().equals("null")) {
-                youtube_view.setVisibility(View.VISIBLE);
-                rlLivingStream.setVisibility(View.GONE);
-                showLive = false;
-//                vvVideo.setVisibility(View.VISIBLE);
-//                vvVideo.setVideoURI(Uri.parse(khotab.getUrlVideoDeaf()));
-//                vvVideo.start();
-
-            } else {
-                showLive = true;
-                vvVideo.setVisibility(View.GONE);
-                youtube_view.setVisibility(View.GONE);
-                rlLivingStream.setVisibility(View.VISIBLE);
-            }
-        } else {
-            showLive = true;
-            vvVideo.setVisibility(View.GONE);
-            youtube_view.setVisibility(View.GONE);
-            rlLivingStream.setVisibility(View.VISIBLE);
-        }
-        vvVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                vvVideo.setVisibility(View.GONE);
-                youtube_view.setVisibility(View.GONE);
-                rlLivingStream.setVisibility(View.VISIBLE);
-            }
-        });
+//        if (sp.getBoolean("IsDeaf", false)) {
+//            if (!khotab.getUrlVideoDeaf().equals("null")) {
+//                youtube_view.setVisibility(View.VISIBLE);
+//                rlLivingStream.setVisibility(View.GONE);
+//                showLive = false;
+//            } else {
+//                showLive = true;
+//                vvVideo.setVisibility(View.GONE);
+//                youtube_view.setVisibility(View.GONE);
+//                rlLivingStream.setVisibility(View.VISIBLE);
+//            }
+//        } else {
+//            showLive = true;
+//            vvVideo.setVisibility(View.GONE);
+//            youtube_view.setVisibility(View.GONE);
+//            rlLivingStream.setVisibility(View.VISIBLE);
+//        }
+//        vvVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//            @Override
+//            public void onCompletion(MediaPlayer mediaPlayer) {
+//                vvVideo.setVisibility(View.GONE);
+//                youtube_view.setVisibility(View.GONE);
+//                rlLivingStream.setVisibility(View.VISIBLE);
+//            }
+//        });
+        showLive = true;
+        vvVideo.setVisibility(View.GONE);
+        youtube_view.setVisibility(View.GONE);
+        rlLivingStream.setVisibility(View.VISIBLE);
 
         animTranslation();
         startKhotbaTimer();
@@ -303,9 +281,9 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
     private void animTranslation() {
         final String body1 =(khotab.getBody1().equals("null"))?"": khotab.getBody1();
         final String body2 =(khotab.getBody2().equals("null"))?"": khotab.getBody2();
-//        String body2 = khotab.getBody2();
         int speed = khotab.getTranslationSpeed();
-        Log.i("//speed: ", speed + "");
+//        Log.i("//body1: ", khotab.getBody1() + " //*");
+//        Log.i("//speed: ", speed + "//*");
         WebSettings settings1 = wvUrdText.getSettings();
         WebSettings settings = wvEngText.getSettings();
         settings1.setDefaultTextEncodingName("utf-8");
@@ -314,12 +292,6 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
         setScrollText(wvUrdText, body2, khotab.isDirection2RTL() ? "right" : "left", speed);
     }
 
-    private void setScrollTextLeft(WebView wv, String body) {
-        wv.setBackgroundColor(Color.TRANSPARENT);
-        String fontSize = getResources().getDimensionPixelSize(R.dimen.textSize) + "px";
-        String htmlS = "<html><FONT style=font-size:" + fontSize + "; padding-bottom:10px; @font-face {font-family: MyFont;src: url(\"file:///android_asset/fonts/droidkufi_regular.ttf\")}; color='#ffffff' FACE='courier'><marquee behavior='scroll' direction='left' scrollamount=7>" + body + "</marquee></FONT></html>";
-        wv.loadData(htmlS, "text/html", "utf-8"); // Set focus to the textview
-    }
 
     private void setScrollText(WebView wv, String body, String dir, int speed) {
         wv.setBackgroundColor(Color.TRANSPARENT);
@@ -332,62 +304,6 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
 //        wv.loadData(htmlS, "text/html", "UTF-8"); // Set focus to the textview
     }
 
-    public static void setMarqueeSpeed(TextView tv, float speed) {
-        if (tv != null) {
-            try {
-                Field f = null;
-                if (tv instanceof AppCompatTextView) {
-                    f = tv.getClass().getSuperclass().getDeclaredField("mMarquee");
-                } else {
-                    f = tv.getClass().getDeclaredField("mMarquee");
-                }
-                if (f != null) {
-                    f.setAccessible(true);
-                    Object marquee = f.get(tv);
-                    if (marquee != null) {
-                        String scrollSpeedFieldName = "mScrollUnit";
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            scrollSpeedFieldName = "mPixelsPerSecond";
-                        }
-                        Field mf = marquee.getClass().getDeclaredField(scrollSpeedFieldName);
-                        mf.setAccessible(true);
-                        mf.setFloat(marquee, speed);
-                    }
-                } else {
-                    Log.e("Marquee", "mMarquee object is null.");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void animateUrd(TextView tvEngText) {
-        Paint textPaint = tvEngText.getPaint();
-        String text = tvEngText.getText().toString();//get text
-        int width = Math.round(textPaint.measureText(text));//measure the text size
-        ViewGroup.LayoutParams params = tvEngText.getLayoutParams();
-        params.width = width;
-        tvEngText.setLayoutParams(params); //refine
-
-        DisplayMetrics displaymetrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getRealMetrics(displaymetrics);
-        int screenWidth = displaymetrics.widthPixels;
-
-        //this is optional. do not scroll if text is shorter than screen width
-        //remove this won't effect the scroll
-        if (width <= screenWidth) {
-            //All text can fit in screen.
-            return;
-        }
-        //set the animation
-        TranslateAnimation slide = new TranslateAnimation(0, -width, 0, 0);
-        slide.setDuration(20000);
-        slide.setRepeatCount(Animation.INFINITE);
-        slide.setRepeatMode(Animation.RESTART);
-        slide.setInterpolator(new LinearInterpolator());
-        tvEngText.startAnimation(slide);
-    }
 
     @Override
     protected void onResume() {
@@ -395,20 +311,19 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
         try {
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
                     == PackageManager.PERMISSION_GRANTED) {
-                stopStreaming();
-                stopChronometer();
-                mChronometer.setBase(SystemClock.elapsedRealtime());
-                mChronometer.start();
+//                stopStreaming();
+//                stopChronometer();
+//                mChronometer.setBase(SystemClock.elapsedRealtime());
+//                mChronometer.start();
 //                mPublisher.setVideoBitRate(720);
-                mPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
-                mPublisher.startRecord(recPath);
-                Log.i("999999", "rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
+//                mPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
+//                mPublisher.startRecord(recPath);
             } else {
                 finish();
                 Toast.makeText(this, "يجب السماح باستخدام الكاميرا", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
-//            Toast.makeText(this, "لا يوجد الكاميرا", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "لا يوجد كاميرا متصلة", Toast.LENGTH_LONG).show();
             e.printStackTrace();
             finish();
         }
@@ -419,7 +334,7 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
         try {
             super.onPause();
             mCameraView.stopCamera();
-            mPublisher.pauseRecord();
+//            mPublisher.pauseRecord();
         } catch (Exception e) {
             e.printStackTrace();
             finish();
@@ -430,24 +345,23 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
     protected void onDestroy() {
         super.onDestroy();
         try {
-            mPublisher.stopPublish();
-            mPublisher.stopRecord();
+//            mPublisher.stopPublish();
+//            mPublisher.stopRecord();
             if (countDownTimer != null) countDownTimer.cancel();
             MainActivity.isOpenSermon = true;
-            Log.i("recPath: ", recPath);
-//            MainActivity.uploadSermonToServer(recPath,sp.getInt("masjedId",-1));
-            DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
-            DateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
-            Date date = df.parse(khotab.getDateKhotab());
-            String DateKhotab = sdf.format(date);
+//            Log.i("recPath: ", recPath);
+//            DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
+//            DateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
+//            Date date = df.parse(khotab.getDateKhotab());
+//            String DateKhotab = sdf.format(date);
 
-            Intent intent = new Intent(BROADCAST);
-            Bundle extras = new Bundle();
-            extras.putString("recPath", recPath);
-            extras.putInt("IdKhotab", khotab.getId());
-            extras.putString("DateKhotab", DateKhotab);
-            intent.putExtras(extras);
-            sendBroadcast(intent);
+//            Intent intent = new Intent(BROADCAST);
+//            Bundle extras = new Bundle();
+//            extras.putString("recPath", recPath);
+//            extras.putInt("IdKhotab", khotab.getId());
+//            extras.putString("DateKhotab", DateKhotab);
+//            intent.putExtras(extras);
+//            sendBroadcast(intent);
         } catch (Exception e) {
             e.printStackTrace();
             finish();
@@ -485,12 +399,6 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
         mPublisher.setScreenOrientation(newConfig.orientation);
     }
 
-    private void hideStatusBar() {
-        View decorView = getWindow().getDecorView();
-        // Hide the status bar.
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
-    }
 
     private void setStreamerDefaultValues() {
         try {
@@ -512,7 +420,7 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
                 @Override
                 public void run() {
                     Log.i("////*: ", "[" + msg + "]");
-//                    Toast.makeText(activity, "[" + msg + "]", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, "[" + msg + "]", Toast.LENGTH_LONG).show();
                 }
             });
         } catch (Exception e) {
@@ -668,7 +576,7 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
 
     private void handleException(Exception e) {
         try {
-//            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             Log.i("streaming: ", e.getMessage());
             mPublisher.stopPublish();
             mPublisher.stopRecord();

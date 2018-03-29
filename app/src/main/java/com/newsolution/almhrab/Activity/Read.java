@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -161,6 +162,7 @@ public class Read extends Activity {
     private LinearLayout rlTitle;
     private AppCompatImageView ivLogo;
     private TextView tvName;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -225,7 +227,7 @@ public class Read extends Activity {
         gv.setMousqeSettings(settings.getFajrEkama() + "", settings.getAlShrouqEkama() + "", settings.getDhuhrEkama() + ""
                 , settings.getAsrEkama() + "", settings.getMagribEkama() + "", settings.getIshaEkama() + "");
         mosquSettings = gv.getMousqeSettings();
-        Log.i("shor: ",settings.getAlShrouqEkama() +" time");
+        Log.i("shor: ", settings.getAlShrouqEkama() + " time");
         spedit.putString("ifajer", settings.getFajrEkama() + "").commit();
         spedit.putString("ishroq", settings.getAlShrouqEkama() + "").commit();
         spedit.putString("idhor", settings.getDhuhrEkama() + "").commit();
@@ -254,27 +256,27 @@ public class Read extends Activity {
         sar.cancelAlarm(this);
         sar.setAlarm(this);
         ///// start service /////
-       try {
-           AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-//           mAudioManager.setStreamSolo(AudioManager.STREAM_MUSIC, true);
-           mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-       }catch(Exception e){}
-
+//       try {
+//           AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+////           mAudioManager.setStreamSolo(AudioManager.STREAM_MUSIC, true);
+//           mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+//       }catch(Exception e){}
+       stopSilentMode();
         buildUI();
         showNews();
-        if (TextUtils.isEmpty(sp.getString("TempIn",""))) {
+        if (TextUtils.isEmpty(sp.getString("TempIn", ""))) {
             getWeather(0);
-        }else {
-            in_masgedTemp.setText(sp.getString("TempIn",""));
+        } else {
+            in_masgedTemp.setText(sp.getString("TempIn", ""));
         }
-        if (TextUtils.isEmpty(sp.getString("TempOut",""))||TextUtils.isEmpty(sp.getString("HumOut",""))) {
+        if (TextUtils.isEmpty(sp.getString("TempOut", "")) || TextUtils.isEmpty(sp.getString("HumOut", ""))) {
             getWeather(1);
-        }else {
-            out_masgedTemp.setText(sp.getString("TempOut",""));
-            tvHumidity.setText(sp.getString("HumOut","")+ "%");
+        } else {
+            out_masgedTemp.setText(sp.getString("TempOut", ""));
+            tvHumidity.setText(sp.getString("HumOut", "") + "%");
 
         }
-        if (TextUtils.isEmpty(sp.getString("TempOut",""))&&TextUtils.isEmpty(sp.getString("TempIn",""))) {
+        if (TextUtils.isEmpty(sp.getString("TempOut", "")) && TextUtils.isEmpty(sp.getString("TempIn", ""))) {
             getWeather(-1);
         }
 
@@ -286,6 +288,23 @@ public class Read extends Activity {
             Log.e("checkTime Error : ", "" + e);
         }
     }
+    private void stopSilentMode() {
+        Log.i("stop Silent: ","truer");
+        try {
+            AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
+            } else {
+                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+            }
+            mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
 
     private void checkTime() {
         DateHigri hd = new DateHigri();
@@ -816,7 +835,7 @@ public class Read extends Activity {
             } else {
                 timeHHMM = "" + String.valueOf(hour) + ":" + String.valueOf(minutes);
             }
-            return timeHHMM ;//+ "ص";
+            return timeHHMM;//+ "ص";
         } else if (hour > 12) {
             hour = hour - 12;
             if (minutes < 10) {
@@ -824,7 +843,7 @@ public class Read extends Activity {
             } else {
                 timeHHMM = "" + String.valueOf(hour) + ":" + String.valueOf(minutes);
             }
-            return timeHHMM ;//+ "م";
+            return timeHHMM;//+ "م";
         } else {
             if (minutes < 10) {
                 timeHHMM = String.valueOf(hour) + ":0" + String.valueOf(minutes);
@@ -902,30 +921,30 @@ public class Read extends Activity {
         Log.i("***mat: ", material1);
 //      String mat[] = material1.substring(1, material1.length() - 1).split(",");
 //      materialDisc.setMovementMethod(new ScrollingMovementMethod());
-       try {
-           material1 = azkar.get(matNumCur);
-           matNumCur++;
-           if (matNumCur < matSize) {
-               material2 = azkar.get(matNumCur);
+        try {
+            material1 = azkar.get(matNumCur);
+            matNumCur++;
+            if (matNumCur < matSize) {
+                material2 = azkar.get(matNumCur);
 //               matNumCur++;
-           }
+            }
 //           if (matNumCur < matSize) {
 //               material3 = azkar.get(matNumCur);
 //           }
-       }catch (Exception e){
-           e.printStackTrace();
-           matNumCur=0;
-           animAzkar();
-       }
+        } catch (Exception e) {
+            e.printStackTrace();
+            matNumCur = 0;
+            animAzkar();
+        }
         if (!TextUtils.isEmpty(material1)) {
             azkarDisc1.setVisibility(View.VISIBLE);
             azkarDisc1.setText(material1);
-        }else
+        } else
             azkarDisc1.setVisibility(View.GONE);
         if (!TextUtils.isEmpty(material2)) {
             azkarDisc2.setVisibility(View.VISIBLE);
             azkarDisc2.setText(material2);
-        }else
+        } else
             azkarDisc2.setVisibility(View.GONE);
 //        if (!TextUtils.isEmpty(material3)) {
 //            azkarDisc3.setText(material3);
@@ -1060,6 +1079,10 @@ public class Read extends Activity {
     }
 
     private String[] calculate() {
+        Calendar today = Calendar.getInstance();
+        day = today.get(Calendar.DAY_OF_MONTH);
+        month = today.get(Calendar.MONTH) + 1;
+        year = today.get(Calendar.YEAR);
         try {
             DBO.open();
             city = DBO.getCityById(cityId);
@@ -1071,7 +1094,7 @@ public class Read extends Activity {
             long1 = sp.getInt("long1", city.getLon1());
             long2 = sp.getInt("long2", city.getLon2());
 
-            Calendar today = Calendar.getInstance();
+//            Calendar today = Calendar.getInstance();
             int hour = today.get(Calendar.HOUR_OF_DAY);
             int minute = today.get(Calendar.MINUTE);
             String timeNow = hour + ":" + minute + ":00";
@@ -1108,6 +1131,7 @@ public class Read extends Activity {
         String[] prayTimes = {cfajr, csunrise, cdhohr, casr, cmaghrib, cisha};
         return prayTimes;
     }
+
     public void getPrayerTimes() {
 //        Toast.makeText(activity,sp.getInt("cityId",1)+"", Toast.LENGTH_SHORT).show();
         Context context;
@@ -1297,9 +1321,9 @@ public class Read extends Activity {
     }
 
     private void getWeather(final int action) {
-        in_masgedTemp.setText(sp.getString("TempIn","24"));
-        out_masgedTemp.setText(sp.getString("TempOut","30"));
-        tvHumidity.setText(sp.getString("HumOut","35")+"%");
+        in_masgedTemp.setText(sp.getString("TempIn", "24"));
+        out_masgedTemp.setText(sp.getString("TempOut", "30"));
+        tvHumidity.setText(sp.getString("HumOut", "35") + "%");
 //        double latitude = lat1 + (lat2 / 60);
 //        double longitude = long1 + (long2 / 60);
 //        Log.i("555: ", latitude + " : " + longitude);
@@ -1340,6 +1364,7 @@ public class Read extends Activity {
 //            }
 //        });
     }
+
     private void showNews() {
         if (sp.getBoolean("news", true)) {
             if (advs.size() > 0) {
@@ -1355,6 +1380,7 @@ public class Read extends Activity {
             rlNews.setVisibility(View.GONE);
         }
     }
+
     private void setImage(String masjedImg, final AppCompatImageView imageView) {
         Glide.with(activity).load(Uri.parse(masjedImg))
                 .override(100, 100).listener(new RequestListener<Uri, GlideDrawable>() {

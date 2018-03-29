@@ -17,7 +17,7 @@
         android:layout_marginRight="20dp"
         android:layout_marginTop="20dp"
         android:padding="10dp"
-        android:text="@string/fridayTxt"
+        android:text="@string/friday"
         android:textColor="@color/black"
         android:textSize="@dimen/textSize"
         android:visibility="visible" />
@@ -31,7 +31,7 @@
         android:layout_marginTop="20dp"
         android:gravity="top"
         android:hint="@string/fridayTxt1"
-        android:imeOptions="actionNext"
+        android:imeOptions="actionDone"
         android:inputType="number"
         android:padding="@dimen/padding"
         android:textColor="@color/black_light"

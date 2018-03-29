@@ -2,6 +2,7 @@ package com.newsolution.almhrab.Helpar;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -10,12 +11,14 @@ import android.os.Vibrator;
 import android.util.Log;
 
 import com.newsolution.almhrab.AppConstants.AppConst;
+import com.newsolution.almhrab.R;
 
 public class PlaySound {
     static MediaPlayer mp;
     static Vibrator v;
     static Boolean sound; // false off true on
     private static String soundName;
+    private static Uri soundURI;
 
     public static Boolean getSound() {
         return sound;
@@ -43,23 +46,23 @@ public class PlaySound {
     }
 
     public static void play(Context c, String soundName) {
+//        stop(c);
         setSoundFromSP(c, soundName, 0);
         SharedPreferences sp = c.getSharedPreferences(AppConst.PREFS, c.MODE_PRIVATE);
         sp.edit().putInt("actionPlay", 0).commit();
         sp.edit().putString("sound", soundName).commit();
-        Log.i("****: sound", sp.getString("sound", " ll"));
+        Log.i("**** close: sound", sp.getString("sound", " ll"));
 //soundName=sp.getString("sound","dhiabi");
         if (sound) {
 //            if (mp == null)
             try {
 
-
-                mp = MediaPlayer.create(
-                        c,
-                        c.getResources().getIdentifier(soundName, "raw", c.getPackageName()));
-//			if (!mp.isPlaying())
-//				mp.start();
-
+//                mp = MediaPlayer.create(c, R.raw.phone);
+//                int resId = c.getResources().getIdentifier(soundName, "res/raw", c.getPackageName());
+//                if (resId==0)
+                int resId = c.getResources().getIdentifier(soundName, "raw", c.getPackageName());
+                soundURI = Uri.parse("android.resource://" + c.getPackageName() + "/" + resId);
+                mp = MediaPlayer.create(c, soundURI);
 
                 if (!mp.isPlaying())
                     mp.start();
@@ -67,13 +70,15 @@ public class PlaySound {
 //					mp.stop();
 //					mp=null;
 //				}
+
             } catch (Exception e) {
                 if (mp != null) {
                     mp = null;
                 }
                 //mp.stop();
                 //mp = null;
-                e.getMessage();
+                e.printStackTrace();
+                Log.i("dddd", e.getMessage());
 
             }
 
@@ -81,6 +86,7 @@ public class PlaySound {
     }
 
     public static void playSDCard(Context c, String soundName, String soundText) {
+//        stop(c);
         setSoundFromSP(c, soundName, 1);
         SharedPreferences sp = c.getSharedPreferences(AppConst.PREFS, c.MODE_PRIVATE);
         sp.edit().putInt("actionPlay", 1).commit();

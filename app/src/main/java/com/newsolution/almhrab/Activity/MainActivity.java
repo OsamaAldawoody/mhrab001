@@ -20,6 +20,7 @@ import android.database.Cursor;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -337,10 +338,10 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     String icmaghrib = "";
     String cisha = "";
     String icisha = "";
-    public Calendar today = Calendar.getInstance();
-    double day = today.get(Calendar.DAY_OF_MONTH);
-    double month = today.get(Calendar.MONTH) + 1;
-    double year = today.get(Calendar.YEAR);
+    //    public Calendar today = Calendar.getInstance();
+//    double day = today.get(Calendar.DAY_OF_MONTH);
+//    double month = today.get(Calendar.MONTH) + 1;
+//    double year = today.get(Calendar.YEAR);
     ArrayList<String> mats = new ArrayList<String>();
     ArrayList<String> advs = new ArrayList<String>();
     ArrayList<News> newses = new ArrayList<News>();
@@ -501,6 +502,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 
 
     private void getWeather(final int action) {
+        Log.i("/// response: ", action + "");
         in_masgedTemp.setText(sp.getString("TempIn", "24"));
         out_masgedTemp.setText(sp.getString("TempOut", "30"));
         tvHumidity.setText(sp.getString("HumOut", "35") + "%");
@@ -649,6 +651,10 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         ishaIqama = (TextView) findViewById(R.id.ishaIqama);
         sound_stop = (ImageView) findViewById(R.id.sound_stop);
         sound_stop.setVisibility(View.GONE);
+
+//        PlaySound.playSDCard(getBaseContext(), "content://com.android.providers.media.documents/document/audio%3A4504", "iqama");
+//        PlaySound.play(getBaseContext(), "phone");
+
         if (PlaySound.isPlay(getBaseContext())) {
             sound_stop.setVisibility(View.VISIBLE);
         }
@@ -702,6 +708,24 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        try {
+            AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
+            } else {
+                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+            }
+            mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+        } catch (Exception ex) {
+            Log.i(LOG_TAG, "onResults");
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
     protected void onResume() {
         IntentFilter intentFilter = new IntentFilter(BROADCAST);
         if (myReceiver != null) registerReceiver(myReceiver, intentFilter);
@@ -716,6 +740,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             }
             mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
         } catch (Exception ex) {
+            Log.i(LOG_TAG, "onResults");
             ex.printStackTrace();
         }
         getWeather(-1);
@@ -1453,20 +1478,36 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                                 isOpenSermon = true;
                                 Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
                             }
-                        }, 120000);//120000
+                        }, 120000);
+                    } else goToEmamScreen();
 
-//                        new Handler().postDelayed(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                Intent cp = new Intent(activity, FridayActivity.class);
-//                                cp.putExtra("khotba", khotba);
-//                                startActivity(cp);
-//                                isOpenSermon = true;
-//                            }
-//                        }, 30000);
-                    }
-                }
+                } else goToEmamScreen();
+            } else goToEmamScreen();
+
+        } else {
+            goToEmamScreen();
+        }
+    }
+
+    private void goToEmamScreen() {
+        if (sp.getBoolean("emamScreen", false)) {
+            stopTimer = true;
+            if (timer != null) {
+                timer.cancel();
+                timer.purge();
             }
+            Log.i("***voice1", "countDown emam");
+            iqamatime = "";
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent cp = new Intent(activity, ViewEmamActivity.class);
+                    startActivity(cp);
+                    isOpenSermon = true;
+                    Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
+                }
+            }, 120000);
+
         }
     }
 
@@ -1476,6 +1517,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         protected Boolean doInBackground(String... params) {
             try {
                 JSONObject result = upLoad2Server(params[0], params[1], params[2]);
+//                Log.i("///result: ",result.toString());
                 if (result != null && result.optBoolean("Status")) {
                     return true;
                 }
@@ -1518,6 +1560,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         String upLoadServerUri = Constants.Main_URL + "SaveKhotabVideo?IdSubscribe=" + masjedId
                 + "&GUID=" + GUID + "&DeviceNo=" + DeviceNo + "&IdKhotab=" + IdKhotab + "&DateKhotab=" + DateKhotab;
         // String [] string = sourceFileUri;
+        Log.i("///test: ", DateKhotab + "");
         Log.i("///test: ", upLoadServerUri + "");
         String fileName = sourceFileUri;
 
@@ -2628,6 +2671,10 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     }
 
     private String[] calculate() {
+        Calendar today = Calendar.getInstance();
+        double day = today.get(Calendar.DAY_OF_MONTH);
+        double month = today.get(Calendar.MONTH) + 1;
+        double year = today.get(Calendar.YEAR);
         try {
             DBO.open();
             city = DBO.getCityById(cityId);
@@ -2639,7 +2686,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             long1 = sp.getInt("long1", city.getLon1());
             long2 = sp.getInt("long2", city.getLon2());
 
-            Calendar today = Calendar.getInstance();
+//            Calendar today = Calendar.getInstance();
             int hour = today.get(Calendar.HOUR_OF_DAY);
             int minute = today.get(Calendar.MINUTE);
             String timeNow = hour + ":" + minute + ":00";

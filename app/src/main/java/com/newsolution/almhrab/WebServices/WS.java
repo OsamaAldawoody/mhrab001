@@ -830,10 +830,11 @@ public class WS {
         param.put("GUID", GUID);
         param.put("DeviceNo", DeviceNo);
         param.put("TimeExpected", TimeExpected + "");
+        Log.i("params: ", param.toString());
         UserOperations.getInstance(activity).sendPostRequest(Constants.Main_URL + "isStreaming", param, new OnLoadedFinished() {
             @Override
             public void onSuccess(String response) {
-                Log.i("/////: ",response);
+                Log.i("/////: ", response);
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(response);

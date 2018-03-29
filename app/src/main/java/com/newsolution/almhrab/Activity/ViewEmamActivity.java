@@ -2,108 +2,123 @@ package com.newsolution.almhrab.Activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.SystemClock;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.AppCompatImageView;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.TextPaint;
-import android.text.TextUtils;
 import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
-import android.widget.ImageView;
+import android.widget.Chronometer;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.newsolution.almhrab.AppConstants.AppConst;
+import com.newsolution.almhrab.AppConstants.Constants;
 import com.newsolution.almhrab.AppConstants.DBOperations;
 import com.newsolution.almhrab.AppConstants.DateHigri;
 import com.newsolution.almhrab.GlobalVars;
 import com.newsolution.almhrab.Helpar.PlaySound;
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Hijri_Cal_Tools;
-import com.newsolution.almhrab.Model.Ads;
+import com.newsolution.almhrab.HorizontalMarqueeTextView;
 import com.newsolution.almhrab.Model.City;
 import com.newsolution.almhrab.Model.OptionSiteClass;
 import com.newsolution.almhrab.R;
 import com.newsolution.almhrab.scheduler.SalaatAlarmReceiver;
+import com.streamaxia.android.CameraPreview;
+import com.streamaxia.android.StreamaxiaPublisher;
+import com.streamaxia.android.handlers.EncoderHandler;
+import com.streamaxia.android.handlers.RecordHandler;
+import com.streamaxia.android.handlers.RtmpHandler;
+import com.streamaxia.android.utils.ScalingMode;
+import com.streamaxia.android.utils.Size;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.SocketException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class ShowAdsActivity extends AppCompatActivity {
 
-    private TextView tvTitle, tvName, tvAdsText;
-    private ImageView ivAdsImage;
-    private VideoView vvAdsVideo;
-    TextView dateTodayM, dateTodayH, time, amPm;
+public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.RtmpListener, RecordHandler.RecordListener,
+        EncoderHandler.EncodeListener {
+
+    private final String TAG = PreviewLiveStreamActivity.class.getSimpleName();
+
+    public static String streamaxiaStreamName = "AlMhrab_";
+    public final static int bitrate = 500;
+    public final static int width = 720;
+    public final static int height = 1280;
+
+    @BindView(R.id.preview)
+    CameraPreview mCameraView;
+    @BindView(R.id.chronometer)
+    Chronometer mChronometer;
+
+    private StreamaxiaPublisher mPublisher;
     public static String droidkufiBold = "fonts/droid_kufi_bold.ttf";
-    private Typeface font;
-    public static String roboto = "fonts/roboto.ttf";
-    public static String koufibd = "fonts/koufibd.ttf";
     public static String droidkufi = "fonts/droidkufi_regular.ttf";
-    private Typeface fontRoboto;
+    private Typeface font;
     private Typeface fontDroidkufi;
-    private Typeface fontKoufibd;
-    private Ads ads;
-    private Runnable adsRunnable;
-    private Handler AdsHandler = new Handler();
+    public static String roboto = "fonts/roboto.ttf";
+    private Typeface fontRoboto;
+    public static String comfort = "fonts/comfort.ttf";//comfort
+    private Typeface fontComfort;
     public static String arial = "fonts/ariblk.ttf";//comfort
     private Typeface fontArial;
+    public static String bangla_mn_bold = "fonts/bangla_mn_bold.ttf";//comfort
+    public static String sansBold = "fonts/neosans_black.otf";//comfort
+    private Typeface fontBangla_mn_bold;
+    private Typeface fontSansBold;
     private Typeface ptBoldHeading;
-    LinearLayout llText, llFajer, llSun, llDuhr, llAsr, llMagrib, llIsha;
-    private LinearLayout llSunrise;
-    private TextView redAfter;
-    private TextView read1;
-    private TextView read2;
-    private RelativeLayout span;
-    private RelativeLayout rlMasjedTitle;
-    private View view;
-    private TextView advText;
-    private double long1, long2;
-    private double lat1, lat2;
-    private SharedPreferences sp;
-    private GlobalVars gv;
-    private SharedPreferences.Editor spedit;
-    private AppCompatImageView ivMasjedLogo;
-    private ImageView ivMenu;
+
+    TextView dateTodayM, dateTodayH;
+
+    private TextView tvName;
+    TextView date1, time, amPm;
+    private static String recPath;//= Environment.getExternalStorageDirectory().getPath() + "/" +Utils.getDateTime()+".mp4";
+    private File saveDir;
+    private VideoView vvVideo;
+    private RelativeLayout rlLivingStream;
+    private Handler timerHandler = new Handler();
+    private Runnable timerRun;
+    private CountDownTimer countDownTimer;
+    private boolean showLive = true;
+    public static final String BROADCAST = Constants.PACKAGE_NAME + ".Activity.android.action.broadcast";
+    private HorizontalMarqueeTextView tvTra1, tvTra2;
     TextView fajrIqama, fajrTitle, shroqTitle,
             duhrTitle, asrTitle, ishaTitle,
             in_masgedTemp, out_masgedTemp, tvHumidity, tvMasjedName;
     private TextView magribIqama, maghribTime, asrIqama, asrTime, ishaIqama, ishaTime,
             maghribTitle, dhuhrTime, fajrTime, sunriseIqama, duhrIqama, sunriseTime;
+    LinearLayout llText, llFajer, llSun, llDuhr, llAsr, llMagrib, llIsha;
     public String cfajr = "";
     public String icfajr = "";
     String csunrise = "";
@@ -136,46 +151,52 @@ public class ShowAdsActivity extends AppCompatActivity {
     private City city;
     private boolean isFajrEkamaIsTime, isAlShrouqEkamaIsTime, isDhuhrEkamaIsTime, ishaEkamaIsTime, isMagribEkamaIsTime, isAsrEkamaIsTime;
     private OptionSiteClass settings;
-    private String iqamatime = "";
-    private int action = 1;
-    private String pray;
-    private int period;
-    private CountDownTimer countDownTimer;
-    private Timer timerAzkar;
-    private TimerTask asyncAzkar;
-    private Runnable run;
-    private Handler handler;
-
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
-
+    private double long1, long2;
+    private double lat1, lat2;
+    private SharedPreferences sp;
+    private SharedPreferences.Editor spedit;
+    private GlobalVars gv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        setContentView(R.layout.activity_emam_view);
         activity = this;
-        setContentView(R.layout.activity_show_ads);
-        ads = (Ads) getIntent().getSerializableExtra("ads");
-        ptBoldHeading = Typeface.createFromAsset(getAssets(), "fonts/pt_bold_heading.ttf");
-        fontArial = Typeface.createFromAsset(getAssets(), arial);
-        font = Typeface.createFromAsset(getAssets(), droidkufiBold);
-        fontRoboto = Typeface.createFromAsset(getAssets(), roboto);
-        fontKoufibd = Typeface.createFromAsset(getAssets(), koufibd);
-        ads = (Ads) getIntent().getSerializableExtra("ads");
-        ptBoldHeading = Typeface.createFromAsset(getAssets(), "fonts/pt_bold_heading.ttf");
-        fontArial = Typeface.createFromAsset(getAssets(), arial);
-        font = Typeface.createFromAsset(getAssets(), droidkufiBold);
-        fontRoboto = Typeface.createFromAsset(getAssets(), roboto);
-        fontKoufibd = Typeface.createFromAsset(getAssets(), koufibd);
-        fontDroidkufi = Typeface.createFromAsset(getAssets(), droidkufi);
-
         sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
+
+        ButterKnife.bind(this);
+
+//        saveDir = new File(Environment.getExternalStorageDirectory(), "AlMhrab");
+//        saveDir.mkdirs();
+//        recPath = saveDir.getAbsolutePath() + "/AlMhrab_" + sp.getInt("masjedId", -1)//+ "_" + khotab.getTitle()
+//                + "_" + Utils.getFormattedCurrentDate() + ".mp4";
+        streamaxiaStreamName = streamaxiaStreamName + sp.getInt("masjedId", -1) + "";
+        mPublisher = new StreamaxiaPublisher(mCameraView, this);
+        mCameraView.setScalingMode(ScalingMode.TRIM);
+        try {
+            mPublisher.setEncoderHandler(new EncoderHandler(this));
+            mPublisher.setRtmpHandler(new RtmpHandler(this));
+//            mPublisher.setRecordEventHandler(new RecordHandler(this));
+            mCameraView.startCamera();
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+        }
+
+        setStreamerDefaultValues();
+
+        font = Typeface.createFromAsset(getAssets(), droidkufiBold);
+        fontArial = Typeface.createFromAsset(getAssets(), arial);
+        fontRoboto = Typeface.createFromAsset(getAssets(), roboto);
+        fontDroidkufi = Typeface.createFromAsset(getAssets(), droidkufi);
+        fontBangla_mn_bold = Typeface.createFromAsset(getAssets(), bangla_mn_bold);
+        fontSansBold = Typeface.createFromAsset(getAssets(), sansBold);
+        ptBoldHeading = Typeface.createFromAsset(getAssets(), "fonts/pt_bold_heading.ttf");
+
         DBO = new DBOperations(this);
         gv = (GlobalVars) getApplicationContext();
-        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
         spedit = sp.edit();
         cityId = sp.getInt("cityId", 1);
         DBO.open();
@@ -222,120 +243,14 @@ public class ShowAdsActivity extends AppCompatActivity {
         ///// start service /////
 
         buildUI();
-
         checkTime();
-        fillData();
-        if (getIntent().getAction().equals("main")) checkAds();
-    }
-
-    private void fillData() {
-        tvName.setText(sp.getString("masjedName", ""));
-        int type = ads.getType();
-        String title = ads.getTitle();
-        String start = ads.getStartDate();
-        String end = ads.getEndDate();
-        String text = ads.getText();
-        String image = ads.getImage();
-        final String video = ads.getVideo();
-        tvTitle.setText(title);
-        try {
-            if (type == 1) {
-                ivAdsImage.setVisibility(View.VISIBLE);
-                vvAdsVideo.setVisibility(View.GONE);
-                tvAdsText.setVisibility(View.GONE);
-                tvAdsText.setText(text);
-                File f = new File(image);
-                Bitmap bmp = BitmapFactory.decodeFile(f.getAbsolutePath());
-                ivAdsImage.setImageBitmap(bmp);
-//            Log.i("---++ image: ", image);
-                Glide.with(activity).load(f).into(ivAdsImage);
-            } else if (type == 2) {
-                ivAdsImage.setVisibility(View.GONE);
-                vvAdsVideo.setVisibility(View.VISIBLE);
-                tvAdsText.setVisibility(View.GONE);
-                tvAdsText.setText(text);
-                vvAdsVideo.setVideoURI(Uri.parse(video));
-                vvAdsVideo.start();
-//                Log.i("---++ video: ", video);
-            } else if (type == 3) {
-                ivAdsImage.setVisibility(View.GONE);
-                vvAdsVideo.setVisibility(View.GONE);
-                tvAdsText.setText(text);
-                tvAdsText.setVisibility(View.VISIBLE);
-            }
-            vvAdsVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    vvAdsVideo.setVideoURI(Uri.parse(video));
-                    vvAdsVideo.start();
-                }
-            });
-        } catch (OutOfMemoryError e) {
-            e.printStackTrace();
-            Utils.showCustomToast(activity, "خطأ في ملف الاعلان");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        startKhotbaTimer();
 
     }
 
-    private void checkAds() {
-       if (ads != null) {
-            String adsStartTime = ads.getStartTime();
-            String adsEndTime = ads.getEndTime();
-            SimpleDateFormat df = new SimpleDateFormat("HH:mm", new Locale("en"));
-            Date date = new Date();
-            String currentTime = df.format(date);
-            try {
-                Date start = df.parse(adsStartTime);
-                Date end = df.parse(adsEndTime);
-                Date now = df.parse(currentTime);
-                Log.i("---++ end: ", end.toString());
-                Log.i("---++ now: ", now.toString());
-                if (now.after(end)) {
-                    finish();
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-        adsRunnable = new Runnable() {
-            @Override
-            public void run() {
-                checkAds();
-            }
-        };
-        AdsHandler.postDelayed(adsRunnable, 1000);
-    }
-
-    private void checkTime() {
-        DateHigri hd = new DateHigri();
-        dateTodayM.setText(Utils.writeMDate(this, hd));
-        dateTodayH.setText(Utils.writeHDate(this, hd));
-        DateFormat timeNow = new SimpleDateFormat("hh:mmss", new Locale("en"));
-        DateFormat ampm = new SimpleDateFormat("a", new Locale("ar"));
-        amPm.setText(ampm.format(Calendar.getInstance().getTime()));
-        Calendar c = Calendar.getInstance();
-        String timeText = timeNow.format(c.getTime());
-        SpannableString string = new SpannableString(timeText);
-        string.setSpan(new RelativeSizeSpan((0.5f)), 5, 7, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-        time.setText(string);
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                checkTime();
-            }
-        }, 1000);
-    }
-
-    public void buildUI() {
-        tvTitle = (TextView) findViewById(R.id.tvTitle);
+    private void buildUI() {
+        rlLivingStream = (RelativeLayout) findViewById(R.id.rlLivingStream);
         tvName = (TextView) findViewById(R.id.tvName);
-        tvAdsText = (TextView) findViewById(R.id.tvAdsText);
-        ivAdsImage = (ImageView) findViewById(R.id.ivAdsImage);
-        vvAdsVideo = (VideoView) findViewById(R.id.vvAdsVideo);
         dateTodayM = (TextView) findViewById(R.id.dateTodayM);
         dateTodayH = (TextView) findViewById(R.id.dateTodayH);
         time = (TextView) findViewById(R.id.Time);
@@ -351,8 +266,9 @@ public class ShowAdsActivity extends AppCompatActivity {
         llAsr = (LinearLayout) findViewById(R.id.llAsr);
         llMagrib = (LinearLayout) findViewById(R.id.llMagrib);
         llIsha = (LinearLayout) findViewById(R.id.llIsha);
-
         tvName.setTypeface(fontDroidkufi);
+        tvName.setText(sp.getString("masjedName", ""));
+        mChronometer.setVisibility(View.GONE);
 
         fajrTitle = (TextView) findViewById(R.id.fajrTitle);
         fajrTime = (TextView) findViewById(R.id.fajrTime);
@@ -406,6 +322,44 @@ public class ShowAdsActivity extends AppCompatActivity {
         timer.schedule(async, 0, 1000);
     }
 
+    private void checkTime() {
+        DateHigri hd = new DateHigri();
+        dateTodayM.setText(Utils.writeMDate(this, hd));
+        dateTodayH.setText(Utils.writeHDate(this, hd));
+        DateFormat timeNow = new SimpleDateFormat("hh:mmss", new Locale("en"));
+        DateFormat ampm = new SimpleDateFormat("a", new Locale("ar"));
+        amPm.setText(ampm.format(Calendar.getInstance().getTime()));
+        Calendar c = Calendar.getInstance();
+        String timeText = timeNow.format(c.getTime());
+        SpannableString string = new SpannableString(timeText);
+        string.setSpan(new RelativeSizeSpan((0.5f)), 5, 7, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        time.setText(string);
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                checkTime();
+            }
+        }, 1000);
+    }
+
+    private void startKhotbaTimer() {
+        long khotbaPeriod = (sp.getInt("appearPeriod", 20)) * 60 * 1000;
+        Log.i("khotbaPeriod: ", khotbaPeriod + "");
+        countDownTimer = new CountDownTimer(khotbaPeriod, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+                try {
+                    finish();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
     public void checkNextPrayTheme() {
         Calendar today = Calendar.getInstance();
         int hour = today.get(Calendar.HOUR_OF_DAY);
@@ -792,34 +746,6 @@ public class ShowAdsActivity extends AppCompatActivity {
         return Iqama;
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (timer != null) {
-            timer.cancel();
-            timer.purge();
-        }
-//        if (handler != null)
-//            handler.removeCallbacks(run);
-//        if (countDownTimer != null) countDownTimer.cancel();
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        AdsHandler.removeCallbacks(adsRunnable);
-        MainActivity.isOpenAds = true;
-        if (timer != null) {
-            timer.cancel();
-            timer.purge();
-        }
-//        if (handler != null)
-//            handler.removeCallbacks(run);
-//        if (countDownTimer != null) countDownTimer.cancel();
-
-    }
-
     private void clearAllStyles() {
         fajrTitle.setTextColor(Color.parseColor("#ffffff"));
         fajrTitle.setBackgroundColor(0);
@@ -880,9 +806,9 @@ public class ShowAdsActivity extends AppCompatActivity {
 
     private String[] calculate() {
         Calendar today = Calendar.getInstance();
-        double day = today.get(Calendar.DAY_OF_MONTH);
-        double month = today.get(Calendar.MONTH) + 1;
-        double year = today.get(Calendar.YEAR);
+        day = today.get(Calendar.DAY_OF_MONTH);
+        month = today.get(Calendar.MONTH) + 1;
+        year = today.get(Calendar.YEAR);
         try {
             DBO.open();
             city = DBO.getCityById(cityId);
@@ -894,6 +820,7 @@ public class ShowAdsActivity extends AppCompatActivity {
             long1 = sp.getInt("long1", city.getLon1());
             long2 = sp.getInt("long2", city.getLon2());
 
+//            Calendar today = Calendar.getInstance();
             int hour = today.get(Calendar.HOUR_OF_DAY);
             int minute = today.get(Calendar.MINUTE);
             String timeNow = hour + ":" + minute + ":00";
@@ -1066,11 +993,300 @@ public class ShowAdsActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        if (PlaySound.isPlay(activity)) {
-            PlaySound.stop(activity);
+    protected void onResume() {
+        super.onResume();
+        try {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED) {
+//                stopStreaming();
+//                stopChronometer();
+//                mChronometer.setBase(SystemClock.elapsedRealtime());
+//                mChronometer.start();
+//                mPublisher.setVideoBitRate(720);
+//                mPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
+//                mPublisher.startRecord(recPath);
+            } else {
+                finish();
+                Toast.makeText(this, "يجب السماح باستخدام الكاميرا", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "لا يوجد كاميرا متصلة", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+            finish();
         }
-        finish();
-        super.onBackPressed();
     }
+
+    @Override
+    protected void onPause() {
+        try {
+            super.onPause();
+            if (timer != null) {
+                timer.cancel();
+                timer.purge();
+            }
+            mCameraView.stopCamera();
+//            mPublisher.pauseRecord();
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            if (PlaySound.isPlay(activity)) {
+                PlaySound.stop(activity);
+            }
+            if (timer != null) {
+                timer.cancel();
+                timer.purge();
+            }
+//            mPublisher.stopPublish();
+//            mPublisher.stopRecord();
+            if (countDownTimer != null) countDownTimer.cancel();
+//            MainActivity.isOpenSermon = true;
+//            Log.i("recPath: ", recPath);
+//            DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
+//            DateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
+//            Date date = df.parse(khotab.getDateKhotab());
+//            String DateKhotab = sdf.format(date);
+//
+//            Intent intent = new Intent(BROADCAST);
+//            Bundle extras = new Bundle();
+//            extras.putString("recPath", recPath);
+//            extras.putInt("IdKhotab", khotab.getId());
+//            extras.putString("DateKhotab", DateKhotab);
+//            intent.putExtras(extras);
+//            sendBroadcast(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+        }
+    }
+
+//    private void checkTime() {
+//        DateHigri hd = new DateHigri();
+//        date1.setText(Utils.writeIslamicDate1(this, hd));
+//        DateFormat timeNow = new SimpleDateFormat("hh:mmss", new Locale("en"));
+//        DateFormat ampm = new SimpleDateFormat("a", new Locale("ar"));
+//        amPm.setText(ampm.format(Calendar.getInstance().getTime()));
+//        Calendar c = Calendar.getInstance();
+//        String timeText = timeNow.format(c.getTime());
+//        SpannableString string = new SpannableString(timeText);
+//        string.setSpan(new RelativeSizeSpan((0.5f)), 5, 7, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+//        time.setText(string);
+//        final Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                checkTime();
+//            }
+//        }, 1000);
+//    }
+
+    private void stopStreaming() {
+        mPublisher.stopPublish();
+        mPublisher.stopRecord();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mPublisher.setScreenOrientation(newConfig.orientation);
+    }
+
+
+    private void setStreamerDefaultValues() {
+        try {
+            if (mPublisher != null) {
+                List<Size> sizes = mPublisher.getSupportedPictureSizes(getResources().getConfiguration().orientation);
+                Size resolution = sizes.get(0);
+//                mPublisher.setVideoOutputResolution(resolution.width, resolution.height, this.getResources().getConfiguration().orientation);
+                mPublisher.setVideoOutputResolution(480, 640, this.getResources().getConfiguration().orientation);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+        }
+    }
+
+    private void setStatusMessage(final String msg) {
+        try {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.i("////*: ", "[" + msg + "]");
+//                    Toast.makeText(activity, "[" + msg + "]", Toast.LENGTH_LONG).show();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /*
+    * EncoderHandler implementation
+    * */
+
+    @Override
+    public void onNetworkWeak() {
+
+    }
+
+    @Override
+    public void onNetworkResume() {
+
+    }
+
+    @Override
+    public void onEncodeIllegalArgumentException(IllegalArgumentException e) {
+        handleException(e);
+    }
+
+
+    /*
+    * RecordHandler implementation
+    * */
+
+    @Override
+    public void onRecordPause() {
+
+    }
+
+    @Override
+    public void onRecordResume() {
+
+    }
+
+    @Override
+    public void onRecordStarted(String s) {
+//        Toast.makeText(activity, "[" + s + "]", Toast.LENGTH_LONG).show();
+
+    }
+
+    @Override
+    public void onRecordFinished(String s) {
+//        try {
+//            Toast.makeText(activity, "[" + s + "]", Toast.LENGTH_LONG).show();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            finish();
+//        }
+    }
+
+    @Override
+    public void onRecordIllegalArgumentException(IllegalArgumentException e) {
+        handleException(e);
+    }
+
+    @Override
+    public void onRecordIOException(IOException e) {
+        handleException(e);
+    }
+
+    /*
+    * RTMPListener implementation
+    * */
+
+    @Override
+    public void onRtmpConnecting(String s) {
+        setStatusMessage(s);
+    }
+
+    @Override
+    public void onRtmpConnected(String s) {
+        setStatusMessage(s);
+    }
+
+    @Override
+    public void onRtmpVideoStreaming() {
+
+    }
+
+    @Override
+    public void onRtmpAudioStreaming() {
+
+    }
+
+    @Override
+    public void onRtmpStopped() {
+        setStatusMessage("STOPPED");
+    }
+
+    @Override
+    public void onRtmpDisconnected() {
+        setStatusMessage("Disconnected");
+    }
+
+    @Override
+    public void onRtmpVideoFpsChanged(double v) {
+
+    }
+
+    @Override
+    public void onRtmpVideoBitrateChanged(double bitrate) {
+        int rate = (int) bitrate;
+        if (rate / 1000 > 0) {
+            Log.i(TAG, String.format("Video bitrate: %f kbps", bitrate / 1000));
+        } else {
+            Log.i(TAG, String.format("Video bitrate: %d bps", rate));
+        }
+
+    }
+
+    @Override
+    public void onRtmpAudioBitrateChanged(double v) {
+
+    }
+
+    @Override
+    public void onRtmpSocketException(SocketException e) {
+        handleException(e);
+    }
+
+    @Override
+    public void onRtmpIOException(IOException e) {
+        handleException(e);
+    }
+
+    @Override
+    public void onRtmpIllegalArgumentException(IllegalArgumentException e) {
+        handleException(e);
+    }
+
+    @Override
+    public void onRtmpIllegalStateException(IllegalStateException e) {
+        handleException(e);
+    }
+
+    @Override
+    public void onRtmpAuthenticationg(String s) {
+
+    }
+
+    private void stopChronometer() {
+        mChronometer.setBase(SystemClock.elapsedRealtime());
+        mChronometer.stop();
+    }
+
+    private void handleException(Exception e) {
+        try {
+//            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.i("streaming: ", e.getMessage());
+//            mPublisher.stopPublish();
+//            mPublisher.stopRecord();
+        } catch (Exception e1) {
+            // Ignore
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
 }

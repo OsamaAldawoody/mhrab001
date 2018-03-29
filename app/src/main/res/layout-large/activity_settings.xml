@@ -1088,6 +1088,22 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/tvPreviewLiveStream"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:padding="15dp"
+                android:text="@string/preview"
+                android:textColor="@color/light_black"
+                android:textSize="17dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#dadada" />
+
+            <TextView
                 android:id="@+id/tvSettingAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

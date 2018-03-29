@@ -106,7 +106,8 @@ public class Splash extends Activity {
         final Calendar c = Calendar.getInstance();
         c.set(Calendar.SECOND, 0);
 //        String dms = Hijri_Cal_Tools.calDMS(58.51861);
-//        Log.i("dms : ", dms);
+        Log.i("dms :close_screen ", sp.getBoolean("close_screen",false)+"");
+        Log.i("dms :close_voice ", sp.getBoolean("close_voice",false)+"");
         int width = getWindowManager().getDefaultDisplay().getWidth();
         int height = getWindowManager().getDefaultDisplay().getHeight();
 //        Toast.makeText(activity, "width= " + width + " : height= " + height, Toast.LENGTH_LONG).show();

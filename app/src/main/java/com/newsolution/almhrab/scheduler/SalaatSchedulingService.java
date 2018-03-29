@@ -34,7 +34,7 @@ import java.util.TimeZone;
  * wake lock.
  */
 public class SalaatSchedulingService extends IntentService implements Constants, MediaPlayer.OnCompletionListener {
-    private boolean isAlarmEnabledForPrayer=true;
+    private boolean isAlarmEnabledForPrayer = true;
 
     public SalaatSchedulingService() {
         super("SchedulingService");
@@ -64,17 +64,17 @@ public class SalaatSchedulingService extends IntentService implements Constants,
         mp = new MediaPlayer();
         String prayerName = intent.getStringExtra(EXTRA_PRAYER_NAME);
         String prayName = intent.getStringExtra(PRAYER_NAME);
-        isAlarmEnabledForPrayer=isAlarmEnabledForPrayer(getApplicationContext(), prayName);
+        isAlarmEnabledForPrayer = isAlarmEnabledForPrayer(getApplicationContext(), prayName);
         if (action == 0) {
             if (!isAlarmEnabledForPrayer)
-           sendNotification(String.format(formatString, prayerName, now),  prayerName);
+                sendNotification(String.format(formatString, prayerName, now), prayerName);
             else {
-                if (TextUtils.isEmpty(sp.getString("uriAthan",""))) {
+                if (TextUtils.isEmpty(sp.getString("uriAthan", ""))) {
 //                    spedit.putString("sound", "talib").commit();
-                PlaySound.play(getBaseContext(), "talib");
-                }else {
-                    Log.i("****",sp.getString("uriAthan","")+" **-");
-                    PlaySound.playSDCard(getBaseContext(),sp.getString("uriAthan",""),"talib");
+                    PlaySound.play(getBaseContext(), "talib");
+                } else {
+                    Log.i("****", sp.getString("uriAthan", "") + " **-");
+                    PlaySound.playSDCard(getBaseContext(), sp.getString("uriAthan", ""), "talib");
                 }
                 try {
                     mp.setOnCompletionListener(this);
@@ -85,34 +85,41 @@ public class SalaatSchedulingService extends IntentService implements Constants,
             }
         } else if (action == 1) {
             if (!isAlarmEnabledForPrayer)
-                sendNotification(String.format(formatString, prayerName, now),  prayerName);
+                sendNotification(String.format(formatString, prayerName, now), prayerName);
             else {
-                if (TextUtils.isEmpty(sp.getString("uriIqama",""))) {
+//                sp.edit().putString("uriIqama", "").commit();
+                if (TextUtils.isEmpty(sp.getString("uriIqama", ""))) {
 //                    spedit.putString("sound", "iqama").commit();
-                    PlaySound.play(getBaseContext(),"iqama");
-                }else {
+                    PlaySound.play(getBaseContext(), "iqama");
+                } else {
 //                    spedit.putString("sound", "iqama").commit();
-                    PlaySound.playSDCard(getBaseContext(),sp.getString("uriIqama",""),"iqama");
+                    PlaySound.playSDCard(getBaseContext(), sp.getString("uriIqama", ""), "iqama");
                 }
-
-            try {
-                mp.setOnCompletionListener(this);
-            } catch (Exception e) {
-                e.getMessage();
-                mp = null;
-            }}
-        }   else if (action == 2) {
-            if (isAlarmEnabledForPrayer){
-                spedit.putString("sound","phone").commit();
-            if (sp.getBoolean("close_voice", true)){
-                PlaySound.play(getBaseContext(),"phone");
-            try {
-                mp.setOnCompletionListener(this);
-            } catch (Exception e) {
-                e.getMessage();
-                mp = null;
+                try {
+                    mp.setOnCompletionListener(this);
+                } catch (Exception e) {
+                    e.getMessage();
+                    mp = null;
+                }
             }
-        }}
+        } else if (action == 2) {
+            if (isAlarmEnabledForPrayer) {
+                spedit.putString("sound", "phone").commit();
+                if (sp.getBoolean("close_voice", true)) {
+                    if (TextUtils.isEmpty(sp.getString("uriPhone", ""))) {
+                        PlaySound.play(getBaseContext(), "phone");
+                    } else {
+                        PlaySound.playSDCard(getBaseContext(), sp.getString("uriPhone", ""), "phone");
+//                        PlaySound.playSDCard(getBaseContext(), "content://com.android.providers.media.documents/document/audio%3A4557", "phone");
+                    }
+                    try {
+                        mp.setOnCompletionListener(this);
+                    } catch (Exception e) {
+                        e.getMessage();
+                        mp = null;
+                    }
+                }
+            }
         }
 //        Log.i("****:action= ",action+" sound:"+sp.getString("sound"," ll"));
 
@@ -135,15 +142,15 @@ public class SalaatSchedulingService extends IntentService implements Constants,
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle(getString(R.string.app_name))
                         .setAutoCancel(true)
-                       // .setVibrate(pattern)
+                        // .setVibrate(pattern)
                         .setStyle(new NotificationCompat.BigTextStyle().bigText(msg))
                         .setContentText(msg)
                         .setAutoCancel(true);
-            Uri sound = null;
-              sound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.sound);
-            mBuilder.setSound(sound);
+        Uri sound = null;
+        sound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.sound);
+        mBuilder.setSound(sound);
         mBuilder.setContentIntent(contentIntent);
-    mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
 //        try {
 //            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 //            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
@@ -168,30 +175,31 @@ public class SalaatSchedulingService extends IntentService implements Constants,
         mp.release();
         mp = null;
     }
+
     private boolean isAlarmEnabledForPrayer(Context context, String prayer) {
         if (prayer.equalsIgnoreCase(context.getString(R.string.pn2)) || prayer.equalsIgnoreCase(context.getString(R.string.qn2))) {
             return false;
         }
         if (prayer.equalsIgnoreCase(context.getString(R.string.pn1)))
             return sp.getBoolean("notif_onF", true);
-        if ( prayer.equalsIgnoreCase(context.getString(R.string.pn3)))
+        if (prayer.equalsIgnoreCase(context.getString(R.string.pn3)))
             return sp.getBoolean("notif_onD", true);
         if (prayer.equalsIgnoreCase(context.getString(R.string.pn4)))
             return sp.getBoolean("notif_onA", true);
-        if ( prayer.equalsIgnoreCase(context.getString(R.string.pn5)))
+        if (prayer.equalsIgnoreCase(context.getString(R.string.pn5)))
             return sp.getBoolean("notif_onM", true);
-        if ( prayer.equalsIgnoreCase(context.getString(R.string.pn6)))
+        if (prayer.equalsIgnoreCase(context.getString(R.string.pn6)))
             return sp.getBoolean("notif_onI", true);
 
         else if (prayer.equalsIgnoreCase(context.getString(R.string.qn1)))
             return sp.getBoolean("iqama_notif_onF", true);
         if (prayer.equalsIgnoreCase(context.getString(R.string.qn3)))
             return sp.getBoolean("iqama_notif_onD", true);
-        if ( prayer.equalsIgnoreCase(context.getString(R.string.qn4)))
+        if (prayer.equalsIgnoreCase(context.getString(R.string.qn4)))
             return sp.getBoolean("iqama_notif_onA", true);
-        if ( prayer.equalsIgnoreCase(context.getString(R.string.qn5)))
+        if (prayer.equalsIgnoreCase(context.getString(R.string.qn5)))
             return sp.getBoolean("iqama_notif_onM", true);
-        if ( prayer.equalsIgnoreCase(context.getString(R.string.qn6)))
+        if (prayer.equalsIgnoreCase(context.getString(R.string.qn6)))
             return sp.getBoolean("iqama_notif_onI", true);
         else if (prayer.equalsIgnoreCase(context.getString(R.string.pa))) {
             return sp.getBoolean("close_screen", true);

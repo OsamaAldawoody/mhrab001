@@ -8,7 +8,9 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.location.Location;
+import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
@@ -119,6 +121,8 @@ public class ClosePhone extends Activity {
     private DBOperations DBO;
     private Timer timerPray;
     private TimerTask asyncPray;
+    private AudioManager mAudioManager;
+    private int maxVolume;
     private Activity activity;
     private City city;
     private boolean isFajrEkamaIsTime, isDhuhrEkamaIsTime, ishaEkamaIsTime, isAlShrouqEkamaIsTime, isMagribEkamaIsTime, isAsrEkamaIsTime;
@@ -159,6 +163,8 @@ public class ClosePhone extends Activity {
                 .build());
         setContentView(R.layout.activity_close_phone);
         activity = this;
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         font = Typeface.createFromAsset(getAssets(), droidkufiBold);
         fontComfort = Typeface.createFromAsset(getAssets(), comfort);
         fontRoboto = Typeface.createFromAsset(getAssets(), roboto);
@@ -231,6 +237,7 @@ public class ClosePhone extends Activity {
 //        }
 //        ///// start service /////
 
+        stopSilentMode();
         buildUI();
         showNews();
 
@@ -361,6 +368,12 @@ public class ClosePhone extends Activity {
                         @Override
                         public void run() {
                             if (PlaySound.isPlay(getBaseContext())) {
+                                mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
+                                } else {
+                                    mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+                                }
                                 sound_stop.setVisibility(View.VISIBLE);
                             } else sound_stop.setVisibility(View.GONE);
                             if (stopTimer) {
@@ -693,8 +706,10 @@ public class ClosePhone extends Activity {
                 if (khotba.getIsException() == 0) {
                     if (Utils.isOnline(activity)) {
                         stopTimer = true;
-                        timer.cancel();
-                        timer.purge();
+                        if (timer != null) {
+                            timer.cancel();
+                            timer.purge();
+                        }
                         Log.i("***voice1", "countDown");
                         iqamatime = "";
                         new Handler().postDelayed(new Runnable() {
@@ -704,11 +719,38 @@ public class ClosePhone extends Activity {
                                 cp.putExtra("khotba", khotba);
                                 startActivity(cp);
                                 isOpenSermon = true;
+                                Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
                             }
                         }, 120000);
-                    }
-                }
+                    } else goToEmamScreen();
+
+                } else goToEmamScreen();
+            } else goToEmamScreen();
+
+        } else {
+            goToEmamScreen();
+        }
+    }
+
+    private void goToEmamScreen() {
+        if (sp.getBoolean("emamScreen", false)) {
+            stopTimer = true;
+            if (timer != null) {
+                timer.cancel();
+                timer.purge();
             }
+            Log.i("***voice1", "countDown emam");
+            iqamatime = "";
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent cp = new Intent(activity, ViewEmamActivity.class);
+                    startActivity(cp);
+                    isOpenSermon = true;
+                    Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
+                }
+            }, 120000);
+
         }
     }
 
@@ -882,20 +924,21 @@ public class ClosePhone extends Activity {
         if (diffHours > 0) {
             if (diffHours < 10)
                 fh = "0" + fh;
-            val=fh;
-        }   else if (diffMinutes > 0) {
+            val = fh;
+        } else if (diffMinutes > 0) {
             if (diffMinutes < 10)
                 fm = "0" + fm;
             val = fm;
-            if (diffMinutes==1) val = "60";
-        }  else if (diffSeconds > 0) {
-            if(diffSeconds<10)
-                fs="0"+fs;
+            if (diffMinutes == 1) val = "60";
+        } else if (diffSeconds > 0) {
+            if (diffSeconds < 10)
+                fs = "0" + fs;
             val = fs;// + " " + getString(R.string.s);
         } //else if (diffSeconds == 0) val = "60";
         else val = "";
         return val;
     }
+
     private String convTime(String time) {
         String intime[] = time.split(":");
         int hour = Integer.parseInt(intime[0]);
@@ -1068,6 +1111,10 @@ public class ClosePhone extends Activity {
     }
 
     private String[] calculate() {
+        Calendar today = Calendar.getInstance();
+        day = today.get(Calendar.DAY_OF_MONTH);
+        month = today.get(Calendar.MONTH) + 1;
+        year = today.get(Calendar.YEAR);
         try {
             DBO.open();
             city = DBO.getCityById(cityId);
@@ -1079,7 +1126,7 @@ public class ClosePhone extends Activity {
             long1 = sp.getInt("long1", city.getLon1());
             long2 = sp.getInt("long2", city.getLon2());
 
-            Calendar today = Calendar.getInstance();
+//            Calendar today = Calendar.getInstance();
             int hour = today.get(Calendar.HOUR_OF_DAY);
             int minute = today.get(Calendar.MINUTE);
             String timeNow = hour + ":" + minute + ":00";
@@ -1360,6 +1407,23 @@ public class ClosePhone extends Activity {
 //        if (PlaySound.isPlay(activity)) {
 //            PlaySound.stop(activity);
 //        }
+
+    }
+
+    private void stopSilentMode() {
+        Log.i("stop Silent: ", "truer");
+        try {
+            AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
+            } else {
+                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+            }
+            mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
 

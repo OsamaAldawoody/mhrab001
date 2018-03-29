@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
@@ -40,6 +41,7 @@ import com.newsolution.almhrab.GlobalVars;
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Interface.OnLoadedFinished;
 import com.newsolution.almhrab.Model.City;
+import com.newsolution.almhrab.Model.Khotab;
 import com.newsolution.almhrab.Model.OptionSiteClass;
 import com.newsolution.almhrab.R;
 import com.newsolution.almhrab.WebServices.WS;
@@ -83,7 +85,7 @@ public class SettingsActivity extends Activity {
     private int long1, long2;
     private int lat1, lat2;
     private boolean iqamaSoundOn, soundOn;
-    private TextView tvAbout, tvBatteryIn, tvBatteryOut, tvLogout, tvNotificationSet, tvًPriority, tvOtherSet, tvIqamaSet;
+    private TextView tvPreviewLiveStream, tvAbout, tvBatteryIn, tvBatteryOut, tvLogout, tvNotificationSet, tvًPriority, tvOtherSet, tvIqamaSet;
     TextView edHijriSet;
     private Button btnSaveTempIn, btnSaveTempOut, btnSaveHijri;
     private OptionSiteClass settings;
@@ -139,7 +141,7 @@ public class SettingsActivity extends Activity {
         llNews = (LinearLayout) findViewById(R.id.llNews);
         cb_news = (CheckBox) findViewById(R.id.cb_news);
         llFriday = (LinearLayout) findViewById(R.id.llFriday);
-        llFriday.setVisibility(View.GONE);
+        llFriday.setVisibility(View.VISIBLE);
         cb_friday = (CheckBox) findViewById(R.id.cb_friday);
         edTempIn = (EditText) findViewById(R.id.edTemp);
         edTempOut = (EditText) findViewById(R.id.edTempOut);
@@ -154,6 +156,7 @@ public class SettingsActivity extends Activity {
         tvIqamaSet = (TextView) findViewById(R.id.tvIqamaSet);
         tvLogout = (TextView) findViewById(R.id.tvLogout);
         tvAbout = (TextView) findViewById(R.id.tvAbout);
+        tvPreviewLiveStream = (TextView) findViewById(R.id.tvPreviewLiveStream);
         tvNotificationSet = (TextView) findViewById(R.id.tvNotificationSet);
         edHijriSet = (TextView) findViewById(R.id.edHijriSet);
         btnSaveHijri = (Button) findViewById(R.id.btnSaveHijri);
@@ -172,7 +175,7 @@ public class SettingsActivity extends Activity {
         } else {
             cb_news.setChecked(false);
         }
-        if (sp.getBoolean("friday", false)) {
+        if (sp.getBoolean("emamScreen", false)) {
             cb_friday.setChecked(true);
         } else {
             cb_friday.setChecked(false);
@@ -282,18 +285,17 @@ public class SettingsActivity extends Activity {
                     Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, (24 * 60 * 60 * 1000));
                     spedit.putBoolean("sleep", false).commit();
                 }
-
             }
         });
         llFriday.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (cb_friday.isChecked()) {
-                    spedit.putBoolean("friday", false).commit();
+                    spedit.putBoolean("emamScreen", false).commit();
                     cb_friday.setChecked(false);
                 } else {
                     cb_friday.setChecked(true);
-                    spedit.putBoolean("friday", true).commit();
+                    spedit.putBoolean("emamScreen", true).commit();
 //                    showFridayDialog();
                 }
             }
@@ -302,10 +304,10 @@ public class SettingsActivity extends Activity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (cb_friday.isChecked()) {
-                    spedit.putBoolean("friday", true).commit();
+                    spedit.putBoolean("emamScreen", true).commit();
                     showFridayDialog();
                 } else {
-                    spedit.putBoolean("friday", false).commit();
+                    spedit.putBoolean("emamScreen", false).commit();
                 }
             }
         });
@@ -313,6 +315,14 @@ public class SettingsActivity extends Activity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(activity, AboutApp.class));
+            }
+        });
+        tvPreviewLiveStream.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPeriodDialog();
+//                goToPreviewLive(20);
+
             }
         });
         tvScanSensors.setOnClickListener(new View.OnClickListener() {
@@ -527,6 +537,7 @@ public class SettingsActivity extends Activity {
         View view = getLayoutInflater().inflate(R.layout.friday_dialog, null);
         edRecordTimer = (EditText) view.findViewById(R.id.edRecordTimer);
         edAppearTimer = (EditText) view.findViewById(R.id.edAppearTimer);
+        edAppearTimer.setVisibility(View.GONE);
         btn_add = (Button) view.findViewById(R.id.btn_add);
         btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
         fridayDialog = new Dialog(this);
@@ -537,32 +548,27 @@ public class SettingsActivity extends Activity {
                     edRecordTimer.setError("هذا الحقل مطلوب");
                     return;
                 }
-                if (TextUtils.isEmpty(edAppearTimer.getText().toString())) {
-                    edAppearTimer.setError("هذا الحقل مطلوب");
-                    return;
-                }
-                spedit.putInt("recordPeriod", Integer.parseInt(edRecordTimer.getText().toString().trim())).commit();
-                spedit.putInt("appearPeriod", Integer.parseInt(edAppearTimer.getText().toString().trim())).commit();
-                Utils.showCustomToast(activity, getString(R.string.saved));
+                Utils.hideKeyboard(activity);
+                spedit.putInt("appearPeriod", Integer.parseInt(edRecordTimer.getText().toString().trim())).commit();
+//                Utils.showCustomToast(activity, getString(R.string.saved));
+                showPreview(getString(R.string.alert), getString(R.string.previewEmamScreen));
                 if (fridayDialog.isShowing()) fridayDialog.dismiss();
             }
         });
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (sp.getInt("recordPeriod", -1) == -1 && sp.getInt("appearPeriod", -1) == -1)
                     cb_friday.setChecked(false);
                 if (fridayDialog.isShowing()) fridayDialog.dismiss();
             }
         });
-        edRecordTimer.setText(sp.getInt("recordPeriod", -1) != -1 ? sp.getInt("recordPeriod", -1) + "" : "");
-        edAppearTimer.setText(sp.getInt("appearPeriod", -1) != -1 ? sp.getInt("appearPeriod", -1) + "" : "");
+        edRecordTimer.setText(sp.getInt("appearPeriod", -1) != -1 ? sp.getInt("appearPeriod", -1) + "" : "");
         fridayDialog.setContentView(view);
         fridayDialog.show();
         fridayDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
-                if (sp.getInt("recordPeriod", -1) == -1 && sp.getInt("appearPeriod", -1) == -1)
+                if ( sp.getInt("appearPeriod", -1) == -1)
                     cb_friday.setChecked(false);
             }
         });
@@ -572,6 +578,22 @@ public class SettingsActivity extends Activity {
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         window.setAttributes(lp);
+    }
+
+    private void showPreview(String title, String msg) {
+        new AlertDialog.Builder(activity).setTitle(title).setMessage(msg)
+                .setPositiveButton(activity.getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                      startActivity(new Intent(activity,ViewEmamActivity.class));
+                        dialogInterface.dismiss();
+                    }
+                }).setNegativeButton(getString(R.string.cancel_delete), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        }).create().show();
     }
 
     private void showSleepDialog() {
@@ -665,32 +687,7 @@ public class SettingsActivity extends Activity {
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         window.setAttributes(lp);
     }
-    private void setSleepPeriod() {
-        String sleepOn = Utils.addToTime(sp.getString("isha", ""), settings.getCloseScreenAfterIsha()/* sp.getInt("sleepOn", 0) */ + "");
-        String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), settings.getRunScreenBeforeFajr()/*sp.getInt("sleepOff", 0) */ + "");
-//        Log.e("**//sleepOn", sleepOn + "  **");
-//        Log.e("**//sleepOff", sleepOff);
-//        sleepOn = "13:15:00";
-//        sleepOff = "13:20:00";
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-            Date start = sdf.parse(sleepOn);
-            Date end = sdf.parse(sleepOff);
-            if (end.before(start)) {
-                Calendar mCal = Calendar.getInstance();
-                mCal.setTime(end);
-                mCal.add(Calendar.DAY_OF_YEAR, 1);
-                end.setTime(mCal.getTimeInMillis());
-            }
-            DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-            String startDate = df.format(start);
-            String endDate = df.format(end);
-            spedit.putString("startTime", startDate).commit();
-            spedit.putString("endTime", endDate).commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
     private void setSleepModePeriod() {
         String sleepOn = Utils.addToTime(sp.getString("isha", ""), settings.getCloseScreenAfterIsha()/* sp.getInt("sleepOn", 0) */ + "");
         String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), settings.getRunScreenBeforeFajr()/*sp.getInt("sleepOff", 0) */ + "");
@@ -706,16 +703,16 @@ public class SettingsActivity extends Activity {
             calendarStart.set(Calendar.HOUR_OF_DAY, start.getHours());// for 6 hour
             calendarStart.set(Calendar.MINUTE, start.getMinutes());// for 0 min
             calendarStart.set(Calendar.SECOND, 0);// for 0 sec
-            System.out.println("***:calendarStart "+calendarStart.getTime());// print 'Mon Mar 28 06:00:00 ALMT 2016'
+            System.out.println("***:calendarStart " + calendarStart.getTime());// print 'Mon Mar 28 06:00:00 ALMT 2016'
             Calendar calendarEnd = Calendar.getInstance();
             calendarEnd.setTime(date);
             calendarEnd.set(Calendar.HOUR_OF_DAY, end.getHours());
             calendarEnd.set(Calendar.MINUTE, end.getMinutes());
             calendarEnd.set(Calendar.SECOND, 0);// for 0 sec
-            System.out.println("***:calendarEnd "+calendarEnd.getTime());
+            System.out.println("***:calendarEnd " + calendarEnd.getTime());
             if (end.before(start)) {
                 calendarEnd.add(Calendar.DAY_OF_YEAR, 1);
-                System.out.println("***:calendarEnd added "+calendarEnd.getTime());
+                System.out.println("***:calendarEnd added " + calendarEnd.getTime());
             }
             DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
             String startDate = df.format(calendarStart.getTime());
@@ -727,6 +724,78 @@ public class SettingsActivity extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void showPeriodDialog() {
+        View view = getLayoutInflater().inflate(R.layout.sleep_dialog, null);
+        TextView tv_tittle = (TextView) view.findViewById(R.id.tv_tittle);
+        tv_tittle.setText("مدة الخطبة");
+        ed_play = (EditText) view.findViewById(R.id.ed_play);
+        ed_stop = (EditText) view.findViewById(R.id.ed_stop);
+        ed_stop.setVisibility(View.GONE);
+        ed_play.setHint("مدة ظهور الخطبة (دقيقة)");
+        btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
+        btn_add = (Button) view.findViewById(R.id.btn_add);
+        sleepDialog = new Dialog(this);
+        btn_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (TextUtils.isEmpty(ed_play.getText().toString())) {
+                    ed_play.setError("هذا الحقل مطلوب");
+                    return;
+                }
+                if (sleepDialog.isShowing()) sleepDialog.dismiss();
+                goToPreviewLive(Integer.parseInt(ed_play.getText().toString().trim()));
+
+            }
+        });
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (sleepDialog.isShowing()) sleepDialog.dismiss();
+            }
+        });
+        sleepDialog.setContentView(view);
+        sleepDialog.show();
+        sleepDialog.setCancelable(false);
+        sleepDialog.setCanceledOnTouchOutside(false);
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        Window window = sleepDialog.getWindow();
+        lp.copyFrom(window.getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        window.setAttributes(lp);
+    }
+
+    private void goToPreviewLive(int period) {
+        final Khotab object = new Khotab();
+        object.setId(-1);
+//        object.setId(5);
+        object.setTitle("معاينة شاشة البث");
+        object.setTitle1("প্রতিফলন সূরা আল বালাদ");
+        object.setTitle2("رحم کرنے والا مہربان ہےخدا");
+        object.setBody(getString(R.string.SermonTxt1));
+        object.setBody1(getString(R.string.SermonTxt1));
+        object.setBody2(getString(R.string.SermonTxt2));
+        object.setUpdatedAt(Utils.getFormattedCurrentDate());
+        object.setDateKhotab(Utils.getFormattedCurrentDate());
+        object.setDescription("");
+        object.setUrlVideoDeaf("null");
+        object.setTimeExpected(period);
+        object.setIsDeleted(0);
+        object.setIsException(0);
+        object.setTranslationSpeed(10);
+        object.setDirection1RTL(false);
+        object.setDirection2RTL(true);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(activity, PreviewLiveStreamActivity.class);
+                intent.putExtra("khotba", object);
+                startActivity(intent);
+            }
+        }, 700);
     }
 
     private void initiat(final ArrayList<String> list) {
