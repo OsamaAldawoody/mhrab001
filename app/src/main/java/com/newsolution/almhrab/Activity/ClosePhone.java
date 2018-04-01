@@ -389,7 +389,7 @@ public class ClosePhone extends Activity {
             }
         };
         timer.schedule(async, 0, 1000);
-        stopTimer = false;
+//        stopTimer = false;
     }
 
     private void checkTime() {

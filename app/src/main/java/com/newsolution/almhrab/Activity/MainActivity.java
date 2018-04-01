@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -104,7 +105,11 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -354,8 +359,10 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     private TimerTask async;
     private int cityId;
     private DBOperations DBO;
+    private Timer timerScan;
     private Timer timerPray;
     private TimerTask asyncPray;
+    private TimerTask asyncScan;
     private Activity activity;
     private City city;
     private boolean isAlShrouqEkamaIsTime, isFajrEkamaIsTime, isDhuhrEkamaIsTime, ishaEkamaIsTime, isMagribEkamaIsTime, isAsrEkamaIsTime;
@@ -744,7 +751,11 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             ex.printStackTrace();
         }
         getWeather(-1);
-        Scan();
+//        Scan();
+        try {
+            scanSensors();
+        } catch (Exception ex) {
+        }
 //        AutoScan();
         tvMasjedName.setText(sp.getString("masjedName", ""));
         tvName.setText(sp.getString("masjedName", ""));
@@ -2312,6 +2323,29 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         timerPray.schedule(asyncPray, 0, 1800000);
     }
 
+    private void scanSensors() {
+        timerScan = new Timer();
+        //try {
+        asyncScan = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e("scan ", true + "");
+                            _IsScanning = false;
+                            _IsAllowScan = false;
+                            Scan();
+                        }
+                    });
+                } catch (NullPointerException e) {
+                }
+            }
+        };
+        timerScan.schedule(asyncScan, 0, 60 * 60 * 1000);
+    }
+
     private void getAllKhotab() {
         try {
             runOnUiThread(new Runnable() {
@@ -3217,6 +3251,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             ActivityCompat.requestPermissions(activity,
                     permissionsToRequest.toArray(new String[permissionsToRequest.size()]), requestCode);
         }
+
     }
 
     @Override
@@ -3250,6 +3285,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                             }
                         }).create().show();
             }
+
         }
     }
 
@@ -3275,6 +3311,8 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                         if (!this._IsScanning) {
                             this._IsScanning = true;
                             this._BroadcastService.StartScan();
+                            Log.e("startScan ", true + "");
+
 //                if (this._ProgressDialog != null && this._ProgressDialog.isShowing()) {
 //                    this._ProgressDialog.dismiss();
 //                }
@@ -3368,5 +3406,6 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             }
         }
     }
+
 
 }

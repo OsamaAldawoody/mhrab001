@@ -492,45 +492,47 @@ public class SettingsActivity extends Activity {
     }
 
     private void checkLogin() {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
-        LayoutInflater inflater = activity.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.confirm_user, null);
-        dialogBuilder.setView(dialogView);
-        dialogBuilder.setCancelable(false);
-        final AlertDialog alertDialog = dialogBuilder.create();
-        alertDialog.setCanceledOnTouchOutside(false);
-        alertDialog.setCancelable(false);
-        alertDialog.show();
-        final EditText ed_caption = (EditText) dialogView.findViewById(R.id.ed_caption);
-        ed_caption.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(ed_caption, InputMethodManager.SHOW_IMPLICIT);
+       try {
+           AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
+           LayoutInflater inflater = activity.getLayoutInflater();
+           View dialogView = inflater.inflate(R.layout.confirm_user, null);
+           dialogBuilder.setView(dialogView);
+           dialogBuilder.setCancelable(false);
+           final AlertDialog alertDialog = dialogBuilder.create();
+           alertDialog.setCanceledOnTouchOutside(false);
+           alertDialog.setCancelable(false);
+           if (alertDialog != null) alertDialog.show();
+           final EditText ed_caption = (EditText) dialogView.findViewById(R.id.ed_caption);
+           ed_caption.requestFocus();
+           InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+           imm.showSoftInput(ed_caption, InputMethodManager.SHOW_IMPLICIT);
 
-        Button save = (Button) dialogView.findViewById(R.id.save);
-        Button cancel = (Button) dialogView.findViewById(R.id.cancel);
+           Button save = (Button) dialogView.findViewById(R.id.save);
+           Button cancel = (Button) dialogView.findViewById(R.id.cancel);
 
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Utils.hideSoftKeyboard(activity);
-                if (TextUtils.isEmpty(ed_caption.getText().toString().trim())) {
-                    ed_caption.setError("أدخل كلمة المرور للحساب");
-                    return;
-                }
-                Log.i("//////////: ", sp.getString("masjedPW", "") + " ll");
-                if (!(ed_caption.getText().toString().trim()).equals(sp.getString("masjedPW", ""))) {
-                    ed_caption.setError("كلمة المرور غير صحيحة");
-                    return;
-                }
-                alertDialog.dismiss();
-            }
-        });
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+           save.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View v) {
+                   Utils.hideSoftKeyboard(activity);
+                   if (TextUtils.isEmpty(ed_caption.getText().toString().trim())) {
+                       ed_caption.setError("أدخل كلمة المرور للحساب");
+                       return;
+                   }
+                   Log.i("//////////: ", sp.getString("masjedPW", "") + " ll");
+                   if (!(ed_caption.getText().toString().trim()).equals(sp.getString("masjedPW", ""))) {
+                       ed_caption.setError("كلمة المرور غير صحيحة");
+                       return;
+                   }
+                   alertDialog.dismiss();
+               }
+           });
+           cancel.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View view) {
+                   finish();
+               }
+           });
+       }catch (Exception ex){}
     }
 
     private void showFridayDialog() {

@@ -57,7 +57,7 @@
         <LinearLayout
             android:id="@+id/clock"
             android:layout_width="wrap_content"
-            android:layout_height="128dp"
+            android:layout_height="130dp"
             android:layout_gravity="bottom|center_horizontal"
             android:gravity="bottom|center_horizontal">
 
