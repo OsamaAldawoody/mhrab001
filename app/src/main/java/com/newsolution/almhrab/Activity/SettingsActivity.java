@@ -141,7 +141,7 @@ public class SettingsActivity extends Activity {
         llNews = (LinearLayout) findViewById(R.id.llNews);
         cb_news = (CheckBox) findViewById(R.id.cb_news);
         llFriday = (LinearLayout) findViewById(R.id.llFriday);
-        llFriday.setVisibility(View.VISIBLE);
+        llFriday.setVisibility(View.GONE);
         cb_friday = (CheckBox) findViewById(R.id.cb_friday);
         edTempIn = (EditText) findViewById(R.id.edTemp);
         edTempOut = (EditText) findViewById(R.id.edTempOut);

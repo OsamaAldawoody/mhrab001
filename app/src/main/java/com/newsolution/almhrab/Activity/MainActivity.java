@@ -469,15 +469,19 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 Bundle extras = intent.getExtras();
                 if (extras != null) {
                     recPath = extras.getString("recPath");
-                    DateKhotab = extras.getString("DateKhotab");
-                    IdKhotab = extras.getInt("IdKhotab");
                     Log.i("Sermon path  : ", recPath);
+                    if (extras.getBoolean("isKhotba")) {
+                        DateKhotab = extras.getString("DateKhotab");
+                        IdKhotab = extras.getInt("IdKhotab");
+                    } else {
+                        DateKhotab = "";
+                        IdKhotab = -1;
+                    }
                     new uploadSermonToServer().execute(recPath, IdKhotab + "", DateKhotab);
-
                 }
             }
         };
-//        new uploadSermonToServer().execute("/storage/emulated/0/AlMhrab/AlMhrab_6_20180119.mp4",1+"",20180119+"");
+//        new uploadSermonToServer().execute("/storage/emulated/0/AlMhrab/AlMhrab_6_20180416125134.mp4",-1+"","");
 
 //        prayTimes=  gv.getPrayTimes();
         cfajr = sp.getString("suh", "");
@@ -1501,7 +1505,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     }
 
     private void goToEmamScreen() {
-        if (sp.getBoolean("emamScreen", false)) {
+//        if (sp.getBoolean("emamScreen", false)) {
             stopTimer = true;
             if (timer != null) {
                 timer.cancel();
@@ -1519,7 +1523,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 }
             }, 120000);
 
-        }
+//        }
     }
 
     class uploadSermonToServer extends AsyncTask<String, Void, Boolean> {
@@ -2343,7 +2347,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 }
             }
         };
-        timerScan.schedule(asyncScan, 0, 60 * 60 * 1000);
+        timerScan.schedule(asyncScan, 0, 1 * 60 * 1000);
     }
 
     private void getAllKhotab() {
@@ -2975,12 +2979,12 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             return text;
         }
 
-    /*
-     * Measure the text of the space character (there's a bug with the
-     * 'getTextBounds() method of Paint that trims the white space, thus
-     * making it impossible to measure the width of a space without
-     * surrounding it in arbitrary characters)
-     */
+        /*
+         * Measure the text of the space character (there's a bug with the
+         * 'getTextBounds() method of Paint that trims the white space, thus
+         * making it impossible to measure the width of a space without
+         * surrounding it in arbitrary characters)
+         */
         String workaroundString = "a a";
         Rect spacebounds = new Rect();
         paint.getTextBounds(workaroundString, 0, workaroundString.length(), spacebounds);
@@ -2992,10 +2996,10 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
 
         float spaceWidth = spacebounds.width() - (abounds.width() * 2);
 
-    /*
-     * measure the amount of spaces needed based on the target width to fill
-     * (using Math.ceil to ensure the maximum whole number of spaces)
-     */
+        /*
+         * measure the amount of spaces needed based on the target width to fill
+         * (using Math.ceil to ensure the maximum whole number of spaces)
+         */
         int amountOfSpacesNeeded = (int) Math.ceil((width - textbounds.width()) / spaceWidth);
 
         // pad with spaces til the width is less than the text width

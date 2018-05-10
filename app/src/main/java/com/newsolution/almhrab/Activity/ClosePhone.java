@@ -449,6 +449,7 @@ public class ClosePhone extends Activity {
             Date time4 = spd.parse(t4);
             Calendar c4 = Calendar.getInstance();
             c4.setTime(time4);
+
             String t5 = cisha + ":00";
             Date time5 = spd.parse(t5);
             Calendar c5 = Calendar.getInstance();
@@ -473,6 +474,7 @@ public class ClosePhone extends Activity {
             Date time44 = spd.parse(t44);
             Calendar c44 = Calendar.getInstance();
             c44.setTime(time44);
+
 
             String t55 = icisha + ":00";
             Date time55 = spd.parse(t55);
@@ -590,6 +592,8 @@ public class ClosePhone extends Activity {
             }
             if ((c5.getTime().before(now) || c5.getTime().equals(now))
                     && ((c55.getTime().after(now)) || c55.getTime().equals(now))) {
+                iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t55));
+                currentPray = "isha";
                 npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t55));
                 setBackground(llIsha);
                 setTextColor(ishaTime);
@@ -598,8 +602,6 @@ public class ClosePhone extends Activity {
 //                setLargeTextSize(ishaTitle);
                 tvIqama.setText(TextUtils.isEmpty(npt) ? "حان وقت الصلاة " : "المتبقي للإقامة ");
                 remainTime1.setText(npt);
-                iqamatime = getDifferentTime(dayAsString, timeAsString, dayAsString, "" + (t55));
-                currentPray = "isha";
                 Log.i("***iqama:", iqamatime + " /");
                 if (iqamatime.equals("00:00:00")) {
                     tvIqama.setText("حان وقت الصلاة ");
@@ -653,7 +655,7 @@ public class ClosePhone extends Activity {
             } else if (now.after(c4.getTime()) && now.before(c5.getTime())) {
                 nextPray = "isha";
                 globalVariable.setNextPray("isha");
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t5)));//getIqama(t5)
+                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t5)));
                 setBackground(llIsha);
                 setTextColor(ishaTime);
                 //setLargeTextSize(ishaTime);
@@ -733,7 +735,7 @@ public class ClosePhone extends Activity {
     }
 
     private void goToEmamScreen() {
-        if (sp.getBoolean("emamScreen", false)) {
+//        if (sp.getBoolean("emamScreen", false)) {
             stopTimer = true;
             if (timer != null) {
                 timer.cancel();
@@ -751,7 +753,7 @@ public class ClosePhone extends Activity {
                 }
             }, 120000);
 
-        }
+//        }
     }
 
     private void runVoiceRecognition(final String currentPray) {
@@ -1138,16 +1140,16 @@ public class ClosePhone extends Activity {
             Date time5 = new SimpleDateFormat("HH:mm:ss").parse(t5);
             Calendar c5 = Calendar.getInstance();
             c5.setTime(time5);
-            if (now.after(c5.getTime())) {
-                Date dt = new Date();
-                Calendar c = Calendar.getInstance();
-                c.setTime(dt);
-                c.add(Calendar.DATE, 1);
-                dt = c.getTime();
-                day = c.get(Calendar.DAY_OF_MONTH);
-                month = c.get(Calendar.MONTH) + 1;
-                year = c.get(Calendar.YEAR);
-            }
+//            if (now.after(c5.getTime())) {
+//                Date dt = new Date();
+//                Calendar c = Calendar.getInstance();
+//                c.setTime(dt);
+//                c.add(Calendar.DATE, 1);
+//                dt = c.getTime();
+//                day = c.get(Calendar.DAY_OF_MONTH);
+//                month = c.get(Calendar.MONTH) + 1;
+//                year = c.get(Calendar.YEAR);
+//            }
         } catch (ParseException e0) {
         }
         Hijri_Cal_Tools.calculation((double) lat1, (double) lat2, (double) long1, (double) long2,

@@ -2,6 +2,7 @@ package com.newsolution.almhrab.Activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -9,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.content.ContextCompat;
@@ -36,9 +38,11 @@ import com.newsolution.almhrab.Helpar.PlaySound;
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Hijri_Cal_Tools;
 import com.newsolution.almhrab.HorizontalMarqueeTextView;
+import com.newsolution.almhrab.Interface.OnLoadedFinished;
 import com.newsolution.almhrab.Model.City;
 import com.newsolution.almhrab.Model.OptionSiteClass;
 import com.newsolution.almhrab.R;
+import com.newsolution.almhrab.WebServices.WS;
 import com.newsolution.almhrab.scheduler.SalaatAlarmReceiver;
 import com.streamaxia.android.CameraPreview;
 import com.streamaxia.android.StreamaxiaPublisher;
@@ -156,6 +160,7 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
     private SharedPreferences sp;
     private SharedPreferences.Editor spedit;
     private GlobalVars gv;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -178,7 +183,7 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
         try {
             mPublisher.setEncoderHandler(new EncoderHandler(this));
             mPublisher.setRtmpHandler(new RtmpHandler(this));
-//            mPublisher.setRecordEventHandler(new RecordHandler(this));
+            mPublisher.setRecordEventHandler(new RecordHandler(this));
             mCameraView.startCamera();
         } catch (Exception e) {
             e.printStackTrace();
@@ -245,6 +250,9 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
         buildUI();
         checkTime();
         startKhotbaTimer();
+        if (Utils.isOnline(activity)) {
+            isStreaming();
+        }
 
     }
 
@@ -360,6 +368,7 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
             }
         }.start();
     }
+
     public void checkNextPrayTheme() {
         Calendar today = Calendar.getInstance();
         int hour = today.get(Calendar.HOUR_OF_DAY);
@@ -992,19 +1001,40 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
 
     }
 
+    private void isStreaming() {
+        WS.isStreaming(activity, 20, new OnLoadedFinished() {
+            @Override
+            public void onSuccess(String response) {
+
+            }
+
+            @Override
+            public void onFail(String error) {
+
+            }
+        });
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         try {
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
                     == PackageManager.PERMISSION_GRANTED) {
-//                stopStreaming();
-//                stopChronometer();
-//                mChronometer.setBase(SystemClock.elapsedRealtime());
-//                mChronometer.start();
+
+                if (Utils.isOnline(activity)) {
+                    saveDir = new File(Environment.getExternalStorageDirectory(), "AlMhrab");
+                    saveDir.mkdirs();
+                    recPath = saveDir.getAbsolutePath() + "/AlMhrab_" + sp.getInt("masjedId", -1)
+                            + "_" + Utils.getFormattedCurrentDate() + ".mp4";
+                    stopStreaming();
+                    stopChronometer();
+                    mChronometer.setBase(SystemClock.elapsedRealtime());
+                    mChronometer.start();
 //                mPublisher.setVideoBitRate(720);
-//                mPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
-//                mPublisher.startRecord(recPath);
+                    mPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
+                    mPublisher.startRecord(recPath);
+                }
             } else {
                 finish();
                 Toast.makeText(this, "يجب السماح باستخدام الكاميرا", Toast.LENGTH_LONG).show();
@@ -1043,23 +1073,27 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
                 timer.cancel();
                 timer.purge();
             }
-//            mPublisher.stopPublish();
-//            mPublisher.stopRecord();
+
             if (countDownTimer != null) countDownTimer.cancel();
-//            MainActivity.isOpenSermon = true;
-//            Log.i("recPath: ", recPath);
-//            DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
-//            DateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
-//            Date date = df.parse(khotab.getDateKhotab());
-//            String DateKhotab = sdf.format(date);
-//
-//            Intent intent = new Intent(BROADCAST);
-//            Bundle extras = new Bundle();
-//            extras.putString("recPath", recPath);
-//            extras.putInt("IdKhotab", khotab.getId());
-//            extras.putString("DateKhotab", DateKhotab);
-//            intent.putExtras(extras);
-//            sendBroadcast(intent);
+            if (Utils.isOnline(activity)) {
+                stopStreaming();
+                stopChronometer();
+                MainActivity.isOpenSermon = true;
+                Log.i("recPath: ", recPath);
+//                DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
+//                DateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
+//                Date date = df.parse(khotab.getDateKhotab());
+//                String DateKhotab = sdf.format(date);
+
+                Intent intent = new Intent(BROADCAST);
+                Bundle extras = new Bundle();
+                extras.putBoolean("isKhotba", false);
+                extras.putString("recPath", recPath);
+//                extras.putInt("IdKhotab", khotab.getId());
+//                extras.putString("DateKhotab", DateKhotab);
+                intent.putExtras(extras);
+                sendBroadcast(intent);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             finish();
@@ -1128,8 +1162,8 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
 
 
     /*
-    * EncoderHandler implementation
-    * */
+     * EncoderHandler implementation
+     * */
 
     @Override
     public void onNetworkWeak() {
@@ -1148,8 +1182,8 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
 
 
     /*
-    * RecordHandler implementation
-    * */
+     * RecordHandler implementation
+     * */
 
     @Override
     public void onRecordPause() {
@@ -1188,8 +1222,8 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
     }
 
     /*
-    * RTMPListener implementation
-    * */
+     * RTMPListener implementation
+     * */
 
     @Override
     public void onRtmpConnecting(String s) {
@@ -1276,8 +1310,8 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
         try {
 //            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             Log.i("streaming: ", e.getMessage());
-//            mPublisher.stopPublish();
-//            mPublisher.stopRecord();
+            stopStreaming();
+            stopChronometer();
         } catch (Exception e1) {
             // Ignore
             e.printStackTrace();

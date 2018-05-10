@@ -443,6 +443,7 @@ public class FridayActivity extends YouTubeFailureRecoveryActivity implements Rt
 
             Intent intent = new Intent(BROADCAST);
             Bundle extras = new Bundle();
+            extras.putBoolean("isKhotba",true);
             extras.putString("recPath", recPath);
             extras.putInt("IdKhotab", khotab.getId());
             extras.putString("DateKhotab", DateKhotab);
