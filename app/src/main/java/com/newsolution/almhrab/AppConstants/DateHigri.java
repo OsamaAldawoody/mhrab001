@@ -106,30 +106,6 @@ public class DateHigri {
 
 
 
-    public static String writeIslamicDate() {
-        String[] wdNames = {String.valueOf(R.string.sun), String.valueOf(R.string.mon), String.valueOf(R.string.tus), String.valueOf(R.string.wes)
-                , String.valueOf(R.string.ths), String.valueOf(R.string.fri), String.valueOf(R.string.sat)};
-        String[] iMonthNames = {String.valueOf(R.string.am1), String.valueOf(R.string.am2), String.valueOf(R.string.am3),
-                String.valueOf(R.string.am4), String.valueOf(R.string.am5), String.valueOf(R.string.am6), String.valueOf(R.string.am7),
-                String.valueOf(R.string.am8), String.valueOf(R.string.am9), String.valueOf(R.string.am10), String.valueOf(R.string.am11)
-                , String.valueOf(R.string.am12)};
-        String[] MonthNames = {String.valueOf(R.string.em1), String.valueOf(R.string.em2), String.valueOf(R.string.em3),
-                String.valueOf(R.string.em4), String.valueOf(R.string.em5), String.valueOf(R.string.em6), String.valueOf(R.string.em7),
-                String.valueOf(R.string.em8), String.valueOf(R.string.em9), String.valueOf(R.string.em10), String.valueOf(R.string.em11)
-                , String.valueOf(R.string.em12)};
-        boolean dayTest=true;
-        Calendar today = Calendar.getInstance();
-        double day = today.get(Calendar.DAY_OF_MONTH);
-        double  month = today.get(Calendar.MONTH);
-        double  year = today.get(Calendar.YEAR);
-        double[] iDate = kuwaiticalendar(0,dayTest);
-        // String outputIslamicDate = wdNames[(int) iDate[4]] + " " + (int)day + " " +MonthNames[(int) month] + " " + (int)year + " م " + (int)iDate[5] + " "+ iMonthNames[(int) iDate[6]] + " " + (int)iDate[7] + " هـ ";
-        String outputIslamicDate = wdNames[(int) iDate[4]] + " | " + (int)day + " " +MonthNames[(int) month] + " " + (int)year + " | " + (int)iDate[5] + " "+ iMonthNames[(int) iDate[6]] + " " +
-                (int)iDate[7] + " هـ ";
-
-        return outputIslamicDate;
-    }
-
 
     public static int date1() {
         String[] wdNames = {"الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس",

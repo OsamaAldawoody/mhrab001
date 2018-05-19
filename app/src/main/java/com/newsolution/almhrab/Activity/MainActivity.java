@@ -372,7 +372,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     private String LOG_TAG = "voiceRecognitionAct";
     private String currentPray = "";
     private CountDownTimer countDownTimer;
-    private int period = 300000;
+    private int period = 5;
     private int VOICE_RECOGNITION_REQUEST_CODE = 100;
     private int REQUEST_PERMISSIONS = 101;
     private boolean stopTimer = false;
@@ -1699,6 +1699,18 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             //  gv.setNextPray(currentPray);
             startActivity(cp);
         } else {
+            if (currentPray.equals("fajr")) {
+                period = settings.getFajrAzkar();
+            } else if (currentPray.equals("dhuhr")) {
+                period = settings.getDhuhrAzkar();
+            } else if (currentPray.equals("asr")) {
+                period = settings.getAsrAzkar();
+            } else if (currentPray.equals("magrib")) {
+                period = settings.getMagribAzkar();
+            } else if (currentPray.equals("isha")) {
+                period = settings.getIshaAzkar();
+            }
+//            Log.i("////: ",period+"");
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -2347,7 +2359,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                 }
             }
         };
-        timerScan.schedule(asyncScan, 0, 1 * 60 * 1000);
+        timerScan.schedule(asyncScan, 0, 60 * 1000);
     }
 
     private void getAllKhotab() {

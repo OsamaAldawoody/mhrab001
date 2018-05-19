@@ -490,6 +490,8 @@ public class Utils {
 
     final static String MONTHS[] =
             new String[]{"Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    public final static String[] iMONTHS = {"", "محرم", "صفر", "ربيع الأول", "ربيع الثاني", "جمادى الأولى", "جمادى الآخر", "رجب",
+            "شعبان", "رمضان", "شوال", "ذو القعدة", " ذو الحجة"};
 
     public static String getDateTime(long milliSeconds) {
         Calendar calendar = Calendar.getInstance();
@@ -759,7 +761,7 @@ public class Utils {
 
     public static boolean compareDate(String d1, String d2) {
         System.out.println("Date1 * " + d1);
-        System.out.println("Date2 *" +d2);
+        System.out.println("Date2 *" + d2);
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date date1 = sdf.parse(d1);
@@ -782,6 +784,7 @@ public class Utils {
             return true;
         }
     }
+
     public static boolean compareTimes(String d1, String d2) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
@@ -999,7 +1002,7 @@ public class Utils {
 
 
     public static void hideKeypadOntouchOutEdittext(final Activity activity, View view) {
-    /*called onCreate*/
+        /*called onCreate*/
         //Set up touch listener for non-text box views to hide keyboard.
         if (!(view instanceof EditText)) {
 
@@ -1077,10 +1080,6 @@ public class Utils {
         String[] wdNames = {act.getString(R.string.sun), act.getString(R.string.mon), act.getString(R.string.tus),
                 act.getString(R.string.wes)
                 , act.getString(R.string.ths), act.getString(R.string.fri), act.getString(R.string.sat)};
-        String[] iMonthNames = {"محرم","صفر","ربيع الأول",
-                "ربيع الثاني", "جمادى الأولى", "جمادى الآخر", "رجب",
-                "شعبان","شعبان", "شوال", "ذو القعدة"
-                , " ذو الحجة"};
         String[] MonthNames = {act.getString(R.string.em1), act.getString(R.string.em2), act.getString(R.string.em3),
                 act.getString(R.string.em4), act.getString(R.string.em5), act.getString(R.string.em6), act.getString(R.string.em7),
                 act.getString(R.string.em8), act.getString(R.string.em9), act.getString(R.string.em10), act.getString(R.string.em11)
@@ -1090,14 +1089,17 @@ public class Utils {
         double day = today.get(Calendar.DAY_OF_MONTH);
         double month = today.get(Calendar.MONTH);
         double year = today.get(Calendar.YEAR);
-        double[] iDate = hd.kuwaiticalendar(act.getSharedPreferences(AppConst.PREFS, act.MODE_PRIVATE)
-                .getInt("hijriDiff", 0), dayTest);
-        int iDayN = hd.date1();
-        // String outputIslamicDate = wdNames[(int) iDate[4]] + " " + (int)day + " " +MonthNames[(int) month] + " " + (int)year + " م " + (int)iDate[5] + " "+ iMonthNames[(int) iDate[6]] + " " + (int)iDate[7] + " هـ ";
-        String outputIslamicDate = wdNames[iDayN] + " | " + (int) day + " " + MonthNames[(int) month] + " " + (int) year
-                + " | " + (int) iDate[5] + " " + iMonthNames[(int) iDate[6]] + " " +
-                (int) iDate[7] + " " + act.getString(R.string.mt);
+//        double[] iDate = hd.kuwaiticalendar(act.getSharedPreferences(AppConst.PREFS, act.MODE_PRIVATE)
+//                .getInt("hijriDiff", 0), dayTest);
 
+        int iDayN = hd.date1();
+        String normalDate = wdNames[iDayN] + " | " + (int) day + " " + MonthNames[(int) month] + " " + (int) year
+                + " | ";
+        int hijriDiff = act.getSharedPreferences(AppConst.PREFS, act.MODE_PRIVATE)
+                .getInt("hijriDiff", 0);
+        int[] dt = HijriCalendar.getSimpleDate(today, hijriDiff);
+        String hijriDate = dt[1] + " " + iMONTHS[dt[2]] + " " + dt[3] + act.getString(R.string.mt);
+        String outputIslamicDate = normalDate + hijriDate;
         return outputIslamicDate;
     }
 
@@ -1105,9 +1107,9 @@ public class Utils {
         String[] wdNames = {act.getString(R.string.sun), act.getString(R.string.mon), act.getString(R.string.tus),
                 act.getString(R.string.wes)
                 , act.getString(R.string.ths), act.getString(R.string.fri), act.getString(R.string.sat)};
-        String[] iMonthNames = {"محرم","صفر","ربيع الأول",
+        String[] iMonthNames = {"محرم", "صفر", "ربيع الأول",
                 "ربيع الثاني", "جمادى الأولى", "جمادى الآخر", "رجب",
-                "شعبان","شعبان", "شوال", "ذو القعدة"
+                "شعبان", "رمضان", "شوال", "ذو القعدة"
                 , " ذو الحجة"};
 
         String[] MonthNames = {act.getString(R.string.em1), act.getString(R.string.em2), act.getString(R.string.em3),
@@ -1123,11 +1125,17 @@ public class Utils {
                 .getInt("hijriDiff", 0), dayTest);
         int iDayN = hd.date1();
         // String outputIslamicDate = wdNames[(int) iDate[4]] + " " + (int)day + " " +MonthNames[(int) month] + " " + (int)year + " م " + (int)iDate[5] + " "+ iMonthNames[(int) iDate[6]] + " " + (int)iDate[7] + " هـ ";
-        String outputIslamicDate = " "+(int) iDate[5] + " " + iMonthNames[(int) iDate[6]] + " " +
-                (int) iDate[7] + " " + act.getString(R.string.mt) + " - " + (int) day + " " + MonthNames[(int) month] + " " + (int) year;
-
+//        String outputIslamicDate = " " + (int) iDate[5] + " " + iMonthNames[(int) iDate[6]] + " " +
+//                (int) iDate[7] + " " + act.getString(R.string.mt) + " - " + (int) day + " " + MonthNames[(int) month] + " " + (int) year;
+        int hijriDiff = act.getSharedPreferences(AppConst.PREFS, act.MODE_PRIVATE)
+                .getInt("hijriDiff", 0);
+        int[] dt = HijriCalendar.getSimpleDate(today, hijriDiff);
+        String hijriDate = dt[1] + " " + iMONTHS[dt[2]] + " " + dt[3] + act.getString(R.string.mt);
+        String normalDate = (int) day + " " + MonthNames[(int) month] + " " + (int) year;
+        String outputIslamicDate = hijriDate + " - " + normalDate;
         return outputIslamicDate;
     }
+
     public static String writeMDate(Activity act, DateHigri hd) {
         String[] wdNames = {act.getString(R.string.sun), act.getString(R.string.mon), act.getString(R.string.tus),
                 act.getString(R.string.wes)
@@ -1146,23 +1154,38 @@ public class Utils {
                 .getInt("hijriDiff", 0), dayTest);
         int iDayN = hd.date1();
         String outputIslamicDate = wdNames[iDayN] + "  " + (int) day + " " + MonthNames[(int) month]
-                + " " + (int) year+ " " + act.getString(R.string.mt1) ;
+                + " " + (int) year + " " + act.getString(R.string.mt1);
         return outputIslamicDate;
     }
+
     public static String writeHDate(Activity act, DateHigri hd) {
-        String[] iMonthNames = {"محرم","صفر","ربيع الأول",
-                "ربيع الثاني", "جمادى الأولى", "جمادى الآخر", "رجب",
-                "شعبان","شعبان", "شوال", "ذو القعدة"
-                , " ذو الحجة"};
+        Calendar today = Calendar.getInstance();
+        double day = today.get(Calendar.DAY_OF_MONTH);
+        double month = today.get(Calendar.MONTH);
+        double year = today.get(Calendar.YEAR);
 
-        boolean dayTest = true;
-        double[] iDate = hd.kuwaiticalendar(act.getSharedPreferences(AppConst.PREFS, act.MODE_PRIVATE)
-                .getInt("hijriDiff", 0), dayTest);
-        String outputIslamicDate = (int) iDate[5] + " " + iMonthNames[(int) iDate[6]] + " " +
-                (int) iDate[7] + " " + act.getString(R.string.mt) ;
+        int hijriDiff = act.getSharedPreferences(AppConst.PREFS, act.MODE_PRIVATE)
+                .getInt("hijriDiff", 0);
+        int[] dt = HijriCalendar.getSimpleDate(today, hijriDiff);
+        String outputIslamicDate = dt[1] + " " + iMONTHS[dt[2]] + " " + dt[3] + act.getString(R.string.mt);
 
         return outputIslamicDate;
     }
+
+//    public static String writeHDate(Activity act, DateHigri hd) {
+//        String[] iMonthNames = {"محرم", "صفر", "ربيع الأول",
+//                "ربيع الثاني", "جمادى الأولى", "جمادى الآخر", "رجب",
+//                "شعبان", "شعبان", "شوال", "ذو القعدة"
+//                , " ذو الحجة"};
+//
+//        boolean dayTest = true;
+//        double[] iDate = hd.kuwaiticalendar(act.getSharedPreferences(AppConst.PREFS, act.MODE_PRIVATE)
+//                .getInt("hijriDiff", 0), dayTest);
+//        String outputIslamicDate = (int) iDate[5] + " " + iMonthNames[(int) iDate[6]] + " " +
+//                (int) iDate[7] + " " + act.getString(R.string.mt);
+//
+//        return outputIslamicDate;
+//    }
 
 
 }

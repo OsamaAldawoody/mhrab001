@@ -1002,30 +1002,6 @@ public class ClosePhone extends Activity {
     }
 
 
-    public String writeIslamicDate(DateHigri hd) {
-        String[] wdNames = {getString(R.string.sun), getString(R.string.mon), getString(R.string.tus), getString(R.string.wes)
-                , getString(R.string.ths), getString(R.string.fri), getString(R.string.sat)};
-        String[] iMonthNames = {getString(R.string.am1), getString(R.string.am2), getString(R.string.am3),
-                getString(R.string.am4), String.valueOf(R.string.am5), getString(R.string.am6), getString(R.string.am7),
-                getString(R.string.am8), getString(R.string.am9), getString(R.string.am10), getString(R.string.am11)
-                , getString(R.string.am12)};
-        String[] MonthNames = {getString(R.string.em1), getString(R.string.em2), getString(R.string.em3),
-                getString(R.string.em4), getString(R.string.em5), getString(R.string.em6), getString(R.string.em7),
-                getString(R.string.em8), getString(R.string.em9), getString(R.string.em10), getString(R.string.em11)
-                , getString(R.string.em12)};
-        boolean dayTest = true;
-        Calendar today = Calendar.getInstance();
-        double day = today.get(Calendar.DAY_OF_MONTH);
-        double month = today.get(Calendar.MONTH);
-        double year = today.get(Calendar.YEAR);
-        double[] iDate = hd.kuwaiticalendar(sp.getInt("hijriDiff", 0), dayTest);
-        int iDayN = hd.date1();
-        // String outputIslamicDate = wdNames[(int) iDate[4]] + " " + (int)day + " " +MonthNames[(int) month] + " " + (int)year + " م " + (int)iDate[5] + " "+ iMonthNames[(int) iDate[6]] + " " + (int)iDate[7] + " هـ ";
-        String outputIslamicDate = wdNames[iDayN] + " | " + (int) day + " " + MonthNames[(int) month] + " " + (int) year + " | " + (int) iDate[5] + " " + iMonthNames[(int) iDate[6]] + " " +
-                (int) iDate[7] + " " + getString(R.string.mt);
-
-        return outputIslamicDate;
-    }
 
     private void animAdvs() {
         TextView advTitle;
