@@ -136,7 +136,6 @@ public class ChoosePriority extends Activity {
                     long dbendDate = new Date().getTime();
                     Log.d(LOG_TAG, "Sync service DB Insert end : " + dbendDate);
                     Log.d(LOG_TAG, "Sync service DB elapsed : " + (dbendDate - dbstartDate));
-
                     Log.d(LOG_TAG, "Sync service Insert Data Success");
                     return true;
                 }

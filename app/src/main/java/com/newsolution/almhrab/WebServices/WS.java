@@ -615,13 +615,84 @@ public class WS {
             }
         });
     }
+    public static void getAllData(final Activity activity, final OnLoadedFinished listener) {
+        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+        spedit = sp.edit();
+        int id = sp.getInt("masjedId", -1);
+        String GUID = sp.getString("masjedGUID", "");
+        String DeviceNo = sp.getString(AppConst.DeviceNo, "");
 
-    public static String LOG_TAG = "BWWABA";
+        Map<String, String> param = new HashMap<>();
+        param.put("IdSubscribe", id + "");
+        param.put("GUID", GUID);
+        param.put("DeviceNo", DeviceNo);
+        param.put("lastUpdate", "0");
+
+        Log.i("////params ", param.toString());
+
+        UserOperations.getInstance(activity).sendPostRequest(Constants.Main_URL + "getAllKhotab", param, new OnLoadedFinished() {
+            @Override
+            public void onSuccess(String response) {
+                Log.i("////response ", response);
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(response);
+                    boolean Status = jsonObject.optBoolean("Status");
+                    String message = jsonObject.optString("ResultText");
+                    if (Status) {
+                        JSONArray jAKhotab = jsonObject.optJSONArray("OtherData");
+                        ArrayList<Khotab> khotabList = JsonHelper.jsonToKhotabArray(jAKhotab);
+                        DBOperations db = new DBOperations(activity);
+                        if (khotabList.size() > 0) db.insertAllKhotab(khotabList);
+                    } else listener.onFail(message);
+
+                } catch (JSONException e) {
+                    listener.onFail(e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFail(String error) {
+                listener.onFail(error);
+            }
+        });
+    }
+
+    public static String LOG_TAG = "ALMHRAB";
 
     static InputStream is = null;
     static JSONObject jObj = null;
     static String json = "";
-
+    public static JSONObject syncData(int id, String GUID, String lastUpdate, String DeviceNo) {
+        String query = "getAllData?IdSubscribe=" + id + "&GUID=" + GUID + "&lastUpdate=" + lastUpdate + "&DeviceNo=" + DeviceNo + "";
+        return getJsonObject2(query);
+    }
+//    public static void syncData(int id, String GUID, String lastUpdate, String DeviceNo) {
+//
+//            String url = Constants.Main_URL1 + urlQuery;
+//
+//            Log.d(LOG_TAG, "Request url : " + url);
+//            HttpClient client = new DefaultHttpClient();
+//            HttpGet get = new HttpGet(url);
+//            JSONObject jo = new JSONObject();
+//            String data = "";
+//            try {
+//                HttpResponse response = client.execute(get);
+//                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+//                    HttpEntity e = response.getEntity();
+//                    data = EntityUtils.toString(e);
+//                    Log.d(LOG_TAG, "Result before converting to json : " + data);
+//                    jo = new JSONObject(data);
+//                }
+//            } catch (Exception e) {
+//                // TODO: handle exception
+//                e.printStackTrace();
+//                return null;
+//            } finally {
+//                return jo;
+//            }
+//
+//    }
 
     public static JSONObject getJsonObject2(String urlQuery) {
 
@@ -650,10 +721,7 @@ public class WS {
     }
 
 
-    public static JSONObject syncData(int id, String GUID, String lastUpdate, String DeviceNo) {
-        String query = "getAllData?IdSubscribe=" + id + "&GUID=" + GUID + "&lastUpdate=" + lastUpdate + "&DeviceNo=" + DeviceNo + "";
-        return getJsonObject2(query);
-    }
+
 
     public static boolean InsertDataToDB(int action, Activity activity, JSONObject o) {
         Log.d(LOG_TAG, "Sync Service Insert Data");

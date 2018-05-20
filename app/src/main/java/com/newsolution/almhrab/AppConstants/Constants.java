@@ -39,7 +39,7 @@ public interface Constants {
 
 //  public static String Main_URL = "http://newsolutions-001-site1.btempurl.com/APIs/";
 //  public static String IMAGE_URL = "http://newsolutions-001-site1.btempurl.com";
-    public static String Main_URL = "https://almihrab.newsolutions.ps/APIs/";
-    public static String IMAGE_URL = "https://almihrab.newsolutions.ps";
+    public static String Main_URL = "http://almihrab.newsolutions.ps/APIs/";
+    public static String IMAGE_URL = "http://almihrab.newsolutions.ps";
     public static String PACKAGE_NAME="com.newsolution.almhrab";
 }
