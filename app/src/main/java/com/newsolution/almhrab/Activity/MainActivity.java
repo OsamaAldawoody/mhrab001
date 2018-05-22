@@ -1472,11 +1472,11 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         DBO.open();
         final Khotab khotba = DBO.getKhotba(Utils.getCurrentDate());
         DBO.close();
-        if (!sp.getBoolean("IsMasjed", false)) {
-            //isException هذه الجامع لا يوجد عليه رقابة يعني ما في بث مباشر او ترجمة
-            if (khotba != null) {
-                if (khotba.getIsException() == 0) {
-                    if (Utils.isOnline(activity)) {
+            if (!sp.getBoolean("IsMasjed", false)) {
+                if (Utils.isOnline(activity)) {
+                    //isException هذه الجامع لا يوجد عليه رقابة يعني ما في بث مباشر او ترجمة
+                if (khotba != null) {
+                    if (khotba.getIsException() == 0) {
                         stopTimer = true;
                         if (timer != null) {
                             timer.cancel();
@@ -1494,34 +1494,40 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                                 Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
                             }
                         }, 120000);
-                    } else goToEmamScreen();
 
-                } else goToEmamScreen();
-            } else goToEmamScreen();
+                    } else   if (sp.getBoolean("emamScreen", false))  goToEmamScreen(false);
+                } else goToEmamScreen(true);
 
-        } else {
-            goToEmamScreen();
-        }
+                } else
+                if (sp.getBoolean("emamScreen", false)) goToEmamScreen(false);
+            }
+//            else {
+//                if (sp.getBoolean("emamScreen", false)) goToEmamScreen(false);
+//            }
+
+
+
     }
 
-    private void goToEmamScreen() {
+    private void goToEmamScreen(final boolean isStreaming) {
 //        if (sp.getBoolean("emamScreen", false)) {
-            stopTimer = true;
-            if (timer != null) {
-                timer.cancel();
-                timer.purge();
+        stopTimer = true;
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
+        Log.i("***voice1", "countDown emam");
+        iqamatime = "";
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent cp = new Intent(activity, ViewEmamActivity.class);
+                cp.putExtra("isStreaming",isStreaming);
+                startActivity(cp);
+                isOpenSermon = true;
+                Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
             }
-            Log.i("***voice1", "countDown emam");
-            iqamatime = "";
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Intent cp = new Intent(activity, ViewEmamActivity.class);
-                    startActivity(cp);
-                    isOpenSermon = true;
-                    Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
-                }
-            }, 120000);
+        }, 120000);
 
 //        }
     }
@@ -3374,7 +3380,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         }
 
         public void onCancel(DialogInterface dialog) {
-            Toast.makeText(activity, getString(R.string.lan_100), 0).show();
+            Toast.makeText(activity, getString(R.string.lan_100), Toast.LENGTH_LONG).show();
 //            finish();
             getWeather(-1);
         }

@@ -160,6 +160,7 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
     private SharedPreferences sp;
     private SharedPreferences.Editor spedit;
     private GlobalVars gv;
+    private boolean isStreaming;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,13 +171,9 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
         setContentView(R.layout.activity_emam_view);
         activity = this;
         sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
-
+        isStreaming = getIntent().getBooleanExtra("isStreaming", false);
         ButterKnife.bind(this);
 
-//        saveDir = new File(Environment.getExternalStorageDirectory(), "AlMhrab");
-//        saveDir.mkdirs();
-//        recPath = saveDir.getAbsolutePath() + "/AlMhrab_" + sp.getInt("masjedId", -1)//+ "_" + khotab.getTitle()
-//                + "_" + Utils.getFormattedCurrentDate() + ".mp4";
         streamaxiaStreamName = streamaxiaStreamName + sp.getInt("masjedId", -1) + "";
         mPublisher = new StreamaxiaPublisher(mCameraView, this);
         mCameraView.setScalingMode(ScalingMode.TRIM);
@@ -250,7 +247,7 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
         buildUI();
         checkTime();
         startKhotbaTimer();
-        if (Utils.isOnline(activity)) {
+        if (isStreaming && Utils.isOnline(activity)) {
             isStreaming();
         }
 
@@ -1022,7 +1019,7 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
                     == PackageManager.PERMISSION_GRANTED) {
 
-                if (Utils.isOnline(activity)) {
+                if (isStreaming && Utils.isOnline(activity)) {
                     saveDir = new File(Environment.getExternalStorageDirectory(), "AlMhrab");
                     saveDir.mkdirs();
                     recPath = saveDir.getAbsolutePath() + "/AlMhrab_" + sp.getInt("masjedId", -1)
@@ -1031,7 +1028,7 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
                     stopChronometer();
                     mChronometer.setBase(SystemClock.elapsedRealtime());
                     mChronometer.start();
-//                mPublisher.setVideoBitRate(720);
+//                      mPublisher.setVideoBitRate(720);
                     mPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
                     mPublisher.startRecord(recPath);
                 }
@@ -1075,7 +1072,7 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
             }
 
             if (countDownTimer != null) countDownTimer.cancel();
-            if (Utils.isOnline(activity)) {
+            if (isStreaming && Utils.isOnline(activity)) {
                 stopStreaming();
                 stopChronometer();
                 MainActivity.isOpenSermon = true;

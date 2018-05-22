@@ -41,18 +41,11 @@ import com.newsolution.almhrab.GlobalVars;
 import com.newsolution.almhrab.Helpar.PlaySound;
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Hijri_Cal_Tools;
-import com.newsolution.almhrab.Interface.OnLoadedFinished;
 import com.newsolution.almhrab.Model.City;
 import com.newsolution.almhrab.Model.Khotab;
 import com.newsolution.almhrab.Model.News;
 import com.newsolution.almhrab.Model.OptionSiteClass;
 import com.newsolution.almhrab.R;
-import com.newsolution.almhrab.Tempreture.StringUtil;
-import com.newsolution.almhrab.Weather.JSONWeatherParser;
-import com.newsolution.almhrab.Weather.Weather;
-import com.newsolution.almhrab.WebServices.UserOperations;
-
-import org.json.JSONException;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -703,10 +696,10 @@ public class ClosePhone extends Activity {
         final Khotab khotba = DBO.getKhotba(Utils.getCurrentDate());
         DBO.close();
         if (!sp.getBoolean("IsMasjed", false)) {
-            //isException هذه الجامع لا يوجد عليه رقابة يعني ما في بث مباشر او ترجمة
-            if (khotba != null) {
-                if (khotba.getIsException() == 0) {
-                    if (Utils.isOnline(activity)) {
+            if (Utils.isOnline(activity)) {
+                //isException هذه الجامع لا يوجد عليه رقابة يعني ما في بث مباشر او ترجمة
+                if (khotba != null) {
+                    if (khotba.getIsException() == 0) {
                         stopTimer = true;
                         if (timer != null) {
                             timer.cancel();
@@ -724,37 +717,44 @@ public class ClosePhone extends Activity {
                                 Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
                             }
                         }, 120000);
-                    } else goToEmamScreen();
 
-                } else goToEmamScreen();
-            } else goToEmamScreen();
+                    } else   if (sp.getBoolean("emamScreen", false))  goToEmamScreen(false);
+                } else goToEmamScreen(true);
 
-        } else {
-            goToEmamScreen();
+            } else
+            if (sp.getBoolean("emamScreen", false)) goToEmamScreen(false);
         }
+//            else {
+//                if (sp.getBoolean("emamScreen", false)) goToEmamScreen(false);
+//            }
+
+
+
     }
 
-    private void goToEmamScreen() {
+    private void goToEmamScreen(final boolean isStreaming) {
 //        if (sp.getBoolean("emamScreen", false)) {
-            stopTimer = true;
-            if (timer != null) {
-                timer.cancel();
-                timer.purge();
+        stopTimer = true;
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
+        Log.i("***voice1", "countDown emam");
+        iqamatime = "";
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent cp = new Intent(activity, ViewEmamActivity.class);
+                cp.putExtra("isStreaming",isStreaming);
+                startActivity(cp);
+                isOpenSermon = true;
+                Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
             }
-            Log.i("***voice1", "countDown emam");
-            iqamatime = "";
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Intent cp = new Intent(activity, ViewEmamActivity.class);
-                    startActivity(cp);
-                    isOpenSermon = true;
-                    Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
-                }
-            }, 120000);
+        }, 120000);
 
 //        }
     }
+
 
     private void runVoiceRecognition(final String currentPray) {
         if (currentPray.equals("fajr")) {

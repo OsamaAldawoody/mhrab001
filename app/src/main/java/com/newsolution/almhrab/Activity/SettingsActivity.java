@@ -141,7 +141,7 @@ public class SettingsActivity extends Activity {
         llNews = (LinearLayout) findViewById(R.id.llNews);
         cb_news = (CheckBox) findViewById(R.id.cb_news);
         llFriday = (LinearLayout) findViewById(R.id.llFriday);
-        llFriday.setVisibility(View.GONE);
+//        llFriday.setVisibility(View.GONE);
         cb_friday = (CheckBox) findViewById(R.id.cb_friday);
         edTempIn = (EditText) findViewById(R.id.edTemp);
         edTempOut = (EditText) findViewById(R.id.edTempOut);
@@ -587,7 +587,10 @@ public class SettingsActivity extends Activity {
                 .setPositiveButton(activity.getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                      startActivity(new Intent(activity,ViewEmamActivity.class));
+                        Intent cp = new Intent(activity, ViewEmamActivity.class);
+                        cp.putExtra("isStreaming",false);
+                        startActivity(cp);
+//                        startActivity(new Intent(activity,ViewEmamActivity.class));
                         dialogInterface.dismiss();
                     }
                 }).setNegativeButton(getString(R.string.cancel_delete), new DialogInterface.OnClickListener() {

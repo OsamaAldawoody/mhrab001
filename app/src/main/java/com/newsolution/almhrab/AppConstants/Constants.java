@@ -37,8 +37,6 @@ public interface Constants {
 
     int NOTIFICATION_ID = 2010;
 
-//  public static String Main_URL = "http://newsolutions-001-site1.btempurl.com/APIs/";
-//  public static String IMAGE_URL = "http://newsolutions-001-site1.btempurl.com";
     public static String Main_URL = "http://almihrab.newsolutions.ps/APIs/";
     public static String IMAGE_URL = "http://almihrab.newsolutions.ps";
     public static String PACKAGE_NAME="com.newsolution.almhrab";
