@@ -253,22 +253,10 @@ public class ShowPray extends Activity implements RecognitionListener {
             public void run() {
                 if (PlaySound.isPlay(getBaseContext())) {
                     sound_stop.setVisibility(View.VISIBLE);
-//            mAudioManager.setStreamSolo(AudioManager.STREAM_MUSIC, true);
-                    mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
-                    } else {
-                        mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-                    }
+                    stopSilentMode();
                 } else {
                     sound_stop.setVisibility(View.INVISIBLE);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);
-                    } else {
-                        mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
-                    }
-                    mAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-
+                    runSilentMode();
                 }
             }
         };
@@ -350,20 +338,10 @@ public class ShowPray extends Activity implements RecognitionListener {
 //                    public void run() {
                 if (PlaySound.isPlay(getBaseContext())) {
                     sound_stop.setVisibility(View.VISIBLE);
-                    mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
-                    } else {
-                        mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-                    }
+                    stopSilentMode();
                 } else {
                     sound_stop.setVisibility(View.INVISIBLE);
-                    mAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);
-                    } else {
-                        mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
-                    }
+                  runSilentMode();
                     CheckRakaa();
                 }
 //                    }
@@ -411,16 +389,33 @@ public class ShowPray extends Activity implements RecognitionListener {
     }
 
     private void stopSilentMode() {
+        if (mAudioManager == null) {
+            mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        }
         try {
-           Log.i("stop Silent: ","truer");
-            AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
             } else {
                 mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
             }
             mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    private void runSilentMode() {
+        if (mAudioManager == null) {
+            mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        }
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);
+            } else {
+                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+            }
+            mAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -535,21 +530,8 @@ public class ShowPray extends Activity implements RecognitionListener {
             Log.i(LOG_TAG, "act destroy");
         }
         if (handlerSound != null) handlerSound.removeCallbacks(soundRun);
-        if (mAudioManager != null) {
-            try {
-                AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
-                } else {
-                    mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-                }
-                mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
 
+        stopSilentMode();
 
     }
 

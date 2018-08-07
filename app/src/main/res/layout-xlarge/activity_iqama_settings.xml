@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,7 +14,11 @@
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:layout_alignParentTop="true"
-        android:background="@color/back_text">
+        android:background="@color/back_text"
+        app:contentInsetEnd="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetRight="0dp"
+        app:contentInsetStart="0dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -602,6 +607,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#dadada" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -817,6 +823,7 @@
                 android:text="@string/aser_igama"
                 android:textColor="@color/black"
                 android:textSize="18dp" />
+
             <LinearLayout
                 android:id="@+id/ll_adan_soundA"
                 android:layout_width="match_parent"
@@ -897,6 +904,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#dadada" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -1191,6 +1199,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#dadada" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -1484,6 +1493,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#dadada" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
