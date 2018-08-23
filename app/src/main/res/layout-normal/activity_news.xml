@@ -33,10 +33,10 @@
             <ImageView
                 android:id="@+id/iv_back"
                 android:layout_width="?actionBarSize"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:padding="5dp"
+                android:padding="15dp"
                 android:src="@drawable/arrowforward_white" />
 
             <TextView

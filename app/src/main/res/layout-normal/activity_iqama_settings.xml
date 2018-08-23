@@ -32,7 +32,6 @@
                 android:layout_height="?actionBarSize"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="15dp"
                 android:padding="15dp"
                 android:src="@drawable/arrowforward_white" />
 

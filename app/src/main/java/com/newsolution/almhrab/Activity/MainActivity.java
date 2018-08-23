@@ -721,19 +721,8 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
     @Override
     protected void onStart() {
         super.onStart();
-        try {
-            AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
-            } else {
-                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-            }
-            mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-        } catch (Exception ex) {
-            Log.i(LOG_TAG, "onResults");
-            ex.printStackTrace();
-        }
+
+        stopSilentMode();
     }
 
     @Override
@@ -741,19 +730,8 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
         IntentFilter intentFilter = new IntentFilter(BROADCAST);
         if (myReceiver != null) registerReceiver(myReceiver, intentFilter);
         super.onResume();
-        try {
-            AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
-            } else {
-                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-            }
-            mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-        } catch (Exception ex) {
-            Log.i(LOG_TAG, "onResults");
-            ex.printStackTrace();
-        }
+        stopSilentMode();
+
         getWeather(-1);
 //        Scan();
         try {
@@ -1035,6 +1013,7 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            stopSilentMode();
                             if (PlaySound.isPlay(getBaseContext())) {
                                 sound_stop.setVisibility(View.VISIBLE);
                             } else sound_stop.setVisibility(View.GONE);
@@ -1051,6 +1030,24 @@ public class MainActivity extends Activity/* implements RecognitionListener*/ {
             }
         };
         timer.schedule(async, 0, 1000);
+    }
+    private void stopSilentMode() {
+        Log.i("stop Silent: ", "true");
+        try {
+            AudioManager    mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
+//            } else {
+//                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+//            }
+            mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+        } catch (Exception ex) {
+            Log.i("silent: ", ex.getMessage());
+            ex.printStackTrace();
+        }
+
     }
 
     public void checkNextPrayTheme() {

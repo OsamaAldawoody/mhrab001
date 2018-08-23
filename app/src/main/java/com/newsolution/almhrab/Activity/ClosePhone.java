@@ -361,12 +361,7 @@ public class ClosePhone extends Activity {
                         @Override
                         public void run() {
                             if (PlaySound.isPlay(getBaseContext())) {
-                                mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
-                                } else {
-                                    mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-                                }
+                                stopSilentMode();
                                 sound_stop.setVisibility(View.VISIBLE);
                             } else sound_stop.setVisibility(View.GONE);
                             if (stopTimer) {
@@ -718,16 +713,14 @@ public class ClosePhone extends Activity {
                             }
                         }, 120000);
 
-                    } else   if (sp.getBoolean("emamScreen", false))  goToEmamScreen(false);
+                    } else if (sp.getBoolean("emamScreen", false)) goToEmamScreen(false);
                 } else goToEmamScreen(true);
 
-            } else
-            if (sp.getBoolean("emamScreen", false)) goToEmamScreen(false);
+            } else if (sp.getBoolean("emamScreen", false)) goToEmamScreen(false);
         }
 //            else {
 //                if (sp.getBoolean("emamScreen", false)) goToEmamScreen(false);
 //            }
-
 
 
     }
@@ -745,7 +738,7 @@ public class ClosePhone extends Activity {
             @Override
             public void run() {
                 Intent cp = new Intent(activity, ViewEmamActivity.class);
-                cp.putExtra("isStreaming",isStreaming);
+                cp.putExtra("isStreaming", isStreaming);
                 startActivity(cp);
                 isOpenSermon = true;
                 Log.i("***voice1", "isOpenSermon: " + isOpenSermon);
@@ -1002,7 +995,6 @@ public class ClosePhone extends Activity {
     }
 
 
-
     private void animAdvs() {
         TextView advTitle;
         int advSize = advs.size();
@@ -1255,12 +1247,12 @@ public class ClosePhone extends Activity {
             return text;
         }
 
-    /*
-     * Measure the text of the space character (there's a bug with the
-     * 'getTextBounds() method of Paint that trims the white space, thus
-     * making it impossible to measure the width of a space without
-     * surrounding it in arbitrary characters)
-     */
+        /*
+         * Measure the text of the space character (there's a bug with the
+         * 'getTextBounds() method of Paint that trims the white space, thus
+         * making it impossible to measure the width of a space without
+         * surrounding it in arbitrary characters)
+         */
         String workaroundString = "a a";
         Rect spacebounds = new Rect();
         paint.getTextBounds(workaroundString, 0, workaroundString.length(), spacebounds);
@@ -1272,10 +1264,10 @@ public class ClosePhone extends Activity {
 
         float spaceWidth = spacebounds.width() - (abounds.width() * 2);
 
-    /*
-     * measure the amount of spaces needed based on the target width to fill
-     * (using Math.ceil to ensure the maximum whole number of spaces)
-     */
+        /*
+         * measure the amount of spaces needed based on the target width to fill
+         * (using Math.ceil to ensure the maximum whole number of spaces)
+         */
         int amountOfSpacesNeeded = (int) Math.ceil((width - textbounds.width()) / spaceWidth);
 
         // pad with spaces til the width is less than the text width
@@ -1391,13 +1383,15 @@ public class ClosePhone extends Activity {
     private void stopSilentMode() {
         Log.i("stop Silent: ", "truer");
         try {
-            AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
-            } else {
-                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+            if (mAudioManager == null) {
+                mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+//            int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
             }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
+//            } else {
+//                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+//            }
             mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
         } catch (Exception ex) {
             ex.printStackTrace();

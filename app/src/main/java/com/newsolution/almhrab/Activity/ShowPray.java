@@ -180,6 +180,7 @@ public class ShowPray extends Activity implements RecognitionListener {
     private Handler handlerSound;
     private Runnable soundRun;
 
+    boolean VolIsMute = false;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -253,10 +254,10 @@ public class ShowPray extends Activity implements RecognitionListener {
             public void run() {
                 if (PlaySound.isPlay(getBaseContext())) {
                     sound_stop.setVisibility(View.VISIBLE);
-                    stopSilentMode();
+//                    stopSilentMode();
                 } else {
                     sound_stop.setVisibility(View.INVISIBLE);
-                    runSilentMode();
+//                    runSilentMode();
                 }
             }
         };
@@ -338,10 +339,10 @@ public class ShowPray extends Activity implements RecognitionListener {
 //                    public void run() {
                 if (PlaySound.isPlay(getBaseContext())) {
                     sound_stop.setVisibility(View.VISIBLE);
-                    stopSilentMode();
+                    if (VolIsMute) stopSilentMode();
                 } else {
                     sound_stop.setVisibility(View.INVISIBLE);
-                  runSilentMode();
+                    if (!VolIsMute) runSilentMode();
                     CheckRakaa();
                 }
 //                    }
@@ -354,7 +355,7 @@ public class ShowPray extends Activity implements RecognitionListener {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                          stopSilentMode();
+                            if (VolIsMute) stopSilentMode();
                             Intent cp = new Intent(getApplicationContext(), Read.class);
                             cp.setAction("b");
                             cp.putExtra("pray", currentPray);
@@ -373,7 +374,7 @@ public class ShowPray extends Activity implements RecognitionListener {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                stopSilentMode();
+                                if (VolIsMute) stopSilentMode();
                                 Intent cp = new Intent(getApplicationContext(), Read.class);
                                 cp.setAction("b");
                                 cp.putExtra("pray", currentPray);
@@ -389,32 +390,41 @@ public class ShowPray extends Activity implements RecognitionListener {
     }
 
     private void stopSilentMode() {
+        VolIsMute = false;
         if (mAudioManager == null) {
             mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         }
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
-            } else {
-                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-            }
+
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
+//            } else {
+//                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+//            }
+
             mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
+
     private void runSilentMode() {
+        VolIsMute = true;
         if (mAudioManager == null) {
             mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         }
         try {
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);
-            } else {
-                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
-            }
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, AudioManager.FX_KEY_CLICK);
+            } else
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, AudioManager.FX_KEY_CLICK);
+
+//            } else {
+//                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+//            }
             mAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -513,7 +523,7 @@ public class ShowPray extends Activity implements RecognitionListener {
             //  speech = null;
             Log.i(LOG_TAG, "destroy");
         }
-    stopSilentMode();
+        if (VolIsMute) stopSilentMode();
     }
 
     @Override
@@ -531,7 +541,7 @@ public class ShowPray extends Activity implements RecognitionListener {
         }
         if (handlerSound != null) handlerSound.removeCallbacks(soundRun);
 
-        stopSilentMode();
+        if (VolIsMute) stopSilentMode();
 
     }
 

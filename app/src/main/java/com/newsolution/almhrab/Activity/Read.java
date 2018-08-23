@@ -293,11 +293,11 @@ public class Read extends Activity {
         try {
             AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
-            } else {
-                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-            }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
+//            } else {
+//                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+//            }
             mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
         } catch (Exception ex) {
             ex.printStackTrace();

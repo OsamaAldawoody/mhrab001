@@ -25,18 +25,18 @@ public class PlaySound {
     }
 
     public static void setSoundFromSP(Context c, String soundName, int i) {
-        try {
-            AudioManager mAudioManager = (AudioManager) c.getSystemService(Context.AUDIO_SERVICE);
-            int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
-            } else {
-                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-            }
-            mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+//        try {
+        AudioManager mAudioManager = (AudioManager) c.getSystemService(Context.AUDIO_SERVICE);
+        int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
+//        } else {
+//            mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+//        }
+        mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
         PlaySound.sound = true;//sp.getBoolean("sound_on", true);
         if (i == 0) {
             mp = MediaPlayer.create(c, c.getResources().getIdentifier(soundName, "raw", c.getPackageName()));
@@ -81,7 +81,17 @@ public class PlaySound {
                 Log.i("dddd", e.getMessage());
 
             }
-
+            if (mp != null) {
+                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mediaPlayer) {
+                        if (mp != null) {
+                            mp.release();
+                            mp = null;
+                        }
+                    }
+                });
+            }
         }
     }
 
