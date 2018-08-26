@@ -421,7 +421,6 @@ public class ShowPray extends Activity implements RecognitionListener {
                 mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, AudioManager.FX_KEY_CLICK);
             } else
                 mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, AudioManager.FX_KEY_CLICK);
-
 //            } else {
 //                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
 //            }
