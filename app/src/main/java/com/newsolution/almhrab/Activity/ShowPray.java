@@ -351,7 +351,7 @@ public class ShowPray extends Activity implements RecognitionListener {
 
             public void onFinish() {
                 if (countDownTimer != null) countDownTimer.cancel();
-                if (rn < 1) {
+//                if (rn < 1) {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -364,26 +364,25 @@ public class ShowPray extends Activity implements RecognitionListener {
                         }
                     }, 10000);
 //                }else if (rn==4){
-//
-                } else {
-                    repeate++;
-                    if (repeate <= 1) {
-                        // CheckRakaa();
-                        waitTimer(currentPray);
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (VolIsMute) stopSilentMode();
-                                Intent cp = new Intent(getApplicationContext(), Read.class);
-                                cp.setAction("b");
-                                cp.putExtra("pray", currentPray);
-                                startActivity(cp);
-                                finish();
-                            }
-                        }, 10000);
-                    }
-                }
+//              } else {
+//                    repeate++;
+//                    if (repeate <= 1) {
+//                        // CheckRakaa();
+//                        waitTimer(currentPray);
+//                    } else {
+//                        new Handler().postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                if (VolIsMute) stopSilentMode();
+//                                Intent cp = new Intent(getApplicationContext(), Read.class);
+//                                cp.setAction("b");
+//                                cp.putExtra("pray", currentPray);
+//                                startActivity(cp);
+//                                finish();
+//                            }
+//                        }, 10000);
+//                    }
+//                }
             }
 
         }.start();
