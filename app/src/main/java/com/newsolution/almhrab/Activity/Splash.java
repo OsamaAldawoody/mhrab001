@@ -1,6 +1,6 @@
 package com.newsolution.almhrab.Activity;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AppOpsManager;
@@ -12,9 +12,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Color;
-import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -22,18 +20,13 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.newsolution.almhrab.AppConfig;
-import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.DBOperations;
 import com.newsolution.almhrab.GlobalVars;
 import com.newsolution.almhrab.Helpar.Utils;
@@ -51,13 +44,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class Splash extends Activity {
 
-    private Location myLocation = null;
-    private boolean gpsPrayTimes = false;
     private Activity activity;
     public String cfajr, csunrise, cdhohr, casr, cmaghrib, cisha;
     public String nextPray;
@@ -65,13 +57,10 @@ public class Splash extends Activity {
     double day = today.get(Calendar.DAY_OF_MONTH);
     double month = today.get(Calendar.MONTH) + 1;
     double year = today.get(Calendar.YEAR);
-    private double long1, long2;
-    private double lat1, lat2;
     DBOperations DBO;
     private int cityId;
     GlobalVars globalVariable;
     String[] prayTimes;
-    String[] iqamaTimes;
     private SharedPreferences sp;
     private SharedPreferences.Editor spedit;
     public static String LOG_TAG = "//*mhrab";
@@ -79,10 +68,6 @@ public class Splash extends Activity {
     private ProgressBar progress;
     private String[] mosquSettings;
     private OptionSiteClass settings;
-    private boolean isFajrEkamaIsTime, isDhuhrEkamaIsTime, isAlShrouqEkamaIsTime, ishaEkamaIsTime, isMagribEkamaIsTime, isAsrEkamaIsTime;
-    public static long ConnectTimeout = 30000;
-    public static long ExitedTime = 10;
-    public static long ScanRunTime = 60000;
     private int REQUEST_PERMISSIONS = 100;
     private NotificationManager notificationManager;
 
@@ -96,37 +81,19 @@ public class Splash extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         progress = (ProgressBar) findViewById(R.id.progress);
-        progress.getIndeterminateDrawable().setColorFilter(Color.parseColor("#B57C2F"), android.graphics.PorterDuff.Mode.MULTIPLY);
+        progress.getIndeterminateDrawable().setColorFilter(Color.parseColor("#B57C2F"),
+                android.graphics.PorterDuff.Mode.MULTIPLY);
         activity = this;
         DBO = new DBOperations(this);
         DBO.createDatabase();
-        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
+        sp = getSharedPreferences(Utils.PREFS, MODE_PRIVATE);
         spedit = sp.edit();
         globalVariable = (GlobalVars) getApplicationContext();
         final Calendar c = Calendar.getInstance();
         c.set(Calendar.SECOND, 0);
-//        String dms = Hijri_Cal_Tools.calDMS(58.51861);
-        Log.i("dms :close_screen ", sp.getBoolean("close_screen",false)+"");
-        Log.i("dms :close_voice ", sp.getBoolean("close_voice",false)+"");
-        int width = getWindowManager().getDefaultDisplay().getWidth();
-        int height = getWindowManager().getDefaultDisplay().getHeight();
-//        Toast.makeText(activity, "width= " + width + " : height= " + height, Toast.LENGTH_LONG).show();
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        String deviceId = getDeviceId(getApplicationContext());//tManager.getDeviceId();
-        spedit.putString(AppConst.DeviceNo, deviceId).commit();
-//        Log.i("/////* DeviceNo", deviceId);
-//        startApp();
-//        settingPermission();
-//        askForPermissions(new String[]{
-//                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
-//                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
-//                        android.Manifest.permission.READ_PHONE_STATE,
-//                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-////                        android.Manifest.permission.WRITE_SETTINGS,
-////                        android.Manifest.permission.DISABLE_KEYGUARD,
-//                        android.Manifest.permission.READ_EXTERNAL_STORAGE
-//                },
-//                REQUEST_PERMISSIONS);
+        String deviceId = getDeviceId(getApplicationContext());
+        spedit.putString(Utils.DeviceNo, deviceId).commit();
 
     }
 
@@ -157,8 +124,6 @@ public class Splash extends Activity {
                         android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         android.Manifest.permission.CAMERA,
                         android.Manifest.permission.RECORD_AUDIO,
-//                        android.Manifest.permission.WRITE_SETTINGS,
-//                        android.Manifest.permission.DISABLE_KEYGUARD,
                         android.Manifest.permission.READ_EXTERNAL_STORAGE
                 },
                 REQUEST_PERMISSIONS);
@@ -173,7 +138,6 @@ public class Splash extends Activity {
             }
         }
         if (!permissionsToRequest.isEmpty()) {
-//          Log.i("***9 "," "+permissionsToRequest.size());
             ActivityCompat.requestPermissions(activity,
                     permissionsToRequest.toArray(new String[permissionsToRequest.size()]), requestCode);
         } else isBluetooth4();
@@ -206,8 +170,6 @@ public class Splash extends Activity {
                                                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                                                 android.Manifest.permission.CAMERA,
                                                 android.Manifest.permission.RECORD_AUDIO,
-//                                                android.Manifest.permission.WRITE_SETTINGS,
-//                                                android.Manifest.permission.DISABLE_KEYGUARD,
                                                 android.Manifest.permission.READ_EXTERNAL_STORAGE
                                         },
                                         REQUEST_PERMISSIONS);
@@ -226,12 +188,12 @@ public class Splash extends Activity {
 
     public void isBluetooth4() {
         if (!getPackageManager().hasSystemFeature("android.hardware.bluetooth_le")) {
-            Toast.makeText(this, getString(R.string.lan_6), 0).show();
+            Toast.makeText(this, getString(R.string.lan_6), Toast.LENGTH_SHORT).show();
             finish();
         }
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
-            Toast.makeText(this, getString(R.string.lan_7), 0).show();
+            Toast.makeText(this, getString(R.string.lan_7), Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -249,10 +211,9 @@ public class Splash extends Activity {
             return;
         }
         if (resultCode == -1) {
-//            Toast.makeText(this, getString(R.string.lan_8), 0).show();
             isNotificationEnabled();
         } else if (resultCode == 0) {
-            Toast.makeText(this, getString(R.string.lan_9), 0).show();
+            Toast.makeText(this, getString(R.string.lan_9), Toast.LENGTH_SHORT).show();
             finish();
         } else if (requestCode == 200 && resultCode == RESULT_OK) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
@@ -268,8 +229,6 @@ public class Splash extends Activity {
                                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                                 android.Manifest.permission.CAMERA,
                                 android.Manifest.permission.RECORD_AUDIO,
-//                        android.Manifest.permission.WRITE_SETTINGS,
-//                        android.Manifest.permission.DISABLE_KEYGUARD,
                                 android.Manifest.permission.READ_EXTERNAL_STORAGE
                         },
                         REQUEST_PERMISSIONS);
@@ -281,20 +240,15 @@ public class Splash extends Activity {
                             android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                             android.Manifest.permission.CAMERA,
                             android.Manifest.permission.RECORD_AUDIO,
-//                        android.Manifest.permission.WRITE_SETTINGS,
-//                        android.Manifest.permission.DISABLE_KEYGUARD,
                             android.Manifest.permission.READ_EXTERNAL_STORAGE
                     },
                     REQUEST_PERMISSIONS);
         } else if (requestCode == 200 && resultCode == RESULT_CANCELED) {
             finish();
         } else if (requestCode == 300 && resultCode == RESULT_CANCELED) {
-//            Utils.showCustomToast(activity,"request permission");
             finish();
         }
-//        else {
-//            Utils.showCustomToast(activity,"request code: "+requestCode+" : "+resultCode);
-//        }
+
     }
 
     public void isNotificationEnabled() {
@@ -315,8 +269,6 @@ public class Splash extends Activity {
                 }
             } catch (Exception e) {
             }
-//        } else if (Build.VERSION.SDK_INT <= 17) {
-//            result = false;
         } else {
             result = true;
         }
@@ -364,7 +316,6 @@ public class Splash extends Activity {
             @Override
             public void run() {
                 Intent intent;
-//                spedit.putInt("masjedId",-1).commit();
                 if (sp.getInt("masjedId", -1) != -1) {
                     getPrayerTimes();
                 } else {
@@ -392,31 +343,24 @@ public class Splash extends Activity {
         spedit.putString("iisha", mosquSettings[5]).commit();
         spedit.putInt("hijriDiff", settings.getDateHijri()).commit();
 
-        //        lat1 = city.getLat1();
-//        lat2 = city.getLat2();
-//        long1 = city.getLon1();
-//        long2 = city.getLon2();
         DBO.close();
-        lat1 = sp.getInt("lat1", city.getLat1());
-        lat2 = sp.getInt("lat2", city.getLat2());
-        long1 = sp.getInt("long1", city.getLon1());
-        long2 = sp.getInt("long2", city.getLon2());
+        double lat1 = sp.getInt("lat1", city.getLat1());
+        double lat2 = sp.getInt("lat2", city.getLat2());
+        double long1 = sp.getInt("long1", city.getLon1());
+        double long2 = sp.getInt("long2", city.getLon2());
         Hijri_Cal_Tools.calculation((double) lat1, (double) lat2, (double) long1, (double) long2,
                 year, month, day);
-//        Log.i("init()", lat1 + "," + lat2 + "," + long1 + "," + long2 + "," + year + "," +
-//                month + "," + day);
+
         cfajr = Hijri_Cal_Tools.getFajer();
         csunrise = Hijri_Cal_Tools.getSunRise();
         cdhohr = Hijri_Cal_Tools.getDhuhur();
         casr = Hijri_Cal_Tools.getAsar();
         cmaghrib = Hijri_Cal_Tools.getMagrib();
         cisha = Hijri_Cal_Tools.getIshaa();
-        String[] prayTimes = {cfajr, csunrise, cdhohr, casr, cmaghrib, cisha};
-        return prayTimes;
+        return new String[]{cfajr, csunrise, cdhohr, casr, cmaghrib, cisha};
     }
 
     public void getPrayerTimes() {
-        Context context;
         boolean isName = false;
         try {
             cityId = sp.getInt("cityId", 1);
@@ -435,12 +379,12 @@ public class Splash extends Activity {
                 spedit.putString("asr", casr).commit();
                 spedit.putString("magrib", cmaghrib).commit();
                 spedit.putString("isha", cisha).commit();
-                isFajrEkamaIsTime = settings.isFajrEkamaIsTime();
-                isAlShrouqEkamaIsTime = settings.isAlShrouqEkamaIsTime();
-                isDhuhrEkamaIsTime = settings.isDhuhrEkamaIsTime();
-                isAsrEkamaIsTime = settings.isAsrEkamaIsTime();
-                isMagribEkamaIsTime = settings.isMagribEkamaIsTime();
-                ishaEkamaIsTime = settings.ishaEkamaIsTime();
+                boolean isFajrEkamaIsTime = settings.isFajrEkamaIsTime();
+                boolean isAlShrouqEkamaIsTime = settings.isAlShrouqEkamaIsTime();
+                boolean isDhuhrEkamaIsTime = settings.isDhuhrEkamaIsTime();
+                boolean isAsrEkamaIsTime = settings.isAsrEkamaIsTime();
+                boolean isMagribEkamaIsTime = settings.isMagribEkamaIsTime();
+                boolean ishaEkamaIsTime = settings.ishaEkamaIsTime();
                 if (isFajrEkamaIsTime)
                     spedit.putString("iqsuh", settings.getFajrEkamaTime() + ":00").commit();
                 else
@@ -449,7 +393,6 @@ public class Splash extends Activity {
                     spedit.putString("iqsun", settings.getAlShrouqEkamaTime() + ":00").commit();
                 else
                     spedit.putString("iqsun", Utils.getIqama(csunrise, mosquSettings[1])).commit();
-//                spedit.putString("iqsun", csunrise).commit();
                 if (isDhuhrEkamaIsTime)
                     spedit.putString("iqduh", settings.getDhuhrEkamaTime() + ":00").commit();
                 else
@@ -469,12 +412,6 @@ public class Splash extends Activity {
 
                 spedit.putInt("hijriDiff", settings.getDateHijri()).commit();
 
-//                Log.e("+++", prayTimes[1]  +" : "+sp.getString("iqsun",""));
-//                Log.e("+++", prayTimes[2]  +" : "+sp.getString("iqduh",""));
-//                Log.e("+++", prayTimes[3]  +" : "+sp.getString("iqasr",""));
-//                Log.e("+++", prayTimes[4]  +" : "+sp.getString("iamagrib",""));
-//                Log.e("+++", prayTimes[5]  +" : "+sp.getString("iqisha",""));
-
             }
             if (isName) {
                 globalVariable.setPrayTimes(cfajr, csunrise, cdhohr, casr, cmaghrib, cisha);
@@ -486,10 +423,8 @@ public class Splash extends Activity {
                         finish();
                     } else if (sp.getInt("priority", 0) == 1) {
                         if (Utils.isOnline(activity)) {
-//                        spedit.putInt("priority", 1).commit();
                             getPriority();
                         } else {
-//                        Log.e("eeeee+", " 7775555");
                             Utils.showAlert(activity, getString(R.string.alert), getString(R.string.alert_msg));
                         }
                     } else if (sp.getInt("priority", 0) == 2) {
@@ -504,7 +439,6 @@ public class Splash extends Activity {
                                         dialogInterface.dismiss();
                                     }
                                 }).create().show();
-//                        Utils.showAlert(activity, getString(R.string.alert), getString(R.string.alert_msg));
                     }
                 } else {
                     getPriority();
@@ -517,13 +451,11 @@ public class Splash extends Activity {
     }
 
     private void getPriority() {
-//        Log.e("+++", sp.getInt("priority", 0) + " 5555");
         if (sp.getInt("priority", 0) == 0) {
             Intent intent = new Intent(activity, ChoosePriority.class);
             startActivity(intent);
             finish();
         } else if (sp.getInt("priority", 0) == 1) {
-//            Log.e("+++", sp.getInt("priority", 0) + " 777");
             syncData();
         } else {
             Intent intent = new Intent(activity, MainActivity.class);
@@ -544,29 +476,29 @@ public class Splash extends Activity {
         String ncisha = cisha.replace("ص", "").replace("م", "");
         try {
             String t1 = ncfajr + ":00";
-            Date time1 = new SimpleDateFormat("HH:mm:ss").parse(t1);
+            Date time1 = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH).parse(t1);
             Calendar c1 = Calendar.getInstance();
             c1.setTime(time1);
 
             String t2 = ncdhohr + ":00";
-            Date time2 = new SimpleDateFormat("HH:mm:ss").parse(t2);
+            Date time2 = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH).parse(t2);
             Calendar c2 = Calendar.getInstance();
             c2.setTime(time2);
             String t3 = ncasr + ":00";
-            Date time3 = new SimpleDateFormat("HH:mm:ss").parse(t3);
+            Date time3 = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH).parse(t3);
             Calendar c3 = Calendar.getInstance();
             c3.setTime(time3);
             String t4 = ncmaghrib + ":00";
-            Date time4 = new SimpleDateFormat("HH:mm:ss").parse(t4);
+            Date time4 = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH).parse(t4);
             Calendar c4 = Calendar.getInstance();
             c4.setTime(time4);
             String t5 = ncisha + ":00";
-            Date time5 = new SimpleDateFormat("HH:mm:ss").parse(t5);
+            Date time5 = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH).parse(t5);
             Calendar c5 = Calendar.getInstance();
             c5.setTime(time5);
 
             String timeNow = hour + ":" + minute + ":00";
-            Date d = new SimpleDateFormat("HH:mm:ss").parse(timeNow);
+            Date d = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH).parse(timeNow);
             Calendar cnow = Calendar.getInstance();
             cnow.setTime(d);
             Date now = cnow.getTime();
@@ -591,10 +523,6 @@ public class Splash extends Activity {
                 nextPray = "fajr";
                 spedit.putString("next_adan", "fajr").commit();
             }
-//            Log.i("///*now", now + "");
-//            Log.i("///*nextPray", nextPray + "");
-//            Toast.makeText(activity, "now: "+now+"", Toast.LENGTH_LONG).show();
-//            Toast.makeText(activity, nextPray+" 999", Toast.LENGTH_LONG).show();
             globalVariable.setNextPray(nextPray);
         } catch (Exception e) {
             e.printStackTrace();
@@ -604,11 +532,9 @@ public class Splash extends Activity {
 
     private void syncData() {
         if (Utils.isOnline(activity)) {
-//            Log.e("+++", sp.getInt("priority", 0) + " 8888");
             progress.setVisibility(View.VISIBLE);
             new UpdateAsync().execute();
         } else {
-//            Log.e("+++ //", sp.getInt("priority", 0) + " 9999");
             progress.setVisibility(View.INVISIBLE);
             Utils.showCustomToast(activity, getString(R.string.no_internet));
             startActivity(new Intent(activity, ChoosePriority.class));
@@ -618,37 +544,23 @@ public class Splash extends Activity {
 
     }
 
+    @SuppressLint("StaticFieldLeak")
     private class UpdateAsync extends AsyncTask<Void, Void, Boolean> {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            long wsstartDate = new Date().getTime();
-//            Log.d(LOG_TAG, "Sync service Start : " + wsstartDate);
             int id = sp.getInt("masjedId", -1);
             String GUID = sp.getString("masjedGUID", "");
-            String lastUpdate = sp.getString(AppConst.LASTUPDATE, "20170701000000");
-            String DeviceNo = sp.getString(AppConst.DeviceNo, "");
+            String lastUpdate = sp.getString(Utils.LASTUPDATE, "20170701000000");
+            String DeviceNo = sp.getString(Utils.DeviceNo, "");
             JSONObject result = WS.syncData(id, GUID, lastUpdate, DeviceNo);
 
-            Log.i(LOG_TAG, "Sync service Return data : " + result.toString());
-            long wsendDate = new Date().getTime();
-//            Log.d(LOG_TAG, "Sync service End : " + wsendDate);
-//            Log.d(LOG_TAG, "Sync service WS elapsed : " + (wsendDate - wsstartDate));
-            if (result != null){
-            if ( result.optBoolean("Status")) {
-                serverTime = result.optLong("ResultNumber ") + "";//Utils.getFormattedCurrentDate();
-                long dbstartDate = new Date().getTime();
-                Log.d(LOG_TAG, "Sync service DB Insert start : " + dbstartDate);
+            if (result != null) {
+                if (result.optBoolean("Status")) {
+                    serverTime = result.optLong("ResultNumber ") + "";
 
-                if (WS.InsertDataToDB(1, activity, result)) {
-                    long dbendDate = new Date().getTime();
-                    Log.d(LOG_TAG, "Sync service DB Insert end : " + dbendDate);
-                    Log.d(LOG_TAG, "Sync service DB elapsed : " + (dbendDate - dbstartDate));
-
-                    Log.d(LOG_TAG, "Sync service Insert Data Success");
-                    return true;
-                }
-            }else   return false;
+                    return WS.InsertDataToDB(1, activity, result);
+                } else return false;
             }
             return false;
         }
@@ -658,9 +570,8 @@ public class Splash extends Activity {
             super.onPostExecute(status);
             Log.d(LOG_TAG, "End of Sync Service");
             if (status) {
-                spedit.putString(AppConst.LASTUPDATE, serverTime).commit();
+                spedit.putString(Utils.LASTUPDATE, serverTime).commit();
                 spedit.putBoolean("isFirstLunch", false).commit();
-                Log.d(LOG_TAG, "End of Sync Service Successfuly");
                 go();
 
             } else if (sp.getBoolean("isFirstLunch", true)) {
@@ -678,13 +589,4 @@ public class Splash extends Activity {
         startActivity(intent);
         finish();
     }
-
-
-    /*
-    * String json = "{\"name\":\"bar\"}";
- Foo fooObject= realm.createObjectFromJson(Foo.class, json);
- //or
- String jsonArray = "[{\"name\":\"bar\"},{\"name\":\"baz\"}]";
- RealmList<Foo> fooObjects = realm.createAllFromJson(Foo.class, jsonArray);
- */
 }

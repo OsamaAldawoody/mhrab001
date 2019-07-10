@@ -1,32 +1,30 @@
 package com.newsolution.almhrab.Activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.newsolution.almhrab.Adapters.AzkarAdapter;
-import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.DBOperations;
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Interface.OnLoadedFinished;
@@ -35,8 +33,7 @@ import com.newsolution.almhrab.R;
 import com.newsolution.almhrab.WebServices.WS;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Locale;
+
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -44,45 +41,41 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class AzkarAct extends Activity {
     Activity activity;
     private RecyclerView rv_ads;
-    private ImageView iv_addAds;
     AzkarAdapter adapter;
     ArrayList<Azkar> adsArrayList;
     private DBOperations DBO;
-    private ImageView iv_back;
     private int id;
-    private LinearLayout parentPanel;
     private SharedPreferences sp;
-    private SharedPreferences.Editor spedit;
-    private Button btn_add, btn_cancel;
-    private EditText  ed_count, ed_sort, ed_newsText;
-    private TextView tv_tittle;
+    private EditText ed_count, ed_sort, ed_newsText;
     private Dialog dialog;
     private ProgressDialog pd;
-    private CheckBox cb_isha,cb_magrib,cb_asr,cb_duhr,cb_fajer;
+    private CheckBox cb_isha, cb_magrib, cb_asr, cb_duhr, cb_fajer;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/neosansarabic.ttf")//battar  droidkufi_regular droid_sans_arabic neosansarabic //mcs_shafa_normal
+                .setDefaultFontPath("fonts/neosansarabic.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
         activity = this;
-        setColor();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setColor();
+        }
         setContentView(R.layout.activity_news);
         DBO = new DBOperations(this);
         DBO.createDatabase();
-        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
-        spedit = sp.edit();
-        tv_tittle = (TextView) findViewById(R.id.tv_tittle);
+        sp = getSharedPreferences(Utils.PREFS, MODE_PRIVATE);
+        SharedPreferences.Editor spedit = sp.edit();
+        TextView tv_tittle = (TextView) findViewById(R.id.tv_tittle);
+        ImageView iv_addAds = (ImageView) findViewById(R.id.iv_addAds);
+        ImageView iv_back = (ImageView) findViewById(R.id.iv_back);
         tv_tittle.setText(getString(R.string.azkar));
-        rv_ads = (RecyclerView) findViewById(R.id.rv_ads);
-        iv_addAds = (ImageView) findViewById(R.id.iv_addAds);
-//        iv_addAds.setVisibility(View.GONE);
-        iv_back = (ImageView) findViewById(R.id.iv_back);
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -95,12 +88,14 @@ public class AzkarAct extends Activity {
                 addAzkarDialog(null);
             }
         });
+
+        rv_ads = (RecyclerView) findViewById(R.id.rv_ads);
         rv_ads.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
+
         DBO.open();
         adsArrayList = DBO.getAzkar();
-        Log.i("+++ads", adsArrayList.size() + "  ");
         DBO.close();
         rv_ads.setLayoutManager(llm);
         setAdapter(adsArrayList);
@@ -116,22 +111,23 @@ public class AzkarAct extends Activity {
             @Override
             public void onItemClick(View view, int position) {
                 addAzkarDialog(list.get(position));
-//                editAdvDialog(position);
             }
         });
         rv_ads.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setColor() {
         try {
             Window window = activity.getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(ContextCompat.getColor(activity, R.color.back_text));
-        }catch (NoSuchMethodError ex){
+        } catch (NoSuchMethodError ex) {
             ex.printStackTrace();
-        } }
+        }
+    }
 
     private void addUpdateAzkar(final int action, final Azkar object) {
         if (Utils.isOnline(activity)) {
@@ -142,9 +138,6 @@ public class AzkarAct extends Activity {
             WS.addUpdateAzkar(activity, object, new OnLoadedFinished() {
                 @Override
                 public void onSuccess(String response) {
-//                    Utils.showCustomToast(activity, activity.getString(R.string.success_add));
-//                    addToLocalDB(object);
-//                    if (dialog.isShowing()) dialog.dismiss();
                     getAzkars(action);
                 }
 
@@ -165,7 +158,7 @@ public class AzkarAct extends Activity {
         WS.getAllAzkar(activity, new OnLoadedFinished() {
             @Override
             public void onSuccess(String response) {
-                if (action==0)
+                if (action == 0)
                     Utils.showCustomToast(activity, getString(R.string.success_add));
                 else Utils.showCustomToast(activity, getString(R.string.success_edit));
                 updateAdapter();
@@ -239,7 +232,7 @@ public class AzkarAct extends Activity {
             } else {
                 Utils.showCustomToast(activity, getString(R.string.no_internet));
             }
-        }else {
+        } else {
             DBO.open();
             DBO.delAzkar(adsArrayList.get(pos).getId());
             adsArrayList.remove(pos);
@@ -250,28 +243,26 @@ public class AzkarAct extends Activity {
     }
 
     private void addAzkarDialog(final Azkar objectAzkar) {
-        View view = getLayoutInflater().inflate(R.layout.add_edit_azkar, null);
-        parentPanel = (LinearLayout) view.findViewById(R.id.mainLayout);
+        @SuppressLint("InflateParams") View view = getLayoutInflater().inflate(R.layout.add_edit_azkar, null);
         ed_newsText = (EditText) view.findViewById(R.id.ed_newsText);
         ed_count = (EditText) view.findViewById(R.id.ed_count);
         ed_sort = (EditText) view.findViewById(R.id.ed_sort);
-        btn_add = (Button) view.findViewById(R.id.btn_add);
+        Button btn_add = (Button) view.findViewById(R.id.btn_add);
         cb_fajer = (CheckBox) view.findViewById(R.id.cb_fajer);
         cb_duhr = (CheckBox) view.findViewById(R.id.cb_duhr);
         cb_asr = (CheckBox) view.findViewById(R.id.cb_asr);
         cb_magrib = (CheckBox) view.findViewById(R.id.cb_magrib);
         cb_isha = (CheckBox) view.findViewById(R.id.cb_isha);
-        btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
-        // tv_tittle=(TextView)view.findViewById(R.id.tv_tittle);
+        Button btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
         dialog = new Dialog(this);
 
         dialog.setTitle(getString(R.string.add_azkar));
-        if (objectAzkar==null){
+        if (objectAzkar == null) {
             btn_add.setText(getString(R.string.add));
-        }else {
+        } else {
             btn_add.setText(getString(R.string.edit_adv));
-            ed_sort.setText(objectAzkar.getSort()+"");
-            ed_count.setText(objectAzkar.getCount()+"");
+            ed_sort.setText(String.valueOf(objectAzkar.getSort()));
+            ed_count.setText(String.valueOf(objectAzkar.getCount()));
             cb_fajer.setChecked(objectAzkar.isFajr());
             cb_duhr.setChecked(objectAzkar.isDhuhr());
             cb_asr.setChecked(objectAzkar.isAsr());
@@ -298,12 +289,14 @@ public class AzkarAct extends Activity {
                     int id = Utils.random9();
                     DBO.open();
                     if (sp.getInt("priority", 0) == 1) {
-                        id =0;
-                    }else {  if (DBO.getAzkarById(id)) {
-                        id = Utils.random9();
-                    }}
+                        id = 0;
+                    } else {
+                        if (DBO.getAzkarById(id)) {
+                            id = Utils.random9();
+                        }
+                    }
                     DBO.close();
-                    object.setId((objectAzkar==null)?id:objectAzkar.getId());
+                    object.setId((objectAzkar == null) ? id : objectAzkar.getId());
                     object.setTextAzakar(ed_newsText.getText().toString().trim());
                     object.setSort(Integer.parseInt(ed_sort.getText().toString()));
                     object.setCount(Integer.parseInt(ed_count.getText().toString()));
@@ -315,7 +308,7 @@ public class AzkarAct extends Activity {
                     object.setDeleted(false);
                     object.setUpdatedAt(Utils.getFormattedCurrentDate());
                     if (sp.getInt("priority", 0) == 1) {
-                        addUpdateAzkar((objectAzkar==null)?0:1,object);
+                        addUpdateAzkar((objectAzkar == null) ? 0 : 1, object);
                     } else {
                         pd = new ProgressDialog(activity);
                         pd.setMessage(getString(R.string.wait));
@@ -348,28 +341,11 @@ public class AzkarAct extends Activity {
 
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         Window window = dialog.getWindow();
-        lp.copyFrom(window.getAttributes());
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        window.setAttributes(lp);
-    }
-
-    public void showDatePicker(final EditText v) {
-        final Calendar c = Calendar.getInstance(new Locale("en"));
-        int mYear = c.get(Calendar.YEAR);
-        int mMonth = c.get(Calendar.MONTH);
-        int mDay = c.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog datePickerDialog = new DatePickerDialog(activity,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year,
-                                          int monthOfYear, int dayOfMonth) {
-                        String Date = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
-//                        String Date = getMonthForInt((monthOfYear )) + "-" + String.valueOf(year)+ "-" +dayOfMonth ;//31-DEC-15
-                        v.setText(Date);
-
-                    }
-                }, mYear, mMonth, mDay);
-        datePickerDialog.show();
+        if (window != null) {
+            lp.copyFrom(window.getAttributes());
+            window.setAttributes(lp);
+        }
     }
 }

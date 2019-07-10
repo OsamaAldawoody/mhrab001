@@ -18,7 +18,6 @@ import java.util.ArrayList;
  */
 public class LocationAdapter extends ArrayAdapter<City> {
 
-        // Initialise custom font, for example:
 
         ArrayList<City> items;
         public LocationAdapter(Context context, ArrayList<City> objects) {
@@ -32,7 +31,6 @@ public class LocationAdapter extends ArrayAdapter<City> {
         return items.size();
     }
 
-    // Affects default (closed) state of the spinner
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             TextView view = (TextView) super.getView(position, convertView, parent);
@@ -43,16 +41,6 @@ public class LocationAdapter extends ArrayAdapter<City> {
             return view;
         }
 
-//        // Affects opened state of the spinner
-//        @Override
-//        public View getDropDownView(int position, View convertView, ViewGroup parent) {
-//            TextView view = (TextView) super.getDropDownView(position, convertView, parent);
-//            view.setTypeface(font);
-//            view.setTextColor(Color.BLACK);
-//            view.setTextSize(14);
-//            // view.setBackgroundColor(getContext().getResources().getColor(R.color.primary_color_dark));
-//            view.setText(items.get(position).getName());
-//            return view;
-//        }
+
     }
 

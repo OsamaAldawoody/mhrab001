@@ -1,5 +1,6 @@
 package com.newsolution.almhrab.WebServices;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 
@@ -23,6 +24,7 @@ import java.util.Map;
  */
 public class UserOperations {
 
+    @SuppressLint("StaticFieldLeak")
     private static UserOperations instance;
     private Context context;
 
@@ -36,35 +38,7 @@ public class UserOperations {
         return instance;
     }
 
-    public void sendRequest(final String url, final OnLoadFinished onLoadFinished) {
-        UserOperationsProcessor.getInstance(context).sendRequest(url, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject o) {
-                        try {
-                            onLoadFinished.onSuccess(o);
-                        } catch (JSONException e) {
-                            onLoadFinished.onFail("An error occurred, try again");
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        onLoadFinished.onFail(" This operation failed, Please try again");
-                    }
-                });
-    }
-
-    public void sendGetRequest(String url, OnLoadedFinished listener) {
-        sendRequest(Request.Method.GET, url, null, listener);
-    }
-
-    public void sendPutRequest(String url, Map<String, String> params, OnLoadedFinished listener) {
-        sendRequest(Request.Method.PUT, url, params, listener);
-    }
-
-    public void sendPostRequest(String url, Map<String, String> params, OnLoadedFinished listener) {
+    void sendPostRequest(String url, Map<String, String> params, OnLoadedFinished listener) {
         sendRequest(Request.Method.POST, url, params, listener);
     }
 

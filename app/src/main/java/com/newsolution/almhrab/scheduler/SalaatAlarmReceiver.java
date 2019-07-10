@@ -1,8 +1,6 @@
 package com.newsolution.almhrab.scheduler;
 
-import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,69 +8,41 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Handler;
-import android.os.PowerManager;
-import android.provider.Settings;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.WindowManager;
-import android.widget.Toast;
 
 
-import com.newsolution.almhrab.Activity.ChoosePriority;
+
 import com.newsolution.almhrab.Activity.ClosePhone;
-import com.newsolution.almhrab.Activity.MainActivity;
-import com.newsolution.almhrab.Activity.RingAlarmActivity;
-import com.newsolution.almhrab.Activity.Splash;
-import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.Constants;
 import com.newsolution.almhrab.Helpar.Utils;
-import com.newsolution.almhrab.Helpar.WakeLocker;
-import com.newsolution.almhrab.Hijri_Cal_Tools;
-import com.newsolution.almhrab.Model.City;
-import com.newsolution.almhrab.Model.OptionSiteClass;
+
 import com.newsolution.almhrab.R;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import static com.newsolution.almhrab.AppConstants.Constants.ALARM_ID;
-import static com.newsolution.almhrab.AppConstants.Constants.EXTRA_PRAYER_NAME;
-import static com.newsolution.almhrab.AppConstants.Constants.EXTRA_PRAYER_TIME;
-import static com.newsolution.almhrab.AppConstants.Constants.FIVE_MINUTES;
 
-/**
- * When the alarm fires, this WakefulBroadcastReceiver receives the broadcast Intent
- * and then starts the IntentService {@code SampleSchedulingService} to do some work.
- */
+
 public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Constants {
     private SharedPreferences sp;
     private SharedPreferences.Editor spedit;
 
-    // The app's AlarmManager, which provides access to the system alarm services.
     private AlarmManager alarmMgr;
-    private AlarmManager iqamaAlarmMgr;
-    // The pending intent that is triggered when the alarm fires.
     private PendingIntent alarmIntent;
-    private PendingIntent iqamaAlarmIntent;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        sp = context.getSharedPreferences(AppConst.PREFS, context.MODE_PRIVATE);
+        sp = context.getSharedPreferences(Utils.PREFS, context.MODE_PRIVATE);
         spedit = sp.edit();
         // BEGIN_INCLUDE(alarm_onreceive)
         /* 
@@ -133,7 +103,7 @@ public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Con
      * @param context
      */
     public void setAlarm(Context context) {
-        sp = context.getSharedPreferences(AppConst.PREFS, context.MODE_PRIVATE);
+        sp = context.getSharedPreferences(Utils.PREFS, context.MODE_PRIVATE);
         spedit = sp.edit();
         alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, SalaatAlarmReceiver.class);
@@ -143,55 +113,9 @@ public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Con
         // Set the alarm's trigger time to 8:30 a.m.
 
         int alarmIndex = 0;
-//        Log.e("**//sleep", sp.getBoolean("sleep", false)+"");
         Calendar then = Calendar.getInstance(TimeZone.getDefault());
         then.setTimeInMillis(System.currentTimeMillis());
-//        KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Activity.KEYGUARD_SERVICE);
-//        KeyguardManager.KeyguardLock lock = keyguardManager.newKeyguardLock(context.KEYGUARD_SERVICE);
-//        if (sp.getBoolean("sleep", false)) {
-////            String sleepOn = Utils.addToTime(sp.getString("isha", ""), sp.getInt("sleepOn", 0) + "");
-////            String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), sp.getInt("sleepOff", 0) + "");
-//            try {
-//                Date mToday = new Date();
-//                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-//                DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-//
-//                String curTime = sdf.format(mToday);
-//                Date cur = sdf.parse(curTime);
-//
-//                String curTime1 = df.format(cur);
-//                Date userDate = df.parse(curTime1);
-//                Log.e("**//curTime", curTime);
-//                Log.e("**//cur", cur.toString());
-//
-//                Date start = df.parse(sp.getString("startTime", userDate + ""));
-//                Date end = df.parse(sp.getString("endTime", userDate + ""));
-//                Log.e("**//curTime", userDate.toString());
-//                Log.e("**//start", start.toString());
-//                Log.e("**//end", end.toString());
-//                if ((userDate.after(start) || userDate.equals(start)) && userDate.before(end)) {
-//                    Log.e("**//result", "falls between start and end , go to screen 1 ");
-//                    lock.reenableKeyguard();
-//                    Settings.System.putInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, 1000);
-////                    return;
-//                } else {
-//                    WakeLocker.acquire(context);
-//                    WakeLocker.release();
-//                    lock.disableKeyguard();
-//                    Settings.System.putInt(context.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, (3 * 24 * 60 * 60 * 1000));
-//                    Log.e("**//result", "does not fall between start and end , go to screen 2 ");
-//                }
-//            } catch (ParseException e) {
-//
-//                e.printStackTrace();
-//            }
-//        } else {
-//            WakeLocker.acquire(context);
-//            WakeLocker.release();
-//            lock.disableKeyguard();
-//        }
 
-//    LinkedHashMap<String, String> prayerTimes = PrayTime.getPrayerTimes(context, alarmIndex, lat, lng, PrayTime.TIME_24);
         Map<String, String> prayerTimes = new HashMap<>();
         prayerTimes.put(context.getString(R.string.pn1), sp.getString("suh", ""));
         prayerTimes.put(context.getString(R.string.pn2), sp.getString("sun", ""));
@@ -219,13 +143,11 @@ public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Con
             if (!isAlarmEnabledForPrayer(context, prayer)) {
                 continue;
             }
-//           Log.i("999", isAlarmEnabledForPrayer(context, prayer) + "");
             then = getCalendarFromPrayerTime(then, prayerTimes.get(prayer));
 
             if (then.after(now)) {//وقت الصلاة بعد الان
                 // this is the alarm to set
                 nameOfPrayerFound = prayer;
-                Log.i("999", nameOfPrayerFound);
                 nextAlarmFound = true;
                 break;
             }
@@ -242,11 +164,8 @@ public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Con
                 if (then.before(now)) {//وقت الصلاة قبل الان
                     // this is the next day.
                     nameOfPrayerFound = prayer;
-                    Log.i("999", " 88" + nameOfPrayerFound);
                     nextAlarmFound = true;
                     then.add(Calendar.DAY_OF_YEAR, 1);
-//                    updatePrayTimes(then.YEAR, then.MONTH, then.DAY_OF_MONTH);
-//                    Log.i("999887: ",then.DAY_OF_YEAR+"");
                     break;
                 }
             }
@@ -352,29 +271,6 @@ public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Con
                 PackageManager.DONT_KILL_APP);
     }
 
-    public void cancelIqamaAlarm(Context context) {
-        // If the alarm has been set, cancel it.
-        if (iqamaAlarmMgr == null) {
-            iqamaAlarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        }
-        if (iqamaAlarmMgr != null) {
-            if (iqamaAlarmIntent == null) {
-                Intent intent = new Intent(context, SalaatAlarmReceiver.class);
-                iqamaAlarmIntent = PendingIntent.getBroadcast(context, IQAMA_ALARM_ID, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-            }
-            iqamaAlarmMgr.cancel(iqamaAlarmIntent);
-        }
-
-        // Disable {@code SampleBootReceiver} so that it doesn't automatically restart the
-        // alarm when the device is rebooted.
-        ComponentName receiver = new ComponentName(context, SalaatBootReceiver.class);
-        PackageManager pm = context.getPackageManager();
-
-        pm.setComponentEnabledSetting(receiver,
-                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                PackageManager.DONT_KILL_APP);
-    }
-    // END_INCLUDE(cancel_alarm)
 
     private int getPrayerIndexFromName(Context context, String prayerName) {
 //    String name = prayerName.toLowerCase();
@@ -446,28 +342,6 @@ public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Con
         return prayerName;
     }
 
-    private String getIqamaNameFromIndex(Context context, int iqamaIndex) {
-        String iqamaName = null;
-        switch (iqamaIndex) {
-            case 0:
-                iqamaName = context.getString(R.string.qn1);
-                break;
-            case 1:
-                iqamaName = context.getString(R.string.qn3);
-                break;
-            case 2:
-                iqamaName = context.getString(R.string.qn4);
-                break;
-            case 3:
-                iqamaName = context.getString(R.string.qn5);
-                break;
-            case 4:
-                iqamaName = context.getString(R.string.qn6);
-                break;
-        }
-        return iqamaName;
-    }
-
     private boolean isAlarmEnabledForPrayer(Context context, String prayer) {
         if (isFriday()) {
             if (prayer.equalsIgnoreCase(context.getString(R.string.pn3)))
@@ -492,58 +366,7 @@ public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Con
             return true;
         } else return false;
     }
-//    private boolean isFriday() {
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", new Locale("en"));
-//        Calendar cal = getNextFridayDate();
-//        String friday = dateFormat.format(cal.getTime());
-//        Calendar calendar=Calendar.getInstance();
-//        String today = dateFormat.format(calendar.getTime());
-//                Log.e("****/ friday/", " " + friday);
-//                Log.e("****/ today/", " " + today);
-//        if (today.equals(friday)){
-//            return  true;
-//        }
-//        return  false;
-//    }
-//    private static Calendar getNextFridayDate() {
-//        Calendar calendar = Calendar.getInstance();
-//        int weekday = calendar.get(Calendar.DAY_OF_WEEK);
-//        int days = Calendar.FRIDAY - weekday;
-//        if (days <= 0) {
-//            days += 7;
-//        }
-//        calendar.add(Calendar.DAY_OF_YEAR, days);
-//        return calendar;
-//    }
-//    private boolean isAlarmEnabledForPrayer(Context context, String prayer) {
-//        if (prayer.equalsIgnoreCase(context.getString(R.string.pn2)) || prayer.equalsIgnoreCase(context.getString(R.string.qn2))) {
-//            return false;
-//        }
-//        if (prayer.equalsIgnoreCase(context.getString(R.string.pn1)))
-//            return sp.getBoolean("notif_onF", true);
-//        if ( prayer.equalsIgnoreCase(context.getString(R.string.pn3)))
-//            return sp.getBoolean("notif_onD", true);
-//        if (prayer.equalsIgnoreCase(context.getString(R.string.pn4)))
-//            return sp.getBoolean("notif_onA", true);
-//        if ( prayer.equalsIgnoreCase(context.getString(R.string.pn5)))
-//            return sp.getBoolean("notif_onM", true);
-//        if ( prayer.equalsIgnoreCase(context.getString(R.string.pn6)))
-//            return sp.getBoolean("notif_onI", true);
 
-//         else if (prayer.equalsIgnoreCase(context.getString(R.string.qn1)))
-//            return sp.getBoolean("iqama_notif_onF", true);
-//        if (prayer.equalsIgnoreCase(context.getString(R.string.qn3)))
-//            return sp.getBoolean("iqama_notif_onD", true);
-//        if ( prayer.equalsIgnoreCase(context.getString(R.string.qn4)))
-//            return sp.getBoolean("iqama_notif_onA", true);
-//        if ( prayer.equalsIgnoreCase(context.getString(R.string.qn5)))
-//            return sp.getBoolean("iqama_notif_onM", true);
-//        if ( prayer.equalsIgnoreCase(context.getString(R.string.qn6)))
-//            return sp.getBoolean("iqama_notif_onI", true);
-//         else if (prayer.equalsIgnoreCase(context.getString(R.string.pa))) {
-//            return sp.getBoolean("close_screen", true);
-//        } else return true;
-//    }
 
     private Calendar getCalendarFromPrayerTime(Calendar cal, String prayerTime) {
         if (!TextUtils.isEmpty(prayerTime)) {
@@ -559,26 +382,6 @@ public class SalaatAlarmReceiver extends WakefulBroadcastReceiver implements Con
         }
         return cal;
 
-    }
-
-    private String[] calculate(int year, int month, int day) {
-
-        int lat1 = sp.getInt("lat1", -1);
-        int lat2 = sp.getInt("lat2", -1);
-        int long1 = sp.getInt("long1", -1);
-        int long2 = sp.getInt("long2", -1);
-        Hijri_Cal_Tools.calculation((double) lat1, (double) lat2, (double) long1, (double) long2,
-                year, month, day);
-//        Log.i("init()", lat1 + "," + lat2 + "," + long1 + "," + long2 + "," + year + "," +
-//                month + "," + day);
-        String cfajr = Hijri_Cal_Tools.getFajer();
-        String csunrise = Hijri_Cal_Tools.getSunRise();
-        String cdhohr = Hijri_Cal_Tools.getDhuhur();
-        String casr = Hijri_Cal_Tools.getAsar();
-        String cmaghrib = Hijri_Cal_Tools.getMagrib();
-        String cisha = Hijri_Cal_Tools.getIshaa();
-        String[] prayTimes = {cfajr, csunrise, cdhohr, casr, cmaghrib, cisha};
-        return prayTimes;
     }
 
 }

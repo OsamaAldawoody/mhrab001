@@ -4,7 +4,17 @@ package com.newsolution.almhrab.Model;
  * Created by hp on 9/17/2017.
  */
 
-public  class City {
+public class City {
+    private int id;
+    private String Name;
+    private String NameEn;
+    private int lon1;
+    private int lon2;
+    private int lat1;
+    private int lat2;
+    private String updatedAt;
+    private int isDeleted;
+
     public City() {
     }
 
@@ -104,13 +114,5 @@ public  class City {
         this.isDeleted = isDeleted;
     }
 
-    int id;
-    String Name;
-    String NameEn;
-    int lon1;
-    int lon2;
-    int lat1;
-    int lat2;
-    String updatedAt;
-    int isDeleted;
+
 }

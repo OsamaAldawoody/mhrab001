@@ -1,27 +1,21 @@
 package com.newsolution.almhrab.Activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.AudioManager;
-import android.net.Uri;
-import android.os.Build;
+
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.speech.SpeechRecognizer;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.TextPaint;
 import android.text.TextUtils;
-import android.text.method.ScrollingMovementMethod;
 import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.View;
@@ -31,28 +25,18 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.DBOperations;
 import com.newsolution.almhrab.AppConstants.DateHigri;
 import com.newsolution.almhrab.GlobalVars;
 import com.newsolution.almhrab.Helpar.PlaySound;
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Hijri_Cal_Tools;
-import com.newsolution.almhrab.Interface.OnLoadedFinished;
 import com.newsolution.almhrab.Model.City;
-import com.newsolution.almhrab.Model.News;
 import com.newsolution.almhrab.Model.OptionSiteClass;
 import com.newsolution.almhrab.R;
-import com.newsolution.almhrab.Weather.JSONWeatherParser;
-import com.newsolution.almhrab.Weather.Weather;
-import com.newsolution.almhrab.WebServices.UserOperations;
+
 import com.newsolution.almhrab.scheduler.SalaatAlarmReceiver;
 
-import org.json.JSONException;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -68,42 +52,19 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class Read extends Activity {
-    private RelativeLayout layout;
-    private ImageView soundStop;
-    private LinearLayout clock;
-    private TextView Time;
-    private LinearLayout percent;
-    private TextView outMasgedasged;
-    private TextView inMasged;
-    private TextView addingToCart;
-    private TextView dateToday;
-    private View readViewGray;
-    private LinearLayout dates;
-    private LinearLayout times;
-    private TextView mgrbTitle;
-    LinearLayout llText, llFajer, llSun, llDuhr, llAsr, llMagrib, llIsha;
-    private LinearLayout llSunrise;
-    private TextView redAfter;
-    private TextView read1;
-    private TextView read2;
-    private RelativeLayout span;
-    private RelativeLayout rlMasjedTitle;
-    private View view;
-    private TextView advText;
 
+    LinearLayout llText, llFajer, llSun, llDuhr, llAsr, llMagrib, llIsha;
 
     private double long1, long2;
     private double lat1, lat2;
     private SharedPreferences sp;
     private GlobalVars gv;
     private SharedPreferences.Editor spedit;
-    private AppCompatImageView ivMasjedLogo;
-    private ImageView ivMenu;
-    TextView date1, time, amPm, fajrIqama, fajrTitle, shroqTitle,
+    TextView date1, time, amPm, fajrTitle, shroqTitle,
             duhrTitle, asrTitle, ishaTitle,
             in_masgedTemp, out_masgedTemp, tvHumidity, tvMasjedName;
-    private TextView magribIqama, maghribTime, asrIqama, asrTime, ishaIqama, ishaTime,
-            maghribTitle, dhuhrTime, fajrTime, sunriseIqama, duhrIqama, sunriseTime;
+    private TextView maghribTime, asrTime, ishaTime,
+            maghribTitle, dhuhrTime, fajrTime, sunriseTime;
     public String cfajr = "";
     public String icfajr = "";
     String csunrise = "";
@@ -127,41 +88,30 @@ public class Read extends Activity {
     String[] mosquSettings;
     String[] prayTimes;
     private Timer timer;
-    private TimerTask async;
     private int cityId;
     private DBOperations DBO;
-    private Timer timerPray;
-    private TimerTask asyncPray;
     private Activity activity;
     private City city;
     private boolean isFajrEkamaIsTime, isAlShrouqEkamaIsTime, isDhuhrEkamaIsTime, ishaEkamaIsTime, isMagribEkamaIsTime, isAsrEkamaIsTime;
     private OptionSiteClass settings;
     private ImageView sound_stop;
-    private String iqamatime = "";
     private int action = 1;
     private String pray;
     private int period;
     private CountDownTimer countDownTimer;
-    private Timer timerAzkar;
-    private TimerTask asyncAzkar;
     private Runnable run;
     private Handler handler;
-    public static String FONT_NAME_EB = "fonts/droid_kufi_bold.ttf";
-    private TextView tvIn, tvOut, tvHum;
     public static String droidkufiBold = "fonts/droid_kufi_bold.ttf";
     public static String droidkufi = "fonts/droidkufi_regular.ttf";
     private Typeface font;
     private Typeface fontDroidkufi;
     public static String roboto = "fonts/roboto.ttf";
     private Typeface fontRoboto;
-    public static String comfort = "fonts/comfort.ttf";
-    private Typeface fontComfort;
     private LinearLayout llAzkar;
     TextView azkarDisc1, azkarDisc2, azkarDisc3;
     private RelativeLayout rlNews;
     private LinearLayout rlTitle;
-    private AppCompatImageView ivLogo;
-    private TextView tvName;
+    private String TAG = Read.class.getSimpleName();
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -170,46 +120,40 @@ public class Read extends Activity {
 
     private int dispCurrentPray() {
         pray = getIntent().getStringExtra("pray");
-//        TextView PrayName = (TextView) findViewById(R.id.show_time);
         if (pray.equals("fajr")) {
-//            PrayName.setText(getResources().getString(R.string.p1));
             action = 1;
         }
         if (pray.equals("dhuhr")) {
-//            PrayName.setText(getResources().getString(R.string.p2));
             action = 2;
         }
         if (pray.equals("asr")) {
-//            PrayName.setText(getResources().getString(R.string.p3));
             action = 3;
         }
         if (pray.equals("magrib")) {
-//            PrayName.setText(getResources().getString(R.string.p4));
             action = 4;
         }
         if (pray.equals("isha")) {
-//            PrayName.setText(getResources().getString(R.string.p5));
             action = 5;
         }
         return action;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/neosansarabic.ttf")//battar  droidkufi_regular droid_sans_arabic neosansarabic //mcs_shafa_normal
+                .setDefaultFontPath("fonts/neosansarabic.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
         setContentView(R.layout.activity_read);
         activity = this;
         font = Typeface.createFromAsset(getAssets(), droidkufiBold);
-        fontComfort = Typeface.createFromAsset(getAssets(), comfort);
         fontRoboto = Typeface.createFromAsset(getAssets(), roboto);
         fontDroidkufi = Typeface.createFromAsset(getAssets(), droidkufi);
         DBO = new DBOperations(this);
         gv = (GlobalVars) getApplicationContext();
-        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
+        sp = getSharedPreferences(Utils.PREFS, MODE_PRIVATE);
         spedit = sp.edit();
         cityId = sp.getInt("cityId", 1);
         DBO.open();
@@ -227,7 +171,7 @@ public class Read extends Activity {
         gv.setMousqeSettings(settings.getFajrEkama() + "", settings.getAlShrouqEkama() + "", settings.getDhuhrEkama() + ""
                 , settings.getAsrEkama() + "", settings.getMagribEkama() + "", settings.getIshaEkama() + "");
         mosquSettings = gv.getMousqeSettings();
-        Log.i("shor: ", settings.getAlShrouqEkama() + " time");
+
         spedit.putString("ifajer", settings.getFajrEkama() + "").commit();
         spedit.putString("ishroq", settings.getAlShrouqEkama() + "").commit();
         spedit.putString("idhor", settings.getDhuhrEkama() + "").commit();
@@ -236,7 +180,6 @@ public class Read extends Activity {
         spedit.putString("iisha", settings.getIshaEkama() + "").commit();
 
 
-//        prayTimes=  gv.getPrayTimes();
         cfajr = sp.getString("suh", "");
         csunrise = sp.getString("sun", "");
         cdhohr = sp.getString("duh", "");
@@ -251,17 +194,11 @@ public class Read extends Activity {
         icmaghrib = sp.getString("iqmagrib", "");
         icisha = sp.getString("iqisha", "");
 
-        ///// start service /////
         SalaatAlarmReceiver sar = new SalaatAlarmReceiver();
         sar.cancelAlarm(this);
         sar.setAlarm(this);
-        ///// start service /////
-//       try {
-//           AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-////           mAudioManager.setStreamSolo(AudioManager.STREAM_MUSIC, true);
-//           mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-//       }catch(Exception e){}
-       stopSilentMode();
+
+        stopSilentMode();
         buildUI();
         showNews();
         if (TextUtils.isEmpty(sp.getString("TempIn", ""))) {
@@ -281,24 +218,22 @@ public class Read extends Activity {
         }
 
         screenVisibilty();
-//        Log.i("voice action: ", getIntent().getAction());
         try {
             checkTime();
-        } catch (Exception e) {
-            Log.e("checkTime Error : ", "" + e);
+        } catch (Exception ignored) {
         }
     }
+
     private void stopSilentMode() {
-        Log.i("stop Silent: ","truer");
         try {
             AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
-//            } else {
-//                mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-//            }
-            mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+            int maxVolume;
+            if (mAudioManager != null) {
+                maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, AudioManager.FX_KEY_CLICK);
+                mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+            }
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -313,7 +248,7 @@ public class Read extends Activity {
         time = (TextView) findViewById(R.id.Time);
         time.setTypeface(fontRoboto);
         date1.setTypeface(font);
-        DateFormat timeNow = new SimpleDateFormat("hh:mmss", new Locale("en"));
+        DateFormat timeNow = new SimpleDateFormat("hh:mmss", Locale.ENGLISH);
         amPm = (TextView) findViewById(R.id.amPm);
         amPm.setVisibility(View.VISIBLE);
         DateFormat ampm = new SimpleDateFormat("a", new Locale("ar"));
@@ -341,23 +276,26 @@ public class Read extends Activity {
 
     private void screenVisibilty() {
         pray = getIntent().getStringExtra("pray");
-        if (pray.equals("fajr")) {
-            period = settings.getFajrAzkarTimer();
-        } else if (pray.equals("dhuhr")) {
-            period = settings.getDhuhrAzkarTimer();
-        } else if (pray.equals("asr")) {
-            period = settings.getAsrAzkarTimer();
-        } else if (pray.equals("magrib")) {
-            period = settings.getMagribAzkarTimer();
-        } else if (pray.equals("isha")) {
-            period = settings.getIshaAzkarTimer();
+        switch (pray) {
+            case "fajr":
+                period = settings.getFajrAzkarTimer();
+                break;
+            case "dhuhr":
+                period = settings.getDhuhrAzkarTimer();
+                break;
+            case "asr":
+                period = settings.getAsrAzkarTimer();
+                break;
+            case "magrib":
+                period = settings.getMagribAzkarTimer();
+                break;
+            case "isha":
+                period = settings.getIshaAzkarTimer();
+                break;
         }
-        Log.i("voice", "countDownTimer: period" + period);
 
         countDownTimer = new CountDownTimer(period * (60 * 1000), 1000) {
-
             public void onTick(long millisUntilFinished) {
-                Log.i("voice", "millisUntilFinished" + millisUntilFinished / 1000);
             }
 
             public void onFinish() {
@@ -378,7 +316,7 @@ public class Read extends Activity {
         azkarDisc2.setTypeface(fontDroidkufi);
         azkarDisc3.setTypeface(fontDroidkufi);
 
-        rlMasjedTitle = (RelativeLayout) findViewById(R.id.rlMasjedTitle);
+        RelativeLayout rlMasjedTitle = (RelativeLayout) findViewById(R.id.rlMasjedTitle);
         rlMasjedTitle.setVisibility(View.GONE);
         llText = (LinearLayout) findViewById(R.id.llText);
         llFajer = (LinearLayout) findViewById(R.id.llFajer);
@@ -388,28 +326,27 @@ public class Read extends Activity {
         llMagrib = (LinearLayout) findViewById(R.id.llMagrib);
         llIsha = (LinearLayout) findViewById(R.id.llIsha);
         tvMasjedName = (TextView) findViewById(R.id.tvMasjedName);
-        ivMasjedLogo = (AppCompatImageView) findViewById(R.id.ivMasjedLogo);
+        AppCompatImageView ivMasjedLogo = (AppCompatImageView) findViewById(R.id.ivMasjedLogo);
         rlNews = (RelativeLayout) findViewById(R.id.rlNews);
         rlTitle = (LinearLayout) findViewById(R.id.rlTitle);
-        ivLogo = (AppCompatImageView) findViewById(R.id.ivLogo);
+        AppCompatImageView ivLogo = (AppCompatImageView) findViewById(R.id.ivLogo);
         ivLogo.setVisibility(View.GONE);
-        tvName = (TextView) findViewById(R.id.tvName);
+        TextView tvName = (TextView) findViewById(R.id.tvName);
         tvHumidity = (TextView) findViewById(R.id.tvHumidity);
         out_masgedTemp = (TextView) findViewById(R.id.outMasgedasged);
         in_masgedTemp = (TextView) findViewById(R.id.in_masged);
-        ivMenu = (ImageView) findViewById(R.id.ivMenu);
+        ImageView ivMenu = (ImageView) findViewById(R.id.ivMenu);
         ivMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dispMenu(view);
             }
         });
-        tvIn = (TextView) findViewById(R.id.tvIn);
-        tvOut = (TextView) findViewById(R.id.tvOut);
-        tvHum = (TextView) findViewById(R.id.tvHum);
-        tvHum.setText("الرطوبة الخارجية");
+        TextView tvIn = (TextView) findViewById(R.id.tvIn);
+        TextView tvOut = (TextView) findViewById(R.id.tvOut);
+        TextView tvHum = (TextView) findViewById(R.id.tvHum);
+        tvHum.setText(getString(R.string.outHum));
         tvMasjedName.setTypeface(fontDroidkufi);
-//        tvName.setTypeface(fontDroidkufi);
         tvIn.setTypeface(fontDroidkufi);
         tvOut.setTypeface(fontDroidkufi);
         tvHum.setTypeface(fontDroidkufi);
@@ -417,8 +354,8 @@ public class Read extends Activity {
         tvMasjedName.setText(sp.getString("masjedName", ""));
         tvName.setText(sp.getString("masjedName", ""));
         if (!TextUtils.isEmpty(sp.getString("masjedImg", ""))) {
-            setImage(sp.getString("masjedImg", ""), ivLogo);
-            setImage(sp.getString("masjedImg", ""), ivMasjedLogo);
+            Utils.setImage(activity, sp.getString("masjedImg", ""), ivLogo);
+            Utils.setImage(activity, sp.getString("masjedImg", ""), ivMasjedLogo);
         } else {
             ivMasjedLogo.setImageResource(R.drawable.ic_mosque);
             ivLogo.setImageResource(R.drawable.ic_mosque);
@@ -468,8 +405,7 @@ public class Read extends Activity {
             }
         });
         timer = new Timer();
-        //try {
-        async = new TimerTask() {
+        TimerTask async = new TimerTask() {
             @Override
             public void run() {
                 try {
@@ -484,7 +420,7 @@ public class Read extends Activity {
                         }
                     });
                 } catch (NullPointerException e) {
-                    Log.i("exception", "" + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         };
@@ -507,7 +443,6 @@ public class Read extends Activity {
 
 
         } catch (Exception e) {
-            Log.e("//// ", e.getMessage());
             e.printStackTrace();
             cfajr = "00:00";
             csunrise = "00:00";
@@ -524,11 +459,7 @@ public class Read extends Activity {
             ishaTime.setText((cisha));
 
             setIqamaTime();
-//            Toast.makeText(MainActivity.this, "" + getString(R.string.warnning), Toast.LENGTH_SHORT).show();
-//            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-//            finish();
         }
-//}
         try {
             SimpleDateFormat spd = new SimpleDateFormat("HH:mm:ss", new Locale("en"));
             String t1 = cfajr + ":00";
@@ -576,10 +507,6 @@ public class Read extends Activity {
             Date time55 = spd.parse(t55);
             Calendar c55 = Calendar.getInstance();
             c55.setTime(time55);
-//            String t6 = csunrise + ":00";
-//            Date time6 = new SimpleDateFormat("HH:mm:ss").parse(t6);
-//            Calendar c6 = Calendar.getInstance();
-//            c6.setTime(time6);
 
 
             String timeNow = hour + ":" + minute + ":00";
@@ -589,32 +516,12 @@ public class Read extends Activity {
             Date now = cnow.getTime();
 
             Calendar calendar = Calendar.getInstance();
-            Date dtoday = calendar.getTime();
             calendar.add(Calendar.DAY_OF_YEAR, 1);
-            Date dtomorrow = calendar.getTime();
-
-            DateFormat cdate = new SimpleDateFormat("MM/dd/yyyy", new Locale("en"));
-            DateFormat ctime = new SimpleDateFormat("HH:mm:ss", new Locale("en"));
-
-            String dayAsString = cdate.format(dtoday);
-            String tomorrowAsString = cdate.format(dtomorrow);
-            String timeAsString = ctime.format(Calendar.getInstance().getTime());
-            String npt = "";
 
             clearAllStyles();
-//            mosquetxt = (TextView) findViewById(R.id.nextPrayTime);
-//            String cur = mosquetxt.getText().toString();
 
-
-//            if(cur.equals("00:01")){
-//                Intent cp = new Intent (getApplicationContext(), CurruntPray.class);
-//                startActivity(cp);
-//            }
-
-//            if (sp.getString("suh", "").toLowerCase().equals(timeAsString.toLowerCase())) {
             if ((c1.getTime().before(now) || c1.getTime().equals(now))
                     && ((c11.getTime().after(now)) || c11.getTime().equals(now))) {
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t11));
                 setBackground(llFajer);
                 setTextColor(fajrTitle);
                 setTextColor(fajrTime);
@@ -622,7 +529,6 @@ public class Read extends Activity {
             }
             if ((c2.getTime().before(now) || c2.getTime().equals(now))
                     && ((c22.getTime().after(now)) || c22.getTime().equals(now))) {
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t22));
                 setBackground(llDuhr);
                 setTextColor(duhrTitle);
                 setTextColor(dhuhrTime);
@@ -631,7 +537,6 @@ public class Read extends Activity {
             }
             if ((c3.getTime().before(now) || c3.getTime().equals(now))
                     && ((c33.getTime().after(now)) || c33.getTime().equals(now))) {
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t33));
                 setBackground(llAsr);
                 setTextColor(asrTime);
                 setTextColor(asrTitle);
@@ -639,7 +544,6 @@ public class Read extends Activity {
             }
             if ((c4.getTime().before(now) || c4.getTime().equals(now))
                     && ((c44.getTime().after(now)) || c44.getTime().equals(now))) {
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t44));
                 setBackground(llMagrib);
                 setTextColor(maghribTime);
                 setTextColor(maghribTitle);
@@ -647,7 +551,6 @@ public class Read extends Activity {
             }
             if ((c5.getTime().before(now) || c5.getTime().equals(now))
                     && ((c55.getTime().after(now)) || c55.getTime().equals(now))) {
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t55));
                 setBackground(llIsha);
                 setTextColor(ishaTime);
                 setTextColor(ishaTitle);
@@ -657,44 +560,37 @@ public class Read extends Activity {
 
             final GlobalVars globalVariable = (GlobalVars) getApplicationContext();
             if (now.before(c1.getTime())) {
-//                spedit.putString("phoneAlert", Utils.setPhoneAlert(icfajr,settings.getPhoneShowAlertsBeforEkama()+"")).commit();
                 nextPray = "fajr";
                 globalVariable.setNextPray("fajr");
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t1)));
                 setBackground(llFajer);
                 setTextColor(fajrTitle);
                 setTextColor(fajrTime);
             } else if (now.after(c1.getTime()) && now.before(c2.getTime())) {
                 nextPray = "dhuhr";
                 globalVariable.setNextPray("dhuhr");
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t2)));
                 setBackground(llDuhr);
                 setTextColor(duhrTitle);
                 setTextColor(dhuhrTime);
             } else if (now.after(c2.getTime()) && now.before(c3.getTime())) {
                 nextPray = "asr";
                 globalVariable.setNextPray("asr");
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t3)));
                 setBackground(llAsr);
                 setTextColor(asrTime);
                 setTextColor(asrTitle);
             } else if (now.after(c3.getTime()) && now.before(c4.getTime())) {
                 nextPray = "maghrib";
                 globalVariable.setNextPray("maghrib");
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t4)));
                 setBackground(llMagrib);
                 setTextColor(maghribTime);
                 setTextColor(maghribTitle);
             } else if (now.after(c4.getTime()) && now.before(c5.getTime())) {
                 nextPray = "isha";
                 globalVariable.setNextPray("isha");
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t5)));//getIqama(t5)
                 setBackground(llIsha);
                 setTextColor(ishaTime);
                 setTextColor(ishaTitle);
             } else if (now.after(c5.getTime())) {
                 globalVariable.setNextPray("fajr");
-                npt = getDifTime(dayAsString, timeAsString, tomorrowAsString, "" + (getIqama(t1)));
                 setBackground(llFajer);
                 setTextColor(fajrTitle);
                 setTextColor(fajrTime);
@@ -720,7 +616,6 @@ public class Read extends Activity {
             spedit.putString("iqsun", settings.getAlShrouqEkamaTime() + ":00").commit();
         else
             spedit.putString("iqsun", Utils.getIqama(csunrise, mosquSettings[1])).commit();
-//                spedit.putString("iqsun", csunrise).commit();
         if (isDhuhrEkamaIsTime)
             spedit.putString("iqduh", settings.getDhuhrEkamaTime() + ":00").commit();
         else
@@ -748,82 +643,10 @@ public class Read extends Activity {
         icisha = sp.getString("iqisha", "");
     }
 
-    private String getDifTime(String cdate, String ctime, String tdate, String ttime) {
-        String val = "";
-        String dateStart = cdate + " " + ctime;
-        String dateStop = tdate + " " + ttime;
-
-        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss", new Locale("en"));
-        Date d1 = null;
-        Date d2 = null;
-        try {
-            d1 = format.parse(dateStart);
-            d2 = format.parse(dateStop);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        long diff = d2.getTime() - d1.getTime();
-        long diffSeconds = diff / 1000 % 60;
-        long diffMinutes = diff / (60 * 1000) % 60;
-        long diffHours = diff / (60 * 60 * 1000) % 24;
-        long diffDays = diff / (24 * 60 * 60 * 1000);
-
-        String fh = "";
-        String fm = "";
-//        if (diffHours < 10) {
-////            fh = "0" + diffHours;
-//            fh = "" + diffHours;
-//        } else {
-        fh = "" + diffHours;
-//        }
-//        if (diffMinutes < 10) {
-//            fm = "" + diffMinutes;
-////            fm = "0" + diffMinutes;
-//        } else {
-        fm = "" + diffMinutes;
-//        }
-        if (diffHours > 0)
-            val = fh + " " + getString(R.string.h) + " و " + fm + " " + getString(R.string.m);
-        else
-            val = fm + " " + getString(R.string.m);
-
-        return val;
-    }
-
     private String convTime(String time) {
-        String intime[] = time.split(":");
+        String[] intime = time.split(":");
         int hour = Integer.parseInt(intime[0]);
         int minutes = Integer.parseInt(intime[1]);
-        String disTime;
-        String h;
-        String m;
-//        if (hour < 12) {
-//            if (hour < 10) {
-//                h = "0" + hour;
-//            } else {
-//                h = "" + hour;
-//            }
-//            if (minutes < 10) {
-//                m = "0" + minutes;
-//            } else {
-//                m = "" + minutes;
-//            }
-//            disTime = h + ":" + m + " " + getString(R.string.AM);
-//        } else  {
-//            hour = hour - 12;
-//            if (hour < 10) {
-//                h = "0" + hour;
-//            } else {
-//                h = "" + hour;
-//            }
-//            if (minutes < 10) {
-//                m = "0" + minutes;
-//            } else {
-//                m = "" + minutes;
-//            }
-        //            disTime = h + ":" + m + " " + getString(R.string.PM);
-
         if (minutes == 60) {
             minutes = 0;
             hour++;
@@ -831,50 +654,30 @@ public class Read extends Activity {
         String timeHHMM;
         if (hour < 10) {
             if (minutes < 10) {
-                timeHHMM = "" + String.valueOf(hour) + ":0" + String.valueOf(minutes);
+                timeHHMM = "" + hour + ":0" + minutes;
             } else {
-                timeHHMM = "" + String.valueOf(hour) + ":" + String.valueOf(minutes);
+                timeHHMM = "" + hour + ":" + minutes;
             }
-            return timeHHMM;//+ "ص";
+            return timeHHMM;
         } else if (hour > 12) {
             hour = hour - 12;
             if (minutes < 10) {
-                timeHHMM = "" + String.valueOf(hour) + ":0" + String.valueOf(minutes);
+                timeHHMM = "" + hour + ":0" + minutes;
             } else {
-                timeHHMM = "" + String.valueOf(hour) + ":" + String.valueOf(minutes);
+                timeHHMM = "" + hour + ":" + minutes;
             }
-            return timeHHMM;//+ "م";
+            return timeHHMM;
         } else {
             if (minutes < 10) {
-                timeHHMM = String.valueOf(hour) + ":0" + String.valueOf(minutes);
+                timeHHMM = hour + ":0" + minutes;
             } else {
-                timeHHMM = String.valueOf(hour) + ":" + String.valueOf(minutes);
+                timeHHMM = hour + ":" + minutes;
             }
             if (hour == 12) {
-                return timeHHMM;// + "م";
+                return timeHHMM;
             }
-            return timeHHMM;// + "ص";
+            return timeHHMM;
         }
-
-//        return timeHHMM;
-        //  return time;
-    }
-
-    private String getIqama(String time) {
-//       time=time.replace("ص","").replace("م","");
-        String intime[] = time.split(":");
-        int hour = Integer.parseInt(intime[0]);
-        int minutes = Integer.parseInt(intime[1]);
-        int h = hour;
-        long m = minutes + Long.parseLong("00");//getIqamaTime()
-
-        if (m > 59) {
-            m = m - 60;
-            h++;
-        }
-        String Iqama = h + ":" + m + ":00";
-        // Log.e("pray + iqama = ", time + " -- " + Iqama);
-        return Iqama;
     }
 
 
@@ -883,17 +686,16 @@ public class Read extends Activity {
         int advSize = advs.size();
         Log.e("advSize : = ", "" + advSize);
         int start = 0;
-        String advText = "";
+        StringBuilder advText = new StringBuilder();
 
         while (start < advSize) {
             String advers = advs.get(start);
-            String adv[] = advers.substring(1, advers.length() - 1).split(",");
-            advText += "    " + adv[0];
+            String[] adv = advers.substring(1, advers.length() - 1).split(",");
+            advText.append("    ").append(adv[0]);
             start++;
         }
         advTitle = (TextView) findViewById(R.id.advText);
-        advTitle.setText(padText(advText, advTitle.getPaint(), advTitle.getWidth()));
-//        advTitle.setText(advText);
+        advTitle.setText(Utils.padText(advText.toString(), advTitle.getPaint(), advTitle.getWidth()));
         advTitle.setTypeface(fontDroidkufi);
         advTitle.setSelected(true);
 
@@ -907,30 +709,13 @@ public class Read extends Activity {
         if (matNumCur >= matSize) {
             matNumCur = 0;
         }
-        String material1 = "", material2 = "";//, material3 = "";
-//        for (int i=0;i<matSize;i++){
-//            material1 = azkar.get(i);
-//           i++;
-//            if (i<matSize)
-//            material2 = azkar.get(i);
-//            i++;
-//            if (i<matSize)
-//                material3 = azkar.get(i);
-//
-//        }
-        Log.i("***mat: ", material1);
-//      String mat[] = material1.substring(1, material1.length() - 1).split(",");
-//      materialDisc.setMovementMethod(new ScrollingMovementMethod());
+        String material1 = "", material2 = "";
         try {
             material1 = azkar.get(matNumCur);
             matNumCur++;
             if (matNumCur < matSize) {
                 material2 = azkar.get(matNumCur);
-//               matNumCur++;
             }
-//           if (matNumCur < matSize) {
-//               material3 = azkar.get(matNumCur);
-//           }
         } catch (Exception e) {
             e.printStackTrace();
             matNumCur = 0;
@@ -946,19 +731,14 @@ public class Read extends Activity {
             azkarDisc2.setText(material2);
         } else
             azkarDisc2.setVisibility(View.GONE);
-//        if (!TextUtils.isEmpty(material3)) {
-//            azkarDisc3.setText(material3);
-//            azkarDisc3.setVisibility(View.VISIBLE);
-//        }else
-//            azkarDisc3.setVisibility(View.GONE);
 
-        /////////////////
+
         llAzkar.startAnimation(fadeIn);
         fadeIn.setDuration(1000);
         fadeIn.setFillAfter(false);
         fadeOut.setDuration(1000);
         fadeOut.setFillAfter(false);
-        ////////////////
+
         run = new Runnable() {
             @Override
             public void run() {
@@ -968,25 +748,6 @@ public class Read extends Activity {
         };
         handler = new Handler();
         handler.postDelayed(run, 30000);
-//        timerAzkar = new Timer();
-//        //try {
-//        asyncAzkar = new TimerTask() {
-//            @Override
-//            public void run() {
-//                try {
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            matNumCur++;/**/
-//                            animAzkar();
-//                        }
-//                    });
-//                } catch (NullPointerException e) {
-//                    Log.i("exception", "" + e.getMessage());
-//                }
-//            }
-//        };
-//        timerAzkar.schedule(asyncAzkar, 0, 15000);
     }
 
     @Override
@@ -1021,48 +782,37 @@ public class Read extends Activity {
         fajrTime.setTextColor(Color.parseColor("#ffffff"));
         fajrTime.setBackgroundResource(0);
         llFajer.setBackgroundResource(0);
-//        setTextSize(fajrTitle);
-//        setTextSize(fajrTime);
 
         sunriseTime.setTextColor(Color.parseColor("#ffffff"));
         sunriseTime.setBackgroundColor(0);
         llSun.setBackgroundResource(0);
         shroqTitle.setTextColor(Color.parseColor("#ffffff"));
         shroqTitle.setBackgroundResource(0);
-//        setTextSize(sunriseTime);
-//        setTextSize(shroqTitle);
+
 
         duhrTitle.setTextColor(Color.parseColor("#ffffff"));
         duhrTitle.setBackgroundColor(0);
         dhuhrTime.setTextColor(Color.parseColor("#ffffff"));
         dhuhrTime.setBackgroundResource(0);
         llDuhr.setBackgroundResource(0);
-//        setTextSize(dhuhrTime);
-//        setTextSize(duhrTitle);
 
         asrTitle.setTextColor(Color.parseColor("#ffffff"));
         asrTitle.setBackgroundColor(0);
         asrTime.setTextColor(Color.parseColor("#ffffff"));
         asrTime.setBackgroundResource(0);
         llAsr.setBackgroundResource(0);
-//        setTextSize(asrTime);
-//        setTextSize(asrTitle);
 
         maghribTitle.setTextColor(Color.parseColor("#ffffff"));
         maghribTitle.setBackgroundColor(0);
         maghribTime.setTextColor(Color.parseColor("#ffffff"));
         maghribTime.setBackgroundResource(0);
         llMagrib.setBackgroundResource(0);
-//        setTextSize(maghribTitle);
-//        setTextSize(maghribTime);
 
         ishaTitle.setTextColor(Color.parseColor("#ffffff"));
         ishaTitle.setBackgroundColor(0);
         ishaTime.setTextColor(Color.parseColor("#ffffff"));
         ishaTime.setBackgroundResource(0);
         llIsha.setBackgroundResource(0);
-//        setTextSize(ishaTitle);
-//        setTextSize(ishaTime);
     }
 
     private void setTextColor(TextView textView) {
@@ -1088,22 +838,20 @@ public class Read extends Activity {
             city = DBO.getCityById(cityId);
             settings = DBO.getSettings();
             DBO.close();
-            Log.e("//// ", "" + sp.getInt("cityId", 1));
             lat1 = sp.getInt("lat1", city.getLat1());
             lat2 = sp.getInt("lat2", city.getLat2());
             long1 = sp.getInt("long1", city.getLon1());
             long2 = sp.getInt("long2", city.getLon2());
 
-//            Calendar today = Calendar.getInstance();
             int hour = today.get(Calendar.HOUR_OF_DAY);
             int minute = today.get(Calendar.MINUTE);
             String timeNow = hour + ":" + minute + ":00";
-            Date d = new SimpleDateFormat("HH:mm:ss", new Locale("en")).parse(timeNow);
+            Date d = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH).parse(timeNow);
             Calendar cnow = Calendar.getInstance();
             cnow.setTime(d);
             Date now = cnow.getTime();
             String t5 = cisha + ":00";
-            Date time5 = new SimpleDateFormat("HH:mm:ss").parse(t5);
+            Date time5 = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH).parse(t5);
             Calendar c5 = Calendar.getInstance();
             c5.setTime(time5);
             if (now.after(c5.getTime())) {
@@ -1116,25 +864,20 @@ public class Read extends Activity {
                 month = c.get(Calendar.MONTH) + 1;
                 year = c.get(Calendar.YEAR);
             }
-        } catch (ParseException e0) {
+        } catch (ParseException ignored) {
         }
-        Hijri_Cal_Tools.calculation((double) lat1, (double) lat2, (double) long1, (double) long2,
-                year, month, day);
-        Log.e("///init()", lat1 + "," + lat2 + "," + long1 + "," + long2 + "," + year + "," +
-                month + "," + day);
+        Hijri_Cal_Tools.calculation(lat1, lat2, long1, long2, year, month, day);
+        Log.e(TAG, lat1 + "," + lat2 + "," + long1 + "," + long2 + "," + year + "," + month + "," + day);
         cfajr = Hijri_Cal_Tools.getFajer();
         csunrise = Hijri_Cal_Tools.getSunRise();
         cdhohr = Hijri_Cal_Tools.getDhuhur();
         casr = Hijri_Cal_Tools.getAsar();
         cmaghrib = Hijri_Cal_Tools.getMagrib();
         cisha = Hijri_Cal_Tools.getIshaa();
-        String[] prayTimes = {cfajr, csunrise, cdhohr, casr, cmaghrib, cisha};
-        return prayTimes;
+        return new String[]{cfajr, csunrise, cdhohr, casr, cmaghrib, cisha};
     }
 
     public void getPrayerTimes() {
-//        Toast.makeText(activity,sp.getInt("cityId",1)+"", Toast.LENGTH_SHORT).show();
-        Context context;
         try {
             prayTimes = calculate();
             if (prayTimes.length > 0) {
@@ -1165,7 +908,6 @@ public class Read extends Activity {
                     spedit.putString("iqsun", settings.getAlShrouqEkamaTime() + ":00").commit();
                 else
                     spedit.putString("iqsun", Utils.getIqama(csunrise, mosquSettings[1])).commit();
-//                spedit.putString("iqsun", csunrise).commit();
                 if (isDhuhrEkamaIsTime)
                     spedit.putString("iqduh", settings.getDhuhrEkamaTime() + ":00").commit();
                 else
@@ -1191,125 +933,13 @@ public class Read extends Activity {
                 icasr = sp.getString("iqasr", "");
                 icmaghrib = sp.getString("iqmagrib", "");
                 icisha = sp.getString("iqisha", "");
-//                Log.i("****", cdhohr);
             }
             gv.setPrayTimes(cfajr, csunrise, cdhohr, casr, cmaghrib, cisha);
-//            checkNextPray();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void checkNextPray() {
-        Calendar today = Calendar.getInstance();
-        int hour = today.get(Calendar.HOUR_OF_DAY);
-        int minute = today.get(Calendar.MINUTE);
-        try {
-            String t1 = cfajr + ":00";
-            Date time1 = new SimpleDateFormat("HH:mm:ss").parse(t1);
-            Calendar c1 = Calendar.getInstance();
-            c1.setTime(time1);
-
-            String t2 = cdhohr + ":00";
-            Date time2 = new SimpleDateFormat("HH:mm:ss").parse(t2);
-            Calendar c2 = Calendar.getInstance();
-            c2.setTime(time2);
-            String t3 = casr + ":00";
-            Date time3 = new SimpleDateFormat("HH:mm:ss").parse(t3);
-            Calendar c3 = Calendar.getInstance();
-            c3.setTime(time3);
-            String t4 = cmaghrib + ":00";
-            Date time4 = new SimpleDateFormat("HH:mm:ss").parse(t4);
-            Calendar c4 = Calendar.getInstance();
-            c4.setTime(time4);
-            String t5 = cisha + ":00";
-            Date time5 = new SimpleDateFormat("HH:mm:ss").parse(t5);
-            Calendar c5 = Calendar.getInstance();
-            c5.setTime(time5);
-
-            String timeNow = hour + ":" + minute + ":00";
-            Date d = new SimpleDateFormat("HH:mm:ss", new Locale("en")).parse(timeNow);
-            Calendar cnow = Calendar.getInstance();
-            cnow.setTime(d);
-            Date now = cnow.getTime();
-
-            if (now.before(c1.getTime())) {
-                nextPray = "fajr";
-                spedit.putString("next_adan", "fajr").commit();
-                spedit.putString("phoneAlert", Utils.setPhoneAlert(icfajr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
-            } else if (now.after(c1.getTime()) && now.before(c2.getTime())) {
-                nextPray = "dhuhr";
-                spedit.putString("phoneAlert", Utils.setPhoneAlert(icdhohr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
-                spedit.putString("next_adan", "dhuhr").commit();
-            } else if (now.after(c2.getTime()) && now.before(c3.getTime())) {
-                nextPray = "asr";
-                spedit.putString("next_adan", "asr").commit();
-                spedit.putString("phoneAlert", Utils.setPhoneAlert(icasr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
-
-            } else if (now.after(c3.getTime()) && now.before(c4.getTime())) {
-                nextPray = "magrib";
-                spedit.putString("phoneAlert", Utils.setPhoneAlert(icmaghrib, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
-                spedit.putString("next_adan", "magrib").commit();
-            } else if (now.after(c4.getTime()) && now.before(c5.getTime())) {
-                nextPray = "isha";
-                spedit.putString("phoneAlert", Utils.setPhoneAlert(icisha, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
-                spedit.putString("next_adan", "isha").commit();
-            } else if (now.after(c5.getTime())) {
-                spedit.putString("phoneAlert", Utils.setPhoneAlert(icfajr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
-                nextPray = "fajr";
-                spedit.putString("next_adan", "fajr").commit();
-            }
-            gv.setNextPray(nextPray);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public static CharSequence padText(CharSequence text, TextPaint paint, int width) {
-
-        // First measure the width of the text itself
-        Rect textbounds = new Rect();
-        paint.getTextBounds(text.toString(), 0, text.length(), textbounds);
-
-        /**
-         * check to see if it does indeed need padding to reach the target width
-         */
-        if (textbounds.width() > width) {
-            return text;
-        }
-
-    /*
-     * Measure the text of the space character (there's a bug with the
-     * 'getTextBounds() method of Paint that trims the white space, thus
-     * making it impossible to measure the width of a space without
-     * surrounding it in arbitrary characters)
-     */
-        String workaroundString = "a a";
-        Rect spacebounds = new Rect();
-        paint.getTextBounds(workaroundString, 0, workaroundString.length(), spacebounds);
-
-        Rect abounds = new Rect();
-        paint.getTextBounds(new char[]{
-                'a'
-        }, 0, 1, abounds);
-
-        float spaceWidth = spacebounds.width() - (abounds.width() * 2);
-
-    /*
-     * measure the amount of spaces needed based on the target width to fill
-     * (using Math.ceil to ensure the maximum whole number of spaces)
-     */
-        int amountOfSpacesNeeded = (int) Math.ceil((width - textbounds.width()) / spaceWidth);
-
-        // pad with spaces til the width is less than the text width
-        return amountOfSpacesNeeded > 0 ? padRight(text.toString(), text.toString().length()
-                + amountOfSpacesNeeded) : text;
-    }
-
-    public static String padRight(String s, int n) {
-        return String.format("%1$-" + n + "s", s);
-    }
 
     @Override
     public void onBackPressed() {
@@ -1320,49 +950,11 @@ public class Read extends Activity {
         super.onBackPressed();
     }
 
+    @SuppressLint("SetTextI18n")
     private void getWeather(final int action) {
         in_masgedTemp.setText(sp.getString("TempIn", "24"));
         out_masgedTemp.setText(sp.getString("TempOut", "30"));
         tvHumidity.setText(sp.getString("HumOut", "35") + "%");
-//        double latitude = lat1 + (lat2 / 60);
-//        double longitude = long1 + (long2 / 60);
-//        Log.i("555: ", latitude + " : " + longitude);
-//        String url = ("http://api.openweathermap.org/data/2.5/weather?APPID=bc420023d5d42b4f183f1c811717874f" + "&lat="
-//                + latitude
-//                + "&lon=" + longitude
-//                + "&units=metric");
-//
-//        UserOperations.getInstance(activity).sendGetRequest(url, new OnLoadedFinished() {
-//            @Override
-//            public void onSuccess(String response) {
-//                try {
-//                    Log.i("/// response: ", response);
-//
-//                    Weather weather = JSONWeatherParser.getWeather(response);
-//
-//                    String humidity = ((int) weather.currentCondition.getHumidity()) + "%";
-//                    String temp = ((int) weather.temperature.getTemp()) + "";
-//                    String temp1 = ((int) weather.temperature.getMinTemp()) + "";
-//                    if (action==0) {
-//                        in_masgedTemp.setText(temp1);
-//                        tvHumidity.setText(humidity);
-//                    }else if (action==1){
-//                        out_masgedTemp.setText(temp);
-//                        tvHumidity.setText(humidity);
-//                    }else {
-//                        in_masgedTemp.setText(temp1);
-//                        out_masgedTemp.setText(temp);
-//                        tvHumidity.setText(humidity);
-//                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            @Override
-//            public void onFail(String error) {
-//            }
-//        });
     }
 
     private void showNews() {
@@ -1381,20 +973,4 @@ public class Read extends Activity {
         }
     }
 
-    private void setImage(String masjedImg, final AppCompatImageView imageView) {
-        Glide.with(activity).load(Uri.parse(masjedImg))
-                .override(100, 100).listener(new RequestListener<Uri, GlideDrawable>() {
-            @Override
-            public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
-//                    Log.i("exce: ", e.getMessage());
-                imageView.setImageResource(R.drawable.ic_mosque);
-                return false;
-            }
-
-            @Override
-            public boolean onResourceReady(GlideDrawable resource, Uri model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                return false;
-            }
-        }).into(imageView);
-    }
 }

@@ -45,10 +45,11 @@
         android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="MissingTvBanner">
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning,MissingTvBanner">
         <activity
             android:name=".Activity.Splash"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            tools:ignore="InnerclassSeparator">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <!-- <category android:name="android.intent.category.HOME" /> -->
@@ -68,32 +69,47 @@
 
         <activity
             android:name=".Activity.MainActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            tools:ignore="InnerclassSeparator" />
         <activity
             android:name=".Activity.ClosePhone"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.Read"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.ShowPray"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.NewsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeAct" />
+            android:theme="@style/AppThemeAct"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.AzkarAct"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeAct" />
+            android:theme="@style/AppThemeAct"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.SettingsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeAct"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.ChoosePriority"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            tools:ignore="InnerclassSeparator" />
+
 
         <receiver android:name=".scheduler.SalaatAlarmReceiver" />
         <receiver
@@ -110,16 +126,6 @@
         <service
             android:name=".scheduler.SleepService"
             android:enabled="true" />
-        <!--<receiver-->
-        <!--android:name=".scheduler.SleepBroadcastReciever"-->
-        <!--android:enabled="false">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
-        <!--<action android:name="android.intent.action.TIMEZONE_CHANGED" />-->
-        <!--<action android:name="android.intent.action.TIME_SET" />-->
-        <!--<action android:name="android.intent.action.MY_PACKAGE_REPLACED" />-->
-        <!--</intent-filter>-->
-        <!--</receiver>-->
 
         <service android:name=".scheduler.SalaatSchedulingService" />
 
@@ -135,71 +141,98 @@
 
         <activity
             android:name=".Activity.Login"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.IqamaSettings"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeAct"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.NotificationSettings"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeAct"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity
-            android:name=".Activity.RingAlarmActivity"
-            android:screenOrientation="portrait" />
+            android:windowSoftInputMode="stateAlwaysHidden"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.AccountSetting"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeAct"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.AboutApp"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.ChangeTones"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeAct" />
+            android:theme="@style/AppThemeAct"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.ScanDeviceActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeAct" />
+            android:theme="@style/AppThemeAct"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.FridayActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeAct" />
+            android:theme="@style/AppThemeAct"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.PreviewLiveStreamActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeAct" />
+            android:theme="@style/AppThemeAct"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.ShowAdsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeAct" />
+            android:theme="@style/AppThemeAct"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.ViewEmamActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppThemeAct" />
+            android:theme="@style/AppThemeAct"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.EditAdsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeAct"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.AddAdsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeAct"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.VideoViewActivity"
             android:theme="@style/AppThemeAct"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"
+            tools:ignore="InnerclassSeparator" />
+
         <activity
             android:name=".Activity.AdsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeAct"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"
+            tools:ignore="InnerclassSeparator" />
+
     </application>
 
 </manifest>

@@ -9,11 +9,11 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -21,13 +21,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.util.Util;
-import com.newsolution.almhrab.AppConstants.AppConst;
-import com.newsolution.almhrab.GlobalVars;
-import com.newsolution.almhrab.Helpar.PlaySound;
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.R;
 
@@ -38,14 +33,9 @@ public class ChangeTones extends AppCompatActivity implements View.OnClickListen
     private SharedPreferences sp;
     Activity activity;
     private SharedPreferences.Editor spedit;
-    private MediaPlayer mp;
-    private Toolbar toolBar;
     private ImageView ivBack;
-    private TextView tvTittle;
-    private TextView tvChooseAthanSound;
     private AppCompatImageView ivPlayAthan;
     private Button btnSaveEdit, btnChAthanSound, btnChCloseSound;
-    private TextView tvChooseIqamaSound;
     private AppCompatImageView ivPlayClose, ivPlayIqama;
     private Button btnChIqamaSound;
     private Uri uriAthan = null;
@@ -61,29 +51,27 @@ public class ChangeTones extends AppCompatActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/neosansarabic.ttf")//battar  droidkufi_regular droid_sans_arabic neosansarabic //mcs_shafa_normal
+                .setDefaultFontPath("fonts/neosansarabic.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
         activity = this;
-        setColor();
-        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setColor();
+        }
+        sp = getSharedPreferences(Utils.PREFS, MODE_PRIVATE);
         spedit = sp.edit();
         setContentView(R.layout.activity_change_tones);
-        mp = new MediaPlayer();
+        MediaPlayer mp = new MediaPlayer();
         mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
         findViews();
     }
 
     private void findViews() {
-        toolBar = (Toolbar) findViewById(R.id.tool_bar);
         ivBack = (ImageView) findViewById(R.id.iv_back);
-        tvTittle = (TextView) findViewById(R.id.tv_tittle);
-        tvChooseAthanSound = (TextView) findViewById(R.id.tvChooseAthanSound);
         ivPlayAthan = (AppCompatImageView) findViewById(R.id.ivPlayAthan);
         btnSaveEdit = (Button) findViewById(R.id.btnSaveEdit);
         btnChCloseSound = (Button) findViewById(R.id.btnChCloseSound);
         btnChAthanSound = (Button) findViewById(R.id.btnChAthanSound);
-        tvChooseIqamaSound = (TextView) findViewById(R.id.tvChooseIqamaSound);
         ivPlayIqama = (AppCompatImageView) findViewById(R.id.ivPlayIqama);
         ivPlayClose = (AppCompatImageView) findViewById(R.id.ivPlayClose);
         btnChIqamaSound = (Button) findViewById(R.id.btnChIqamaSound);
@@ -132,25 +120,19 @@ public class ChangeTones extends AppCompatActivity implements View.OnClickListen
                 spedit.putString("uriPhone", uriPhone.toString()).commit();
             }
             if (mediaPlayer2 != null) {
-//                if (mediaPlayer2.isPlaying()) {
                 mediaPlayer2.release();
-//                }
             }
             if (mediaPlayer1 != null) {
-//                if (mediaPlayer1.isPlaying()) {
                 mediaPlayer1.release();
-//                }
             }
             if (mediaPlayer3 != null) {
-//                if (mediaPlayer1.isPlaying()) {
                 mediaPlayer3.release();
-//                }
             }
             if (uriAthan != null || uriIqama != null || uriPhone != null) {
                 Utils.showCustomToast(activity, "تم الحفظ");
             }
         } else if (v == btnChAthanSound) {
-            Intent intent;//intent_upload = new Intent();
+            Intent intent;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
@@ -159,10 +141,9 @@ public class ChangeTones extends AppCompatActivity implements View.OnClickListen
                 intent = new Intent(Intent.ACTION_GET_CONTENT);
             }
             intent.setType("audio/*");
-//            intent_upload.setAction(Intent.ACTION_GET_CONTENT);
             startActivityForResult(intent, 1);
         } else if (v == btnChCloseSound) {
-            Intent intent;//intent_upload = new Intent();
+            Intent intent;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
@@ -171,10 +152,9 @@ public class ChangeTones extends AppCompatActivity implements View.OnClickListen
                 intent = new Intent(Intent.ACTION_GET_CONTENT);
             }
             intent.setType("audio/*");
-//            intent_upload.setAction(Intent.ACTION_GET_CONTENT);
             startActivityForResult(intent, 3);
         } else if (v == btnChIqamaSound) {
-            Intent intent;//intent_upload = new Intent();
+            Intent intent;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
@@ -183,11 +163,9 @@ public class ChangeTones extends AppCompatActivity implements View.OnClickListen
                 intent = new Intent(Intent.ACTION_GET_CONTENT);
             }
             intent.setType("audio/*");
-//            intent_upload.setAction(Intent.ACTION_GET_CONTENT);
             startActivityForResult(intent, 2);
         } else if (v == ivPlayAthan) {
             try {
-//                mediaPlayer2 = MediaPlayer.create(this, uriIqama);
                 if (mediaPlayer2 != null) {
                     if (mediaPlayer2.isPlaying()) {
                         mediaPlayer2.stop();
@@ -213,7 +191,6 @@ public class ChangeTones extends AppCompatActivity implements View.OnClickListen
                         ivPlayAthan.setImageResource(R.drawable.ic_pause);
                     }
                 } else if (uriAthan != null) {
-                    Log.i("****", uriAthan + " **-");
                     mediaPlayer1 = MediaPlayer.create(this, uriAthan);
                     mediaPlayer1.start();
                     ivPlayAthan.setImageResource(R.drawable.ic_pause);
@@ -221,11 +198,10 @@ public class ChangeTones extends AppCompatActivity implements View.OnClickListen
 
             } catch (Exception exception) {
                 exception.printStackTrace();
-                Toast.makeText(activity, "الملف غير موجود, حاول مرة أخرى", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, R.string.fileNotExists, Toast.LENGTH_SHORT).show();
             }
         } else if (v == ivPlayClose) {
             try {
-//                mediaPlayer2 = MediaPlayer.create(this, uriIqama);
                 if (mediaPlayer1 != null) {
                     if (mediaPlayer1.isPlaying()) {
                         mediaPlayer1.stop();
@@ -264,7 +240,6 @@ public class ChangeTones extends AppCompatActivity implements View.OnClickListen
 
         } else if (v == ivPlayIqama) {
             try {
-//                mediaPlayer1 = MediaPlayer.create(this, uriAthan);
                 if (mediaPlayer1 != null) {
                     if (mediaPlayer1.isPlaying()) {
                         mediaPlayer1.stop();
@@ -380,14 +355,6 @@ public class ChangeTones extends AppCompatActivity implements View.OnClickListen
                     resolver.takePersistableUriPermission(uriAthan, takeFlags);
                 }
                 mediaPlayer1 = MediaPlayer.create(this, data.getData());
-//                int duration = mediaPlayer1.getDuration();
-//                mediaPlayer1.release();
-//                if ((duration / 1000) > 60) {
-//                    Toast.makeText(activity, getString(R.string.choose_audio_limit), Toast.LENGTH_LONG).show();
-//                    uriAthan = null;
-//                    ivPlayAthan.setVisibility(View.GONE);
-//                    return;
-//                }
 
                 ivPlayAthan.setVisibility(View.VISIBLE);
 
@@ -399,14 +366,6 @@ public class ChangeTones extends AppCompatActivity implements View.OnClickListen
                     resolver.takePersistableUriPermission(uriIqama, takeFlags);
                 }
                 mediaPlayer2 = MediaPlayer.create(this, data.getData());
-//                int duration = mediaPlayer2.getDuration();
-//                mediaPlayer2.release();
-//                if ((duration / 1000) > 60) {
-//                    Toast.makeText(activity, getString(R.string.choose_audio_limit), Toast.LENGTH_LONG).show();
-//                    uriIqama = null;
-//                    ivPlayIqama.setVisibility(View.GONE);
-//                    return;
-//                }
                 ivPlayIqama.setVisibility(View.VISIBLE);
 
             } else if (requestCode == 3) {
@@ -417,14 +376,6 @@ public class ChangeTones extends AppCompatActivity implements View.OnClickListen
                     resolver.takePersistableUriPermission(uriPhone, takeFlags);
                 }
                 mediaPlayer3 = MediaPlayer.create(this, data.getData());
-//                int duration = mediaPlayer2.getDuration();
-//                mediaPlayer2.release();
-//                if ((duration / 1000) > 60) {
-//                    Toast.makeText(activity, getString(R.string.choose_audio_limit), Toast.LENGTH_LONG).show();
-//                    uriIqama = null;
-//                    ivPlayIqama.setVisibility(View.GONE);
-//                    return;
-//                }
                 ivPlayClose.setVisibility(View.VISIBLE);
 
             }
@@ -432,6 +383,7 @@ public class ChangeTones extends AppCompatActivity implements View.OnClickListen
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setColor() {
         try {
             Window window = activity.getWindow();

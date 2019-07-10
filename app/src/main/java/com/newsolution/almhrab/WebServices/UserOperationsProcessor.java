@@ -1,5 +1,6 @@
 package com.newsolution.almhrab.WebServices;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -19,8 +20,8 @@ import java.util.Map;
  * Created by AmalKronz on 8/9/2015.
  */
 public class UserOperationsProcessor {
-    private final int SOCKET_TIMEOUT = 90 * 1000;//60 seconds - change to what you want
 
+    @SuppressLint("StaticFieldLeak")
     private static UserOperationsProcessor instance;
     private Context context;
 
@@ -35,36 +36,15 @@ public class UserOperationsProcessor {
         return instance;
     }
 
-    public void sendRequest(String url, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
-//        Request mRequest = new Request( url, listener, errorListener, params);
-//        RequestQueueHandler.getInstance(context).addToRequestQueue(mRequest);
-
-        JsonObjectRequest mRequest = new JsonObjectRequest(url, null, listener, errorListener){
-            @Override
-            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                try {
-                    String utf8String = new String(response.data, "UTF-8");
-                    return Response.success(new JSONObject(utf8String), HttpHeaderParser.parseCacheHeaders(response));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        };
-        mRequest.setShouldCache(false);
-        RequestQueueHandler.getInstance(context).addToRequestQueue(mRequest);
-    }
     public void sendRequest(int method, String url, Map<String, String> params,
                             Response.Listener<String> listener, Response.ErrorListener errorListener) {
         MyRequests mRequest = new MyRequests(method, url, listener, errorListener, params);
+        //60 seconds - change to what you want
+        int SOCKET_TIMEOUT = 90 * 1000;
         RetryPolicy policy = new DefaultRetryPolicy(SOCKET_TIMEOUT, 5, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         mRequest.setRetryPolicy(policy);
         mRequest.setShouldCache(false);
         RequestQueueHandler.getInstance(context).addToRequestQueue(mRequest);
-//
-//        JsonObjectRequest mRequest = new JsonObjectRequest(url, null, listener, errorListener);
-//        RequestQueueHandler.getInstance(context).addToRequestQueue(mRequest);
+
     }
 }

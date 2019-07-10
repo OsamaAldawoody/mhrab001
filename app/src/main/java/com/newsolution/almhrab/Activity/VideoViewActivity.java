@@ -15,18 +15,16 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.newsolution.almhrab.Helpar.VideoControllerView;
 import com.newsolution.almhrab.R;
 
-public class VideoViewActivity extends AppCompatActivity implements  SurfaceHolder.Callback,
+public class VideoViewActivity extends AppCompatActivity implements SurfaceHolder.Callback,
         MediaPlayer.OnPreparedListener, VideoControllerView.MediaPlayerControl {
     SurfaceView videoSurface;
     MediaPlayer player;
     VideoControllerView controller;
-    private Intent intent;
     private ProgressBar loading;
 
     @Override
@@ -43,25 +41,26 @@ public class VideoViewActivity extends AppCompatActivity implements  SurfaceHold
         videoHolder.addCallback(this);
         player = new MediaPlayer();
         controller = new VideoControllerView(this);
-        intent=getIntent();
-        if (intent.getAction().equals("uri")){
+        Intent intent = getIntent();
+        if (intent.getAction().equals("uri")) {
             try {
                 player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                player.setDataSource(this, (Uri)intent.getParcelableExtra("videoURI"));
+                player.setDataSource(this, (Uri) intent.getParcelableExtra("videoURI"));
                 player.setOnPreparedListener(this);
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }else{
+        } else {
 
         }
     }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         controller.show();
         return false;
-    }// Implement SurfaceHolder.Callback
+    }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
@@ -82,8 +81,6 @@ public class VideoViewActivity extends AppCompatActivity implements  SurfaceHold
 
     }
 
-    // End SurfaceHolder.Callback
-    // Implement VideoMediaController.MediaPlayerControl
     @Override
     public boolean canPause() {
         return true;
@@ -98,7 +95,7 @@ public class VideoViewActivity extends AppCompatActivity implements  SurfaceHold
     public int getCurrentPosition() {
         try {
             return player.getCurrentPosition();
-        }catch (Exception e){
+        } catch (Exception e) {
             return 0;
         }
     }
@@ -139,11 +136,10 @@ public class VideoViewActivity extends AppCompatActivity implements  SurfaceHold
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if (isPlaying()){
+        if (isPlaying()) {
             pause();
             player.stop();
         }
         player.release();
-        //  player=null;
     }
 }

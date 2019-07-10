@@ -5,12 +5,12 @@ package com.newsolution.almhrab.Model;
  */
 
 public class News {
-    public int Id ;
-    public String TextAds; // الخبر
-    public String UpdatedAt; // اخر تحديث
-    public boolean isDeleted ;// محذوف ؟؟
-    public String FromDate;// يتم العرض من بداية التاريخ
-    public String ToDate; // يتم العرض حتى نهاية تاريخ
+    private int Id ;
+    private String TextAds; // الخبر
+    private String UpdatedAt; // اخر تحديث
+    private boolean isDeleted ;// محذوف ؟؟
+    private String FromDate;// يتم العرض من بداية التاريخ
+    private String ToDate; // يتم العرض حتى نهاية تاريخ
     public int sort;// ترتيب
 
     public int getId() {

@@ -5,14 +5,6 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.Constants;
 import com.newsolution.almhrab.AppConstants.DBOperations;
 import com.newsolution.almhrab.Helpar.JsonHelper;
@@ -47,12 +39,13 @@ import java.util.Map;
  * Created by AmalKronz on 1/4/2016.
  */
 public class WS {
-    private static int SOCKET_TIMEOUT = 90 * 1000;
     private static SharedPreferences sp;
     private static SharedPreferences.Editor spedit;
 
+    private static String LOG_TAG = "ALMHRAB";
+
     public static void login(final Activity activity, final Map<String, String> params, final OnFetched listener) {
-        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+        sp = activity.getSharedPreferences(Utils.PREFS, activity.MODE_PRIVATE);
         spedit = sp.edit();
         Log.i("params", params.toString());
         UserOperations.getInstance(activity).sendPostRequest(Constants.Main_URL + "LoginSubscribe", params, new OnLoadedFinished() {
@@ -96,10 +89,8 @@ public class WS {
                         spedit.putString("masjedName", MyName).commit();
                         spedit.putString("masjedImg", img).commit();
                         spedit.putString("masjedPW", Password).commit();
-//                        Utils.showCustomToast(activity,sp.getString("masjedPW",""));
                         Users user = new Users(Id, FullName, UserName, Mobile, Email, GUID, IdCity, MyName, img);
-//                                Users user= new Users(Id, FullName, UserName, Mobile, Email, GUID, IdCity,IdCityText,Lat1,Lat2,
-//                                            Long1,Long2, MyName, img);
+
                         listener.onSuccess(user);
                     } else listener.onFail(message + "");
 
@@ -116,7 +107,7 @@ public class WS {
     }
 
     public static void updateAccount(final Activity activity, Map<String, String> param, final OnFetched listener) {
-        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+        sp = activity.getSharedPreferences(Utils.PREFS, activity.MODE_PRIVATE);
         spedit = sp.edit();
         Log.i("//// params ", param.toString());
         UserOperations.getInstance(activity).sendPostRequest(Constants.Main_URL + "SubscribeProfileEdit", param, new OnLoadedFinished() {
@@ -155,8 +146,7 @@ public class WS {
                         spedit.putString("masjedName", MyName).commit();
                         spedit.putString("masjedImg", img).commit();
                         Users user = new Users(Id, FullName, UserName, Mobile, Email, GUID, IdCity, MyName, img);
-//                                Users user= new Users(Id, FullName, UserName, Mobile, Email, GUID, IdCity,IdCityText,Lat1,Lat2,
-//                                            Long1,Long2, MyName, img);
+
                         listener.onSuccess(user);
                     } else listener.onFail(message);
 
@@ -173,11 +163,11 @@ public class WS {
     }
 
     public static void UpdateSettings(final Activity activity, OptionSiteClass settings, final OnLoadedFinished listener) {
-        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+        sp = activity.getSharedPreferences(Utils.PREFS, activity.MODE_PRIVATE);
         spedit = sp.edit();
         int id = sp.getInt("masjedId", -1);
         String GUID = sp.getString("masjedGUID", "");
-        String DeviceNo = sp.getString(AppConst.DeviceNo, "");
+        String DeviceNo = sp.getString(Utils.DeviceNo, "");
 
         Map<String, String> param = new HashMap<>();
         param.put("IdSubscribe", id + "");
@@ -230,18 +220,9 @@ public class WS {
         param.put("AlShrouqEkama", settings.getAlShrouqEkama() + "");
         param.put("AlShrouqEkamaTime", settings.getAlShrouqEkamaTime() + "");
         param.put("AlShrouqEkamaIsTime", settings.isAlShrouqEkamaIsTime() + "");
-        param.put("AlShrouqEkamaIsTime", settings.isAlShrouqEkamaIsTime() + "");
-        param.put("AlShrouqEkamaIsTime", settings.isAlShrouqEkamaIsTime() + "");
         param.put("CloseScreenAfterIsha", settings.getCloseScreenAfterIsha() + "");
         param.put("RunScreenBeforeFajr", settings.getRunScreenBeforeFajr() + "");
-//        JSONObject object = null;
-//        try {
-//            object = new JSONObject(settings.toMap().toString());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        param.put("options", object);
-//        JSONObject objectParams = new JSONObject(param);
+
         Log.i("////params ", param.toString());
 
         UserOperations.getInstance(activity).sendPostRequest(Constants.Main_URL + "EditOptionSite", param, new OnLoadedFinished() {
@@ -270,11 +251,11 @@ public class WS {
     }
 
     public static void addUpdateNews(final Activity activity, News object, final OnLoadedFinished listener) {
-        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+        sp = activity.getSharedPreferences(Utils.PREFS, activity.MODE_PRIVATE);
         spedit = sp.edit();
         int id = sp.getInt("masjedId", -1);
         String GUID = sp.getString("masjedGUID", "");
-        String DeviceNo = sp.getString(AppConst.DeviceNo, "");
+        String DeviceNo = sp.getString(Utils.DeviceNo, "");
 
         Map<String, String> param = new HashMap<>();
         param.put("IdSubscribe", id + "");
@@ -316,11 +297,11 @@ public class WS {
     }
 
     public static void getAllNews(final Activity activity, final OnLoadedFinished listener) {
-        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+        sp = activity.getSharedPreferences(Utils.PREFS, activity.MODE_PRIVATE);
         spedit = sp.edit();
         int id = sp.getInt("masjedId", -1);
         String GUID = sp.getString("masjedGUID", "");
-        String DeviceNo = sp.getString(AppConst.DeviceNo, "");
+        String DeviceNo = sp.getString(Utils.DeviceNo, "");
 
         Map<String, String> param = new HashMap<>();
         param.put("IdSubscribe", id + "");
@@ -360,11 +341,11 @@ public class WS {
     }
 
     public static void NewsDelete(final Activity activity, int newsId, final OnLoadedFinished listener) {
-        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+        sp = activity.getSharedPreferences(Utils.PREFS, activity.MODE_PRIVATE);
         spedit = sp.edit();
         int id = sp.getInt("masjedId", -1);
         String GUID = sp.getString("masjedGUID", "");
-        String DeviceNo = sp.getString(AppConst.DeviceNo, "");
+        String DeviceNo = sp.getString(Utils.DeviceNo, "");
 
         Map<String, String> param = new HashMap<>();
         param.put("IdSubscribe", id + "");
@@ -400,11 +381,11 @@ public class WS {
     }
 
     public static void addUpdateAzkar(final Activity activity, Azkar object, final OnLoadedFinished listener) {
-        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+        sp = activity.getSharedPreferences(Utils.PREFS, activity.MODE_PRIVATE);
         spedit = sp.edit();
         int id = sp.getInt("masjedId", -1);
         String GUID = sp.getString("masjedGUID", "");
-        String DeviceNo = sp.getString(AppConst.DeviceNo, "");
+        String DeviceNo = sp.getString(Utils.DeviceNo, "");
 
         Map<String, String> param = new HashMap<>();
         param.put("IdSubscribe", id + "");
@@ -450,11 +431,11 @@ public class WS {
     }
 
     public static void getAllAzkar(final Activity activity, final OnLoadedFinished listener) {
-        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+        sp = activity.getSharedPreferences(Utils.PREFS, activity.MODE_PRIVATE);
         spedit = sp.edit();
         int id = sp.getInt("masjedId", -1);
         String GUID = sp.getString("masjedGUID", "");
-        String DeviceNo = sp.getString(AppConst.DeviceNo, "");
+        String DeviceNo = sp.getString(Utils.DeviceNo, "");
 
         Map<String, String> param = new HashMap<>();
         param.put("IdSubscribe", id + "");
@@ -494,11 +475,11 @@ public class WS {
     }
 
     public static void AzkarDelete(final Activity activity, int newsId, final OnLoadedFinished listener) {
-        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+        sp = activity.getSharedPreferences(Utils.PREFS, activity.MODE_PRIVATE);
         spedit = sp.edit();
         int id = sp.getInt("masjedId", -1);
         String GUID = sp.getString("masjedGUID", "");
-        String DeviceNo = sp.getString(AppConst.DeviceNo, "");
+        String DeviceNo = sp.getString(Utils.DeviceNo, "");
 
         Map<String, String> param = new HashMap<>();
         param.put("IdSubscribe", id + "");
@@ -534,11 +515,11 @@ public class WS {
     }
 
     public static void updateCity(final Activity activity, int cityId, final OnLoadedFinished listener) {
-        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+        sp = activity.getSharedPreferences(Utils.PREFS, activity.MODE_PRIVATE);
         spedit = sp.edit();
         int id = sp.getInt("masjedId", -1);
         String GUID = sp.getString("masjedGUID", "");
-        String DeviceNo = sp.getString(AppConst.DeviceNo, "");
+        String DeviceNo = sp.getString(Utils.DeviceNo, "");
 
         Map<String, String> param = new HashMap<>();
         param.put("IdSubscribe", id + "");
@@ -574,53 +555,11 @@ public class WS {
     }
 
     public static void getAllKhotab(final Activity activity, final OnLoadedFinished listener) {
-        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+        sp = activity.getSharedPreferences(Utils.PREFS, activity.MODE_PRIVATE);
         spedit = sp.edit();
         int id = sp.getInt("masjedId", -1);
         String GUID = sp.getString("masjedGUID", "");
-        String DeviceNo = sp.getString(AppConst.DeviceNo, "");
-
-        Map<String, String> param = new HashMap<>();
-        param.put("IdSubscribe", id + "");
-        param.put("GUID", GUID);
-        param.put("DeviceNo", DeviceNo);
-        param.put("lastUpdate", "0");
-
-        Log.i("////params ", param.toString());
-
-        UserOperations.getInstance(activity).sendPostRequest(Constants.Main_URL + "getAllKhotab", param, new OnLoadedFinished() {
-            @Override
-            public void onSuccess(String response) {
-                Log.i("////response ", response);
-                JSONObject jsonObject = null;
-                try {
-                    jsonObject = new JSONObject(response);
-                    boolean Status = jsonObject.optBoolean("Status");
-                    String message = jsonObject.optString("ResultText");
-                    if (Status) {
-                        JSONArray jAKhotab = jsonObject.optJSONArray("OtherData");
-                        ArrayList<Khotab> khotabList = JsonHelper.jsonToKhotabArray(jAKhotab);
-                        DBOperations db = new DBOperations(activity);
-                        if (khotabList.size() > 0) db.insertAllKhotab(khotabList);
-                    } else listener.onFail(message);
-
-                } catch (JSONException e) {
-                    listener.onFail(e.getMessage());
-                }
-            }
-
-            @Override
-            public void onFail(String error) {
-                listener.onFail(error);
-            }
-        });
-    }
-    public static void getAllData(final Activity activity, final OnLoadedFinished listener) {
-        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
-        spedit = sp.edit();
-        int id = sp.getInt("masjedId", -1);
-        String GUID = sp.getString("masjedGUID", "");
-        String DeviceNo = sp.getString(AppConst.DeviceNo, "");
+        String DeviceNo = sp.getString(Utils.DeviceNo, "");
 
         Map<String, String> param = new HashMap<>();
         param.put("IdSubscribe", id + "");
@@ -658,43 +597,12 @@ public class WS {
         });
     }
 
-    public static String LOG_TAG = "ALMHRAB";
-
-    static InputStream is = null;
-    static JSONObject jObj = null;
-    static String json = "";
     public static JSONObject syncData(int id, String GUID, String lastUpdate, String DeviceNo) {
         String query = "getAllData?IdSubscribe=" + id + "&GUID=" + GUID + "&lastUpdate=" + lastUpdate + "&DeviceNo=" + DeviceNo + "";
         return getJsonObject2(query);
     }
-//    public static void syncData(int id, String GUID, String lastUpdate, String DeviceNo) {
-//
-//            String url = Constants.Main_URL1 + urlQuery;
-//
-//            Log.d(LOG_TAG, "Request url : " + url);
-//            HttpClient client = new DefaultHttpClient();
-//            HttpGet get = new HttpGet(url);
-//            JSONObject jo = new JSONObject();
-//            String data = "";
-//            try {
-//                HttpResponse response = client.execute(get);
-//                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-//                    HttpEntity e = response.getEntity();
-//                    data = EntityUtils.toString(e);
-//                    Log.d(LOG_TAG, "Result before converting to json : " + data);
-//                    jo = new JSONObject(data);
-//                }
-//            } catch (Exception e) {
-//                // TODO: handle exception
-//                e.printStackTrace();
-//                return null;
-//            } finally {
-//                return jo;
-//            }
-//
-//    }
 
-    public static JSONObject getJsonObject2(String urlQuery) {
+    private static JSONObject getJsonObject2(String urlQuery) {
 
         String url = Constants.Main_URL + urlQuery;
 
@@ -720,12 +628,9 @@ public class WS {
         }
     }
 
-
-
-
     public static boolean InsertDataToDB(int action, Activity activity, JSONObject o) {
         Log.d(LOG_TAG, "Sync Service Insert Data");
-        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+        sp = activity.getSharedPreferences(Utils.PREFS, activity.MODE_PRIVATE);
         spedit = sp.edit();
         try {
             DBOperations db = new DBOperations(activity);
@@ -795,103 +700,12 @@ public class WS {
 
     }
 
-
-    //    public static void viewProfile(final Activity activity, int viewProfile, final OnLoadedFinished listener) {
-//        UserOperations.getInstance(activity).sendGetRequest(Const.VIEW_PROFILE_URL + viewProfile, new OnLoadedFinished() {
-//            @Override
-//            public void onSuccess(String response) {
-//                Log.i("//// ", response);
-//                JSONObject jsonObject = null;
-//                try {
-//                    jsonObject = new JSONObject(response);
-//                    JSONObject status = jsonObject.optJSONObject("status");
-//                    boolean success = status.optBoolean("success");
-//                    String message = status.optString("message");
-//                    if (success) {
-//                        JSONArray TEmployee = jsonObject.optJSONArray("TEmployee");
-//                        Users user = new Users();
-//                        for (int i = 0; i < TEmployee.length(); i++) {
-//                            JSONObject jTEmployee = TEmployee.optJSONObject(i);
-//                            int pk_i_id = jTEmployee.optInt("pk_i_id");
-//                            String s_name = jTEmployee.optString("s_name");
-//                            String s_kafeel_name = jTEmployee.optString("s_kafeel_name");
-//                            String dt_from = (jTEmployee.optString("dt_from")).split("T")[0];
-//                            String dt_to = (jTEmployee.optString("dt_to")).split("T")[0];
-//                            String s_nationality = jTEmployee.optString("s_nationality");
-//                            String s_email = jTEmployee.optString("s_email");
-//                            String s_password = jTEmployee.optString("s_password");
-//                            String s_image = Const.IMAGE_URL + jTEmployee.optString("s_image");
-//                            boolean b_block = jTEmployee.optBoolean("b_block");
-//                            boolean b_delete = jTEmployee.optBoolean("b_delete");
-//                            int fk_role_id = jTEmployee.optInt("fk_role_id");
-//                            int fk_branch_id = jTEmployee.optInt("fk_branch_id");
-//                            String s_device_token = jTEmployee.optString("s_device_token");
-//                            String DeviceOS = jTEmployee.optString("DeviceOS");
-//                            JSONObject TBranch = jTEmployee.optJSONObject("TBranch");
-//                            int pk_i_id_TB = TBranch.optInt("pk_i_id");
-//                            String branchName = TBranch.optString("s_name");
-//                            String s_imageTB = TBranch.optString("s_image");
-//                            String fk_manager_id = TBranch.optString("fk_manager_id");
-//                            String s_manage_name = TBranch.optString("s_manage_name");
-//
-//                            JSONArray TBranch_Under_Monitor = jTEmployee.optJSONArray("TBranch_Under_Monitor");
-//
-//                            JSONObject TRole = jTEmployee.optJSONObject("TRole");
-//                            int pk_i_id_TR = TRole.optInt("pk_i_id");
-//                            String s_role_name = TRole.optString("s_role_name");
-//                            JSONArray TEmployees = TRole.optJSONArray("TEmployees");
-//
-//                            JSONArray TRates = jTEmployee.optJSONArray("TRates");
-//                            JSONArray TRequests = jTEmployee.optJSONArray("TRequests");
-//                            JSONArray TStores = jTEmployee.optJSONArray("TStores");
-//                            if ((new SharedPrefUtil(activity).getInt("userId")) == pk_i_id) {
-//                                new SharedPrefUtil(activity).saveInt("userId", pk_i_id);
-//                                new SharedPrefUtil(activity).saveInt("roleId", fk_role_id);
-//                                new SharedPrefUtil(activity).saveInt("branchId", fk_branch_id);
-//                                new SharedPrefUtil(activity).saveString("userName", s_name);
-//                                new SharedPrefUtil(activity).saveString("branchName", branchName);
-//                                new SharedPrefUtil(activity).saveString("userEmail", s_email);
-//                                new SharedPrefUtil(activity).saveString("userPW", s_password);
-//                                new SharedPrefUtil(activity).saveString("kafeelName", s_kafeel_name);
-//                                new SharedPrefUtil(activity).saveString("userImage", Const.IMAGE_URL + s_image);
-//                            }
-//                            user.setPk_i_id(pk_i_id);
-//                            user.setS_device_token(s_device_token);
-//                            user.setDt_from(dt_from);
-//                            user.setDt_to(dt_to);
-//                            user.setS_name(s_name);
-//                            user.setFk_role_id(fk_role_id);
-//                            user.setFk_branch_id(fk_branch_id);
-//                            user.setS_email(s_email);
-//                            user.setS_image(s_image);
-//                            user.setS_kafeel_name(s_kafeel_name);
-//                            user.setS_nationality(s_nationality);
-//                            user.setDeviceOS(DeviceOS);
-//                            user.setBranchName(branchName);
-//                            user.setS_role_name(s_role_name);
-//                        }
-//                        Log.i("//// ", response);
-//
-//                        listener.onSuccess(user);
-//                    } else listener.onFail(message);
-//                } catch (JSONException e) {
-//                    listener.onFail(e.getMessage());
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onFail(String error) {
-//                listener.onFail(error);
-//            }
-//        });
-//    }
     public static void isStreaming(final Activity activity, int TimeExpected, final OnLoadedFinished listener) {
-        sp = activity.getSharedPreferences(AppConst.PREFS, activity.MODE_PRIVATE);
+        sp = activity.getSharedPreferences(Utils.PREFS, activity.MODE_PRIVATE);
         spedit = sp.edit();
         int id = sp.getInt("masjedId", -1);
         String GUID = sp.getString("masjedGUID", "");
-        String DeviceNo = sp.getString(AppConst.DeviceNo, "");
+        String DeviceNo = sp.getString(Utils.DeviceNo, "");
 
         Map<String, String> param = new HashMap<>();
         param.put("IdSubscribe", id + "");

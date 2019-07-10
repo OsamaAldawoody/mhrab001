@@ -1,5 +1,6 @@
 package com.newsolution.almhrab.Activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -8,7 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -16,7 +17,6 @@ import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -34,10 +34,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.newsolution.almhrab.Adapters.LocationAdapter;
-import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.DBOperations;
-import com.newsolution.almhrab.AppConstants.DataBaseHelper;
-import com.newsolution.almhrab.GlobalVars;
+
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Interface.OnLoadedFinished;
 import com.newsolution.almhrab.Model.City;
@@ -51,58 +49,42 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SettingsActivity extends Activity {
     ImageView iv_back;
-    private LinearLayout ll_location,
-            llTones, ll_adv, parentPanel, ll_NewAds, ll_azkar;
     private SharedPreferences sp;
     Activity activity;
     private SharedPreferences.Editor spedit;
-    private SQLiteDatabase mDb;
-    private DataBaseHelper DbHelper;
     ArrayList<City> cities;
 
     private ListView lv;
     LocationAdapter locations;
     private EditText ed_location;
-    private GlobalVars gv;
-    private Button btn_save;
-    private EditText ed_fajer, ed_duhr, ed_aser, ed_magrib, ed_isha;
-    private boolean isDialogShown = false;
+
     private DBOperations DBO;
-    String[] prayTimes;
     private int cityId;
-    public String cfajr, csunrise, cdhohr, casr, cmaghrib, cisha;
-    public String nextPray;
     public Calendar today = Calendar.getInstance();
     double day = today.get(Calendar.DAY_OF_MONTH);
     double month = today.get(Calendar.MONTH) + 1;
     double year = today.get(Calendar.YEAR);
-    private int long1, long2;
-    private int lat1, lat2;
-    private boolean iqamaSoundOn, soundOn;
-    private TextView tvPreviewLiveStream, tvAbout, tvBatteryIn, tvBatteryOut, tvLogout, tvNotificationSet, tvًPriority, tvOtherSet, tvIqamaSet;
+
     TextView edHijriSet;
-    private Button btnSaveTempIn, btnSaveTempOut, btnSaveHijri;
     private OptionSiteClass settings;
     private int hijriDiff;
     private ArrayList<String> list;
-    private TextView tvSettingAccount;
     private CheckBox cb_voiceRec;
-    private LinearLayout ll_voiceRec;
     private EditText edTempIn, edTempOut;
-    private LinearLayout llbatteryOut, llbatteryIn;
-    private TextView tvScanSensors, tvLocationHint;
-    private City city;
+    private TextView tvLocationHint;
     private CheckBox cb_sleep, cb_news, cb_friday;
-    private LinearLayout layout, llSleep, llNews, llFriday;
     private Dialog fridayDialog;
     private Dialog sleepDialog;
-    private EditText edAppearTimer, edRecordTimer, ed_play, ed_stop;
+    private EditText edRecordTimer;
+    private EditText ed_play;
+    private EditText ed_stop;
     private Button btn_cancel, btn_add;
 
     @Override
@@ -110,59 +92,54 @@ public class SettingsActivity extends Activity {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/neosansarabic.ttf")//battar  droidkufi_regular droid_sans_arabic neosansarabic //mcs_shafa_normal
+                .setDefaultFontPath("fonts/neosansarabic.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
         activity = this;
         setColor();
-        gv = (GlobalVars) getApplicationContext();
-        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
+        sp = getSharedPreferences(Utils.PREFS, MODE_PRIVATE);
         spedit = sp.edit();
 
         setContentView(R.layout.activity_settings);
-//        Utils.showCustomToast(activity,sp.getString("masjedPW","")+"  99");
         checkLogin();
+
         DBO = new DBOperations(this);
-        gv = (GlobalVars) getApplicationContext();
         DBO.open();
-        city = DBO.getCityById(sp.getInt("cityId", -1));
+        City city = DBO.getCityById(sp.getInt("cityId", -1));
         settings = DBO.getSettings();
         DBO.close();
 
         iv_back = (ImageView) findViewById(R.id.iv_back);
-        parentPanel = (LinearLayout) findViewById(R.id.parentPanel);
-        layout = (LinearLayout) findViewById(R.id.layout);
-        llSleep = (LinearLayout) findViewById(R.id.llSleep);
+        LinearLayout llSleep = (LinearLayout) findViewById(R.id.llSleep);
         cb_sleep = (CheckBox) findViewById(R.id.cb_sleep);
-        llNews = (LinearLayout) findViewById(R.id.llNews);
+        LinearLayout llNews = (LinearLayout) findViewById(R.id.llNews);
         cb_news = (CheckBox) findViewById(R.id.cb_news);
-        llFriday = (LinearLayout) findViewById(R.id.llFriday);
-//        llFriday.setVisibility(View.GONE);
+        LinearLayout llFriday = (LinearLayout) findViewById(R.id.llFriday);
         cb_friday = (CheckBox) findViewById(R.id.cb_friday);
         edTempIn = (EditText) findViewById(R.id.edTemp);
         edTempOut = (EditText) findViewById(R.id.edTempOut);
-        btnSaveTempIn = (Button) findViewById(R.id.btnSaveTemp);
-        btnSaveTempOut = (Button) findViewById(R.id.btnSaveTempOut);
-        llbatteryOut = (LinearLayout) findViewById(R.id.llbatteryOut);
-        llbatteryIn = (LinearLayout) findViewById(R.id.llbatteryIn);
-        tvBatteryOut = (TextView) findViewById(R.id.tvBatteryOut);
-        tvBatteryIn = (TextView) findViewById(R.id.tvBatteryIn);
-        tvًPriority = (TextView) findViewById(R.id.tvًPriority);
-        tvOtherSet = (TextView) findViewById(R.id.tvOtherSet);
-        tvIqamaSet = (TextView) findViewById(R.id.tvIqamaSet);
-        tvLogout = (TextView) findViewById(R.id.tvLogout);
-        tvAbout = (TextView) findViewById(R.id.tvAbout);
-        tvPreviewLiveStream = (TextView) findViewById(R.id.tvPreviewLiveStream);
-        tvNotificationSet = (TextView) findViewById(R.id.tvNotificationSet);
+
+        Button btnSaveTempIn = (Button) findViewById(R.id.btnSaveTemp);
+        Button btnSaveTempOut = (Button) findViewById(R.id.btnSaveTempOut);
+        TextView tvBatteryOut = (TextView) findViewById(R.id.tvBatteryOut);
+        TextView tvBatteryIn = (TextView) findViewById(R.id.tvBatteryIn);
+        TextView tvًPriority = (TextView) findViewById(R.id.tvًPriority);
+        TextView tvOtherSet = (TextView) findViewById(R.id.tvOtherSet);
+        TextView tvIqamaSet = (TextView) findViewById(R.id.tvIqamaSet);
+        TextView tvLogout = (TextView) findViewById(R.id.tvLogout);
+        TextView tvAbout = (TextView) findViewById(R.id.tvAbout);
+        TextView tvPreviewLiveStream = (TextView) findViewById(R.id.tvPreviewLiveStream);
+        TextView tvNotificationSet = (TextView) findViewById(R.id.tvNotificationSet);
         edHijriSet = (TextView) findViewById(R.id.edHijriSet);
-        btnSaveHijri = (Button) findViewById(R.id.btnSaveHijri);
-        tvSettingAccount = (TextView) findViewById(R.id.tvSettingAccount);
+        Button btnSaveHijri = (Button) findViewById(R.id.btnSaveHijri);
+        TextView tvSettingAccount = (TextView) findViewById(R.id.tvSettingAccount);
         cb_voiceRec = (CheckBox) findViewById(R.id.cb_voiceRec);
-        ll_voiceRec = (LinearLayout) findViewById(R.id.ll_voiceRec);
+        LinearLayout ll_voiceRec = (LinearLayout) findViewById(R.id.ll_voiceRec);
         cb_voiceRec.setChecked(true);
         if (sp.getBoolean("voiceRec", true)) {
             cb_voiceRec.setChecked(true);
@@ -185,34 +162,33 @@ public class SettingsActivity extends Activity {
         } else {
             cb_sleep.setChecked(false);
         }
-        //ll_eqama_settings.setVisibility(View.GONE);
 
-        ll_location = (LinearLayout) findViewById(R.id.ll_location);
-        tvScanSensors = (TextView) findViewById(R.id.tvScanSensors);
+        LinearLayout ll_location = (LinearLayout) findViewById(R.id.ll_location);
+        TextView tvScanSensors = (TextView) findViewById(R.id.tvScanSensors);
         tvLocationHint = (TextView) findViewById(R.id.tvLocationHint);
         if (city != null)
             tvLocationHint.setText("المدينة الحالية " + city.getName());
-        llTones = (LinearLayout) findViewById(R.id.llTones);
-        ll_adv = (LinearLayout) findViewById(R.id.ll_adv);
-        ll_azkar = (LinearLayout) findViewById(R.id.ll_azkar);
-        ll_NewAds = (LinearLayout) findViewById(R.id.ll_NewAds);
+        LinearLayout llTones = (LinearLayout) findViewById(R.id.llTones);
+        LinearLayout ll_adv = (LinearLayout) findViewById(R.id.ll_adv);
+        LinearLayout ll_azkar = (LinearLayout) findViewById(R.id.ll_azkar);
+        LinearLayout ll_NewAds = (LinearLayout) findViewById(R.id.ll_NewAds);
         hijriDiff = settings.getDateHijri();
         if (hijriDiff == 0)
-            edHijriSet.setText("لا يوجد فرق");
+            edHijriSet.setText(getString(R.string.noDifferance));
         else if (hijriDiff == +1)
-            edHijriSet.setText("إضافة يوم");
+            edHijriSet.setText(getString(R.string.addAday));
         else if (hijriDiff == +2)
-            edHijriSet.setText("إضافة يومين");
+            edHijriSet.setText(getString(R.string.addTwoDay));
         else if (hijriDiff == -1)
-            edHijriSet.setText("إرجاع يوم");
+            edHijriSet.setText(getString(R.string.subtractADay));
         else if (hijriDiff == -2)
-            edHijriSet.setText("إرجاع يومين");
+            edHijriSet.setText(getString(R.string.subtractTwoDay));
         list = new ArrayList<String>();
-        list.add("لا يوجد فرق");
-        list.add("إضافة يوم");
-        list.add("إضافة يومين");
-        list.add("إرجاع يوم");
-        list.add("إرجاع يومين");
+        list.add(getString(R.string.noDifferance));
+        list.add(getString(R.string.addAday));
+        list.add(getString(R.string.addTwoDay));
+        list.add(getString(R.string.subtractADay));
+        list.add(getString(R.string.subtractTwoDay));
         tvBatteryIn.setText(sp.getString("batteryIn", "0") + "%");
         tvBatteryOut.setText(sp.getString("batteryOut", "0") + "%");
         edTempIn.setText(sp.getString("SN1", ""));
@@ -271,7 +247,6 @@ public class SettingsActivity extends Activity {
                 } else {
                     cb_sleep.setChecked(true);
                     spedit.putBoolean("sleep", true).commit();
-//                    showSleepDialog();c
                 }
             }
         });
@@ -296,7 +271,6 @@ public class SettingsActivity extends Activity {
                 } else {
                     cb_friday.setChecked(true);
                     spedit.putBoolean("emamScreen", true).commit();
-//                    showFridayDialog();
                 }
             }
         });
@@ -321,7 +295,6 @@ public class SettingsActivity extends Activity {
             @Override
             public void onClick(View view) {
                 showPeriodDialog();
-//                goToPreviewLive(20);
 
             }
         });
@@ -344,11 +317,10 @@ public class SettingsActivity extends Activity {
                                 spedit.putInt("masjedId", -1).commit();
                                 spedit.remove("cityId");
                                 spedit.remove("masjedGUID");
-                                spedit.remove(AppConst.LASTUPDATE);
+                                spedit.remove(Utils.LASTUPDATE);
                                 spedit.clear();
                                 Intent intent = new Intent(activity, Login.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                                 startActivity(intent);
                                 finish();
                             }
@@ -358,7 +330,6 @@ public class SettingsActivity extends Activity {
                                 dialog.cancel();
                             }
                         });
-                // create alert dialog
                 AlertDialog alertDialog = alertDialogBuilder.create();
 
                 // show it
@@ -376,7 +347,7 @@ public class SettingsActivity extends Activity {
             @Override
             public void onClick(View v) {
                 if (TextUtils.isEmpty(edTempIn.getText().toString().trim())) {
-                    edTempIn.setError("أدخل رقم جهاز مستشعر الحرارة الداخلي");
+                    edTempIn.setError(getString(R.string.enterInSensor));
                     return;
                 }
                 spedit.putString("SN1", edTempIn.getText().toString().trim()).commit();
@@ -388,7 +359,7 @@ public class SettingsActivity extends Activity {
             @Override
             public void onClick(View v) {
                 if (TextUtils.isEmpty(edTempOut.getText().toString().trim())) {
-                    edTempOut.setError("أدخل رقم جهاز مستشعر الحرارة الخارجي");
+                    edTempOut.setError(getString(R.string.enterOutSensor));
                     return;
                 }
                 spedit.putString("SN2", edTempOut.getText().toString().trim()).commit();
@@ -416,7 +387,6 @@ public class SettingsActivity extends Activity {
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                startActivity(new Intent(activity, MainActivity.class));
                 finish();
             }
         });
@@ -432,14 +402,12 @@ public class SettingsActivity extends Activity {
             public void onClick(View v) {
                 Intent intent = new Intent(activity, ChoosePriority.class);
                 startActivity(intent);
-                //finish();
             }
         });
         ll_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDialog();
-//                startActivity(new Intent(SettingsActivity.this, Advertisments.class));
             }
         });
         llTones.setOnClickListener(new View.OnClickListener() {
@@ -463,7 +431,6 @@ public class SettingsActivity extends Activity {
         tvIqamaSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                showIqamaDialog();
                 startActivity(new Intent(activity, IqamaSettings.class));
 
             }
@@ -478,7 +445,6 @@ public class SettingsActivity extends Activity {
         tvNotificationSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                showIqamaDialog();
                 startActivity(new Intent(activity, NotificationSettings.class));
 
             }
@@ -492,53 +458,55 @@ public class SettingsActivity extends Activity {
     }
 
     private void checkLogin() {
-       try {
-           AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
-           LayoutInflater inflater = activity.getLayoutInflater();
-           View dialogView = inflater.inflate(R.layout.confirm_user, null);
-           dialogBuilder.setView(dialogView);
-           dialogBuilder.setCancelable(false);
-           final AlertDialog alertDialog = dialogBuilder.create();
-           alertDialog.setCanceledOnTouchOutside(false);
-           alertDialog.setCancelable(false);
-           if (alertDialog != null) alertDialog.show();
-           final EditText ed_caption = (EditText) dialogView.findViewById(R.id.ed_caption);
-           ed_caption.requestFocus();
-           InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-           imm.showSoftInput(ed_caption, InputMethodManager.SHOW_IMPLICIT);
+        try {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
+            LayoutInflater inflater = activity.getLayoutInflater();
+            @SuppressLint("InflateParams") View dialogView = inflater.inflate(R.layout.confirm_user, null);
+            dialogBuilder.setView(dialogView);
+            dialogBuilder.setCancelable(false);
+            final AlertDialog alertDialog = dialogBuilder.create();
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.setCancelable(false);
+            alertDialog.show();
+            final EditText ed_caption = (EditText) dialogView.findViewById(R.id.ed_caption);
+            ed_caption.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(ed_caption, InputMethodManager.SHOW_IMPLICIT);
+            }
 
-           Button save = (Button) dialogView.findViewById(R.id.save);
-           Button cancel = (Button) dialogView.findViewById(R.id.cancel);
+            Button save = (Button) dialogView.findViewById(R.id.save);
+            Button cancel = (Button) dialogView.findViewById(R.id.cancel);
 
-           save.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                   Utils.hideSoftKeyboard(activity);
-                   if (TextUtils.isEmpty(ed_caption.getText().toString().trim())) {
-                       ed_caption.setError("أدخل كلمة المرور للحساب");
-                       return;
-                   }
-                   Log.i("//////////: ", sp.getString("masjedPW", "") + " ll");
-                   if (!(ed_caption.getText().toString().trim()).equals(sp.getString("masjedPW", ""))) {
-                       ed_caption.setError("كلمة المرور غير صحيحة");
-                       return;
-                   }
-                   alertDialog.dismiss();
-               }
-           });
-           cancel.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View view) {
-                   finish();
-               }
-           });
-       }catch (Exception ex){}
+            save.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Utils.hideSoftKeyboard(activity);
+                    if (TextUtils.isEmpty(ed_caption.getText().toString().trim())) {
+                        ed_caption.setError(getString(R.string.enterPassword));
+                        return;
+                    }
+                    if (!(ed_caption.getText().toString().trim()).equals(sp.getString("masjedPW", ""))) {
+                        ed_caption.setError(getString(R.string.wrongPassword));
+                        return;
+                    }
+                    alertDialog.dismiss();
+                }
+            });
+            cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finish();
+                }
+            });
+        } catch (Exception ignored) {
+        }
     }
 
     private void showFridayDialog() {
         View view = getLayoutInflater().inflate(R.layout.friday_dialog, null);
         edRecordTimer = (EditText) view.findViewById(R.id.edRecordTimer);
-        edAppearTimer = (EditText) view.findViewById(R.id.edAppearTimer);
+        EditText edAppearTimer = (EditText) view.findViewById(R.id.edAppearTimer);
         edAppearTimer.setVisibility(View.GONE);
         btn_add = (Button) view.findViewById(R.id.btn_add);
         btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
@@ -547,12 +515,11 @@ public class SettingsActivity extends Activity {
             @Override
             public void onClick(View view) {
                 if (TextUtils.isEmpty(edRecordTimer.getText().toString())) {
-                    edRecordTimer.setError("هذا الحقل مطلوب");
+                    edRecordTimer.setError(getString(R.string.requiredField));
                     return;
                 }
                 Utils.hideKeyboard(activity);
                 spedit.putInt("appearPeriod", Integer.parseInt(edRecordTimer.getText().toString().trim())).commit();
-//                Utils.showCustomToast(activity, getString(R.string.saved));
                 showPreview(getString(R.string.alert), getString(R.string.previewEmamScreen));
                 if (fridayDialog.isShowing()) fridayDialog.dismiss();
             }
@@ -560,7 +527,7 @@ public class SettingsActivity extends Activity {
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    cb_friday.setChecked(false);
+                cb_friday.setChecked(false);
                 if (fridayDialog.isShowing()) fridayDialog.dismiss();
             }
         });
@@ -570,7 +537,7 @@ public class SettingsActivity extends Activity {
         fridayDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
-                if ( sp.getInt("appearPeriod", -1) == -1)
+                if (sp.getInt("appearPeriod", -1) == -1)
                     cb_friday.setChecked(false);
             }
         });
@@ -588,9 +555,8 @@ public class SettingsActivity extends Activity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Intent cp = new Intent(activity, ViewEmamActivity.class);
-                        cp.putExtra("isStreaming",false);
+                        cp.putExtra("isStreaming", false);
                         startActivity(cp);
-//                        startActivity(new Intent(activity,ViewEmamActivity.class));
                         dialogInterface.dismiss();
                     }
                 }).setNegativeButton(getString(R.string.cancel_delete), new DialogInterface.OnClickListener() {
@@ -612,11 +578,11 @@ public class SettingsActivity extends Activity {
             @Override
             public void onClick(View view) {
                 if (TextUtils.isEmpty(ed_play.getText().toString())) {
-                    ed_play.setError("هذا الحقل مطلوب");
+                    ed_play.setError(getString(R.string.requiredField));
                     return;
                 }
                 if (TextUtils.isEmpty(ed_stop.getText().toString())) {
-                    ed_stop.setError("هذا الحقل مطلوب");
+                    ed_stop.setError(getString(R.string.requiredField));
                     return;
                 }
                 if (sleepDialog.isShowing()) sleepDialog.dismiss();
@@ -635,13 +601,9 @@ public class SettingsActivity extends Activity {
                                     pdS.dismiss();
                                 spedit.putInt("sleepOn", Integer.parseInt(ed_play.getText().toString().trim())).commit();
                                 spedit.putInt("sleepOff", Integer.parseInt(ed_stop.getText().toString().trim())).commit();
-//                String sleepOnTime= Utils.addToTime(sp.getString("isha",""),sp.getInt("sleepOn",0)+"");
-//                String sleepOffTime= Utils.diffFromTime(sp.getString("suh",""),sp.getInt("sleepOff",0)+"");
-//                spedit.putString("sleepOnTime", sleepOnTime).commit();
-//                spedit.putString("sleepOffTime", sleepOffTime).commit();
+
                                 Utils.showCustomToast(activity, getString(R.string.saved));
                                 setSleepModePeriod();
-//                                setSleepPeriod();
                             }
 
                             @Override
@@ -660,7 +622,6 @@ public class SettingsActivity extends Activity {
                     spedit.putInt("sleepOff", Integer.parseInt(ed_stop.getText().toString().trim())).commit();
                     Utils.showCustomToast(activity, getString(R.string.saved));
                     setSleepModePeriod();
-//                    setSleepPeriod();
                 }
             }
         });
@@ -678,67 +639,60 @@ public class SettingsActivity extends Activity {
         sleepDialog.show();
         sleepDialog.setCancelable(false);
         sleepDialog.setCanceledOnTouchOutside(false);
-//        sleepDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-//            @Override
-//            public void onDismiss(DialogInterface dialogInterface) {
-//                if (sp.getInt("sleepOff", -1) == -1 && sp.getInt("sleepOff", -1) == -1)
-//                    cb_sleep.setChecked(false);
-//            }
-//        });
+
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         Window window = sleepDialog.getWindow();
-        lp.copyFrom(window.getAttributes());
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        window.setAttributes(lp);
+        if (window != null) {
+            lp.copyFrom(window.getAttributes());
+            window.setAttributes(lp);
+        }
     }
 
     private void setSleepModePeriod() {
-        String sleepOn = Utils.addToTime(sp.getString("isha", ""), settings.getCloseScreenAfterIsha()/* sp.getInt("sleepOn", 0) */ + "");
-        String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), settings.getRunScreenBeforeFajr()/*sp.getInt("sleepOff", 0) */ + "");
-//        Log.e("**//sleepOn", sleepOn + "  **");
-//        Log.e("**//sleepOff", sleepOff);
+        String sleepOn = Utils.addToTime(sp.getString("isha", ""), settings.getCloseScreenAfterIsha() + "");
+        String sleepOff = Utils.diffFromTime(sp.getString("suh", ""), settings.getRunScreenBeforeFajr() + "");
+
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
             Date start = sdf.parse(sleepOn);
             Date end = sdf.parse(sleepOff);
             Date date = new Date();
             Calendar calendarStart = Calendar.getInstance();
             calendarStart.setTime(date);
-            calendarStart.set(Calendar.HOUR_OF_DAY, start.getHours());// for 6 hour
-            calendarStart.set(Calendar.MINUTE, start.getMinutes());// for 0 min
-            calendarStart.set(Calendar.SECOND, 0);// for 0 sec
-            System.out.println("***:calendarStart " + calendarStart.getTime());// print 'Mon Mar 28 06:00:00 ALMT 2016'
+            calendarStart.set(Calendar.HOUR_OF_DAY, start.getHours());
+            calendarStart.set(Calendar.MINUTE, start.getMinutes());
+            calendarStart.set(Calendar.SECOND, 0);
+
             Calendar calendarEnd = Calendar.getInstance();
             calendarEnd.setTime(date);
             calendarEnd.set(Calendar.HOUR_OF_DAY, end.getHours());
             calendarEnd.set(Calendar.MINUTE, end.getMinutes());
-            calendarEnd.set(Calendar.SECOND, 0);// for 0 sec
+            calendarEnd.set(Calendar.SECOND, 0);
             System.out.println("***:calendarEnd " + calendarEnd.getTime());
             if (end.before(start)) {
                 calendarEnd.add(Calendar.DAY_OF_YEAR, 1);
                 System.out.println("***:calendarEnd added " + calendarEnd.getTime());
             }
-            DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+            DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss", Locale.ENGLISH);
             String startDate = df.format(calendarStart.getTime());
             String endDate = df.format(calendarEnd.getTime());
             spedit.putString("startTime", startDate).commit();
             spedit.putString("endTime", endDate).commit();
-            Log.e("**//startTime", startDate + "  **");
-            Log.e("**//endTime", endDate);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void showPeriodDialog() {
-        View view = getLayoutInflater().inflate(R.layout.sleep_dialog, null);
+        @SuppressLint("InflateParams") View view = getLayoutInflater().inflate(R.layout.sleep_dialog, null);
         TextView tv_tittle = (TextView) view.findViewById(R.id.tv_tittle);
-        tv_tittle.setText("مدة الخطبة");
+        tv_tittle.setText(R.string.khotbaPeriod);
         ed_play = (EditText) view.findViewById(R.id.ed_play);
         ed_stop = (EditText) view.findViewById(R.id.ed_stop);
         ed_stop.setVisibility(View.GONE);
-        ed_play.setHint("مدة ظهور الخطبة (دقيقة)");
+        ed_play.setHint(R.string.khotbaApperance);
         btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
         btn_add = (Button) view.findViewById(R.id.btn_add);
         sleepDialog = new Dialog(this);
@@ -746,7 +700,7 @@ public class SettingsActivity extends Activity {
             @Override
             public void onClick(View view) {
                 if (TextUtils.isEmpty(ed_play.getText().toString())) {
-                    ed_play.setError("هذا الحقل مطلوب");
+                    ed_play.setError(getString(R.string.requiredField));
                     return;
                 }
                 if (sleepDialog.isShowing()) sleepDialog.dismiss();
@@ -767,16 +721,17 @@ public class SettingsActivity extends Activity {
 
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         Window window = sleepDialog.getWindow();
-        lp.copyFrom(window.getAttributes());
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        window.setAttributes(lp);
+        if (window != null) {
+            lp.copyFrom(window.getAttributes());
+            window.setAttributes(lp);
+        }
     }
 
     private void goToPreviewLive(int period) {
         final Khotab object = new Khotab();
         object.setId(-1);
-//        object.setId(5);
         object.setTitle("معاينة شاشة البث");
         object.setTitle1("প্রতিফলন সূরা আল বালাদ");
         object.setTitle2("رحم کرنے والا مہربان ہےخدا");
@@ -809,7 +764,7 @@ public class SettingsActivity extends Activity {
                 this,
                 android.R.layout.select_dialog_singlechoice);
         for (int i = 0; i < list.size(); i++) {
-            arrayAdapter.add(list.get(i).toString());
+            arrayAdapter.add(list.get(i));
         }
 
         builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
@@ -817,19 +772,19 @@ public class SettingsActivity extends Activity {
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
                     hijriDiff = 0;
-                    edHijriSet.setText("لا يوجد فرق");
+                    edHijriSet.setText(getString(R.string.noDifferance));
                 } else if (which == 1) {
                     hijriDiff = +1;
-                    edHijriSet.setText("إضافة يوم");
+                    edHijriSet.setText(getString(R.string.addAday));
                 } else if (which == 2) {
                     hijriDiff = +2;
-                    edHijriSet.setText("إضافة يومين");
+                    edHijriSet.setText(getString(R.string.addTwoDay));
                 } else if (which == 3) {
                     hijriDiff = -1;
-                    edHijriSet.setText("إرجاع يوم");
+                    edHijriSet.setText(getString(R.string.subtractADay));
                 } else if (which == 4) {
                     hijriDiff = -2;
-                    edHijriSet.setText("إرجاع يومين");
+                    edHijriSet.setText(getString(R.string.subtractTwoDay));
                 }
                 String hijriDiffTit = (arrayAdapter.getItem(which));
                 edHijriSet.setText(hijriDiffTit);
@@ -842,7 +797,7 @@ public class SettingsActivity extends Activity {
 
     private void saveChanges() {
         final ProgressDialog pd = new ProgressDialog(activity);
-        pd.setMessage("جاري الحفظ...");
+        pd.setMessage(getString(R.string.saving));
         pd.show();
         pd.setCanceledOnTouchOutside(false);
         WS.UpdateSettings(activity, settings, new OnLoadedFinished() {
@@ -866,9 +821,13 @@ public class SettingsActivity extends Activity {
     private void setColor() {
         try {
             Window window = activity.getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(activity, R.color.back_text));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(ContextCompat.getColor(activity, R.color.back_text));
+            }
         } catch (NoSuchMethodError ex) {
             ex.printStackTrace();
         }
@@ -877,19 +836,17 @@ public class SettingsActivity extends Activity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-//        startActivity(new Intent(SettingsActivity.this, MainActivity.class));
         finish();
     }
 
     private void showDialog() {
         final Dialog dialog = new Dialog(this);
         dialog.setTitle(getString(R.string.location_hints));
-        View view = getLayoutInflater().inflate(R.layout.dialog_main, null);
+        @SuppressLint("InflateParams") View view = getLayoutInflater().inflate(R.layout.dialog_main, null);
         lv = (ListView) view.findViewById(R.id.custom_list);
         ed_location = (EditText) view.findViewById(R.id.ed_location);
         DBO.open();
         cities = DBO.getAllCity();
-        Log.i("+++city", cities.size() + "  ");
         DBO.close();
         locations = new LocationAdapter(SettingsActivity.this, cities);
         lv.setAdapter(locations);
@@ -898,7 +855,6 @@ public class SettingsActivity extends Activity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 cityId = ((City) lv.getItemAtPosition(i)).getId();
                 City city = ((City) lv.getItemAtPosition(i));
-//                Toast.makeText(SettingsActivity.this,city.getId()+" :"+city.getName(), Toast.LENGTH_SHORT).show();
                 updateMasjedCity(city);
                 dialog.dismiss();
 
@@ -932,6 +888,7 @@ public class SettingsActivity extends Activity {
 
     }
 
+    @SuppressLint("SetTextI18n")
     private void updateMasjedCity(final City city) {
         if (sp.getInt("priority", 0) == 1) {
             if (Utils.isOnline(activity)) {
@@ -940,6 +897,7 @@ public class SettingsActivity extends Activity {
                 pd.setCanceledOnTouchOutside(false);
                 pd.show();
                 WS.updateCity(activity, city.getId(), new OnLoadedFinished() {
+                    @SuppressLint("SetTextI18n")
                     @Override
                     public void onSuccess(String response) {
                         if (pd.isShowing())

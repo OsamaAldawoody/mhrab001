@@ -2,14 +2,13 @@ package com.newsolution.almhrab;
 
 import android.util.Log;
 
-import java.text.DecimalFormat;
 
 public class Hijri_Cal_Tools {
-    public static double e3;
-    public static double e4;
-    public static int hijriDay;
-    public static int hijriMonth;
-    public static int hijriYear;
+    private static double e3;
+    private static double e4;
+    private static int hijriDay;
+    private static int hijriMonth;
+    private static int hijriYear;
     private static double lat1;
     private static double lat2;
     private static double lon1;
@@ -17,34 +16,34 @@ public class Hijri_Cal_Tools {
     private static double mday;
     private static double mmonth;
     private static double myear;
-    public static double n3;
-    public static double n4;
-    public static double v1;
-    public static double v10;
-    public static double v11;
-    public static double v12;
-    public static double v14;
-    public static double v15;
-    public static double v16;
-    public static double v17;
-    public static double v18;
-    public static double v2;
-    public static double v20;
-    public static double v22;
-    public static double v23;
-    public static double v25;
-    public static double v27;
-    public static double v28;
-    public static double v3;
-    public static double v30;
-    public static double v31;
-    public static double v4;
-    public static double v5;
-    public static double v6;
-    public static double v7;
-    public static double v8;
-    public static double v9;
-    public static double valpha;
+    private static double n3;
+    private static double n4;
+    private static double v1;
+    private static double v10;
+    private static double v11;
+    private static double v12;
+    private static double v14;
+    private static double v15;
+    private static double v16;
+    private static double v17;
+    private static double v18;
+    private static double v2;
+    private static double v20;
+    private static double v22;
+    private static double v23;
+    private static double v25;
+    private static double v27;
+    private static double v28;
+    private static double v3;
+    private static double v30;
+    private static double v31;
+    private static double v4;
+    private static double v5;
+    private static double v6;
+    private static double v7;
+    private static double v8;
+    private static double v9;
+    private static double valpha;
 
     public static void setDay(Double d) {
         Log.i("day before", mday + "");
@@ -53,9 +52,6 @@ public class Hijri_Cal_Tools {
         calculation(lat1, lat2, lon1, lon2, myear, mmonth, mday);
     }
 
-    public static void print(String s) {
-        System.out.println(s);
-    }
 
     public static void calculation(double lati1, double lati2, double longi1, double longi2, double year, double month, double day) {
         lat1 = lati1;
@@ -112,7 +108,7 @@ public class Hijri_Cal_Tools {
         hijriYear = (int) (((30.0d * N) + J) - 30.0d);
     }
 
-    public static String getTimeHHMM(double decimalTime) {
+    private static String getTimeHHMM(double decimalTime) {
         int hours = (int) decimalTime;
         int minutes = (int) ((decimalTime - ((double) ((int) decimalTime))) * 60.0d);
         if (((int) ((((decimalTime - ((double) ((int) decimalTime))) * 60.0d) - ((double) ((int) ((decimalTime - ((double) ((int) decimalTime))) * 60.0d)))) * 60.0d)) >= 30) {
@@ -150,17 +146,6 @@ public class Hijri_Cal_Tools {
         }
     }
 
-    public static int getHijriDay() {
-        return hijriDay;
-    }
-
-    public static int getHijriMonth() {
-        return hijriMonth;
-    }
-
-    public static int getHijriYear() {
-        return hijriYear;
-    }
 
     public static String getDhuhur() {
 //        Log.i("////*",v12+"");
@@ -187,89 +172,10 @@ public class Hijri_Cal_Tools {
         return getTimeHHMM(v28);
     }
 
-    public static Double getDhuhurDouble() {
-        return Double.valueOf(v12);
-    }
 
-    public static Double getAsarDouble() {
-        return Double.valueOf(v12 + v16);
-    }
-
-    public static Double getSunRiseDouble() {
-        return Double.valueOf(v23);
-    }
-
-    public static Double getMagribDouble() {
-        return Double.valueOf(v25);
-    }
-
-    public static Double getFajerDouble() {
-        return Double.valueOf(v31);
-    }
-
-    public static Double getIshaaDouble() {
-        return Double.valueOf(v28);
-    }
-
-    public static String getDuha() {
-        return getTimeHHMM(v23 + 0.25d);
-    }
-
-    public static double getV20() {
-        return v20;
-    }
-
-    public static void setV20(double n20) {
+    private static void setV20(double n20) {
         v20 = n20;
     }
 
-    public static int[] getTimeHHMMCal(double decimalTime) {
-        int hours = (int) decimalTime;
-        int minutes = (int) ((decimalTime - ((double) ((int) decimalTime))) * 60.0d);
-        if (((int) ((((decimalTime - ((double) ((int) decimalTime))) * 60.0d) - ((double) ((int) ((decimalTime - ((double) ((int) decimalTime))) * 60.0d)))) * 60.0d)) >= 30) {
-            minutes++;
-        }
-        if (minutes == 60) {
-            minutes = 0;
-            hours++;
-        }
-        int[] arrayTime = new int[]{hours, minutes};
-        Log.i("Hijri", hours + ":" + minutes);
-        return arrayTime;
-    }
 
-    public static int[] getDhuhurCal() {
-        return getTimeHHMMCal(v12);
-    }
-
-    public static int[] getAsarCal() {
-        return getTimeHHMMCal(v12 + v16);
-    }
-
-    public static int[] getSunRiseCal() {
-        return getTimeHHMMCal(v23);
-    }
-
-    public static int[] getMagribCal() {
-        return getTimeHHMMCal(v25);
-    }
-
-    public static int[] getFajerCal() {
-        return getTimeHHMMCal(v31);
-    }
-
-    public static int[] getIshaaCal() {
-        return getTimeHHMMCal(v28);
-    }
-
-    public static String calDMS(double latlng) {
-        String dms = "";
-        int degree = (int) latlng;
-        double min = latlng - degree;
-        Log.i("dms// 1 : ", "" + min);
-        int minutes = (int) (min * 60);
-        Log.i("dms//: ", "" + minutes);
-        dms = degree + ":" + minutes;
-        return dms;
-    }
 }

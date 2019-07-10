@@ -24,12 +24,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
-import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.Constants;
 import com.newsolution.almhrab.AppConstants.DBOperations;
 import com.newsolution.almhrab.AppConstants.DateHigri;
@@ -58,7 +55,6 @@ import java.net.SocketException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -77,7 +73,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
     private final String TAG = PreviewLiveStreamActivity.class.getSimpleName();
 
     public static String streamaxiaStreamName = "AlMhrab_";
-    public final static int bitrate = 500;
     public final static int width = 720;
     public final static int height = 1280;
 
@@ -89,30 +84,18 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
     private StreamaxiaPublisher mPublisher;
     public static String droidkufiBold = "fonts/droid_kufi_bold.ttf";
     public static String droidkufi = "fonts/droidkufi_regular.ttf";
-    private Typeface font;
     private Typeface fontDroidkufi;
     public static String roboto = "fonts/roboto.ttf";
     private Typeface fontRoboto;
-    public static String comfort = "fonts/comfort.ttf";//comfort
-    private Typeface fontComfort;
     public static String arial = "fonts/ariblk.ttf";//comfort
     private Typeface fontArial;
-    public static String bangla_mn_bold = "fonts/bangla_mn_bold.ttf";//comfort
-    public static String sansBold = "fonts/neosans_black.otf";//comfort
-    private Typeface fontBangla_mn_bold;
-    private Typeface fontSansBold;
     private Typeface ptBoldHeading;
 
     TextView dateTodayM, dateTodayH;
 
-    private TextView tvName;
-    TextView date1, time, amPm;
-    private static String recPath;//= Environment.getExternalStorageDirectory().getPath() + "/" +Utils.getDateTime()+".mp4";
-    private File saveDir;
-    private VideoView vvVideo;
-    private RelativeLayout rlLivingStream;
-    private Handler timerHandler = new Handler();
-    private Runnable timerRun;
+    TextView time, amPm;
+    private static String recPath;
+
     private CountDownTimer countDownTimer;
     private boolean showLive = true;
     public static final String BROADCAST = Constants.PACKAGE_NAME + ".Activity.android.action.broadcast";
@@ -139,18 +122,12 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
     double day = today.get(Calendar.DAY_OF_MONTH);
     double month = today.get(Calendar.MONTH) + 1;
     double year = today.get(Calendar.YEAR);
-    int matNumCur = 0;
-    ArrayList<String> advs = new ArrayList<String>();
-    ArrayList<String> azkar = new ArrayList<String>();
     public String nextPray;
     String[] mosquSettings;
     String[] prayTimes;
     private Timer timer;
-    private TimerTask async;
     private int cityId;
     private DBOperations DBO;
-    private Timer timerPray;
-    private TimerTask asyncPray;
     private Activity activity;
     private City city;
     private boolean isFajrEkamaIsTime, isAlShrouqEkamaIsTime, isDhuhrEkamaIsTime, ishaEkamaIsTime, isMagribEkamaIsTime, isAsrEkamaIsTime;
@@ -170,7 +147,7 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_emam_view);
         activity = this;
-        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
+        sp = getSharedPreferences(Utils.PREFS, MODE_PRIVATE);
         isStreaming = getIntent().getBooleanExtra("isStreaming", false);
         ButterKnife.bind(this);
 
@@ -189,12 +166,9 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
 
         setStreamerDefaultValues();
 
-        font = Typeface.createFromAsset(getAssets(), droidkufiBold);
         fontArial = Typeface.createFromAsset(getAssets(), arial);
         fontRoboto = Typeface.createFromAsset(getAssets(), roboto);
         fontDroidkufi = Typeface.createFromAsset(getAssets(), droidkufi);
-        fontBangla_mn_bold = Typeface.createFromAsset(getAssets(), bangla_mn_bold);
-        fontSansBold = Typeface.createFromAsset(getAssets(), sansBold);
         ptBoldHeading = Typeface.createFromAsset(getAssets(), "fonts/pt_bold_heading.ttf");
 
         DBO = new DBOperations(this);
@@ -214,7 +188,7 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
         gv.setMousqeSettings(settings.getFajrEkama() + "", settings.getAlShrouqEkama() + "", settings.getDhuhrEkama() + ""
                 , settings.getAsrEkama() + "", settings.getMagribEkama() + "", settings.getIshaEkama() + "");
         mosquSettings = gv.getMousqeSettings();
-        Log.i("shor: ", settings.getAlShrouqEkama() + " time");
+
         spedit.putString("ifajer", settings.getFajrEkama() + "").commit();
         spedit.putString("ishroq", settings.getAlShrouqEkama() + "").commit();
         spedit.putString("idhor", settings.getDhuhrEkama() + "").commit();
@@ -223,7 +197,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
         spedit.putString("iisha", settings.getIshaEkama() + "").commit();
 
 
-//        prayTimes=  gv.getPrayTimes();
         cfajr = sp.getString("suh", "");
         csunrise = sp.getString("sun", "");
         cdhohr = sp.getString("duh", "");
@@ -238,11 +211,9 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
         icmaghrib = sp.getString("iqmagrib", "");
         icisha = sp.getString("iqisha", "");
 
-        ///// start service /////
         SalaatAlarmReceiver sar = new SalaatAlarmReceiver();
         sar.cancelAlarm(this);
         sar.setAlarm(this);
-        ///// start service /////
 
         buildUI();
         checkTime();
@@ -254,8 +225,7 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
     }
 
     private void buildUI() {
-        rlLivingStream = (RelativeLayout) findViewById(R.id.rlLivingStream);
-        tvName = (TextView) findViewById(R.id.tvName);
+        TextView tvName = (TextView) findViewById(R.id.tvName);
         dateTodayM = (TextView) findViewById(R.id.dateTodayM);
         dateTodayH = (TextView) findViewById(R.id.dateTodayH);
         time = (TextView) findViewById(R.id.Time);
@@ -307,8 +277,7 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
         ishaTitle.setTypeface(fontDroidkufi);
 
         timer = new Timer();
-        //try {
-        async = new TimerTask() {
+        TimerTask async = new TimerTask() {
             @Override
             public void run() {
                 try {
@@ -331,7 +300,7 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
         DateHigri hd = new DateHigri();
         dateTodayM.setText(Utils.writeMDate(this, hd));
         dateTodayH.setText(Utils.writeHDate(this, hd));
-        DateFormat timeNow = new SimpleDateFormat("hh:mmss", new Locale("en"));
+        DateFormat timeNow = new SimpleDateFormat("hh:mmss", Locale.ENGLISH);
         DateFormat ampm = new SimpleDateFormat("a", new Locale("ar"));
         amPm.setText(ampm.format(Calendar.getInstance().getTime()));
         Calendar c = Calendar.getInstance();
@@ -350,7 +319,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
 
     private void startKhotbaTimer() {
         long khotbaPeriod = (sp.getInt("appearPeriod", 20)) * 60 * 1000;
-        Log.i("khotbaPeriod: ", khotbaPeriod + "");
         countDownTimer = new CountDownTimer(khotbaPeriod, 1000) {
 
             public void onTick(long millisUntilFinished) {
@@ -382,7 +350,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
 
 
         } catch (Exception e) {
-            Log.e("//// ", e.getMessage());
             e.printStackTrace();
             cfajr = "00:00";
             csunrise = "00:00";
@@ -399,13 +366,9 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
             ishaTime.setText((cisha));
 
             setIqamaTime();
-//            Toast.makeText(MainActivity.this, "" + getString(R.string.warnning), Toast.LENGTH_SHORT).show();
-//            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-//            finish();
         }
-//}
         try {
-            SimpleDateFormat spd = new SimpleDateFormat("HH:mm:ss", new Locale("en"));
+            SimpleDateFormat spd = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH);
             String t1 = cfajr + ":00";
             Date time1 = spd.parse(t1);
             Calendar c1 = Calendar.getInstance();
@@ -451,11 +414,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
             Date time55 = spd.parse(t55);
             Calendar c55 = Calendar.getInstance();
             c55.setTime(time55);
-//            String t6 = csunrise + ":00";
-//            Date time6 = new SimpleDateFormat("HH:mm:ss").parse(t6);
-//            Calendar c6 = Calendar.getInstance();
-//            c6.setTime(time6);
-
 
             String timeNow = hour + ":" + minute + ":00";
             Date d = spd.parse(timeNow);
@@ -468,28 +426,17 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
             calendar.add(Calendar.DAY_OF_YEAR, 1);
             Date dtomorrow = calendar.getTime();
 
-            DateFormat cdate = new SimpleDateFormat("MM/dd/yyyy", new Locale("en"));
-            DateFormat ctime = new SimpleDateFormat("HH:mm:ss", new Locale("en"));
+            DateFormat cdate = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+            DateFormat ctime = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH);
 
             String dayAsString = cdate.format(dtoday);
             String tomorrowAsString = cdate.format(dtomorrow);
             String timeAsString = ctime.format(Calendar.getInstance().getTime());
-            String npt = "";
 
             clearAllStyles();
-//            mosquetxt = (TextView) findViewById(R.id.nextPrayTime);
-//            String cur = mosquetxt.getText().toString();
 
-
-//            if(cur.equals("00:01")){
-//                Intent cp = new Intent (getApplicationContext(), CurruntPray.class);
-//                startActivity(cp);
-//            }
-
-//            if (sp.getString("suh", "").toLowerCase().equals(timeAsString.toLowerCase())) {
             if ((c1.getTime().before(now) || c1.getTime().equals(now))
                     && ((c11.getTime().after(now)) || c11.getTime().equals(now))) {
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t11));
                 setBackground(llFajer);
                 setTextColor(fajrTitle);
                 setTextColor(fajrTime);
@@ -497,7 +444,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
             }
             if ((c2.getTime().before(now) || c2.getTime().equals(now))
                     && ((c22.getTime().after(now)) || c22.getTime().equals(now))) {
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t22));
                 setBackground(llDuhr);
                 setTextColor(duhrTitle);
                 setTextColor(dhuhrTime);
@@ -506,7 +452,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
             }
             if ((c3.getTime().before(now) || c3.getTime().equals(now))
                     && ((c33.getTime().after(now)) || c33.getTime().equals(now))) {
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t33));
                 setBackground(llAsr);
                 setTextColor(asrTime);
                 setTextColor(asrTitle);
@@ -514,7 +459,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
             }
             if ((c4.getTime().before(now) || c4.getTime().equals(now))
                     && ((c44.getTime().after(now)) || c44.getTime().equals(now))) {
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t44));
                 setBackground(llMagrib);
                 setTextColor(maghribTime);
                 setTextColor(maghribTitle);
@@ -522,7 +466,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
             }
             if ((c5.getTime().before(now) || c5.getTime().equals(now))
                     && ((c55.getTime().after(now)) || c55.getTime().equals(now))) {
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (t55));
                 setBackground(llIsha);
                 setTextColor(ishaTime);
                 setTextColor(ishaTitle);
@@ -532,44 +475,37 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
 
             final GlobalVars globalVariable = (GlobalVars) getApplicationContext();
             if (now.before(c1.getTime())) {
-//                spedit.putString("phoneAlert", Utils.setPhoneAlert(icfajr,settings.getPhoneShowAlertsBeforEkama()+"")).commit();
                 nextPray = "fajr";
                 globalVariable.setNextPray("fajr");
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t1)));
                 setBackground(llFajer);
                 setTextColor(fajrTitle);
                 setTextColor(fajrTime);
             } else if (now.after(c1.getTime()) && now.before(c2.getTime())) {
                 nextPray = "dhuhr";
                 globalVariable.setNextPray("dhuhr");
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t2)));
                 setBackground(llDuhr);
                 setTextColor(duhrTitle);
                 setTextColor(dhuhrTime);
             } else if (now.after(c2.getTime()) && now.before(c3.getTime())) {
                 nextPray = "asr";
                 globalVariable.setNextPray("asr");
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t3)));
                 setBackground(llAsr);
                 setTextColor(asrTime);
                 setTextColor(asrTitle);
             } else if (now.after(c3.getTime()) && now.before(c4.getTime())) {
                 nextPray = "maghrib";
                 globalVariable.setNextPray("maghrib");
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t4)));
                 setBackground(llMagrib);
                 setTextColor(maghribTime);
                 setTextColor(maghribTitle);
             } else if (now.after(c4.getTime()) && now.before(c5.getTime())) {
                 nextPray = "isha";
                 globalVariable.setNextPray("isha");
-                npt = getDifTime(dayAsString, timeAsString, dayAsString, "" + (getIqama(t5)));//getIqama(t5)
                 setBackground(llIsha);
                 setTextColor(ishaTime);
                 setTextColor(ishaTitle);
             } else if (now.after(c5.getTime())) {
                 globalVariable.setNextPray("fajr");
-                npt = getDifTime(dayAsString, timeAsString, tomorrowAsString, "" + (getIqama(t1)));
                 setBackground(llFajer);
                 setTextColor(fajrTitle);
                 setTextColor(fajrTime);
@@ -595,7 +531,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
             spedit.putString("iqsun", settings.getAlShrouqEkamaTime() + ":00").commit();
         else
             spedit.putString("iqsun", Utils.getIqama(csunrise, mosquSettings[1])).commit();
-//                spedit.putString("iqsun", csunrise).commit();
         if (isDhuhrEkamaIsTime)
             spedit.putString("iqduh", settings.getDhuhrEkamaTime() + ":00").commit();
         else
@@ -623,82 +558,11 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
         icisha = sp.getString("iqisha", "");
     }
 
-    private String getDifTime(String cdate, String ctime, String tdate, String ttime) {
-        String val = "";
-        String dateStart = cdate + " " + ctime;
-        String dateStop = tdate + " " + ttime;
-
-        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss", new Locale("en"));
-        Date d1 = null;
-        Date d2 = null;
-        try {
-            d1 = format.parse(dateStart);
-            d2 = format.parse(dateStop);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        long diff = d2.getTime() - d1.getTime();
-        long diffSeconds = diff / 1000 % 60;
-        long diffMinutes = diff / (60 * 1000) % 60;
-        long diffHours = diff / (60 * 60 * 1000) % 24;
-        long diffDays = diff / (24 * 60 * 60 * 1000);
-
-        String fh = "";
-        String fm = "";
-//        if (diffHours < 10) {
-////            fh = "0" + diffHours;
-//            fh = "" + diffHours;
-//        } else {
-        fh = "" + diffHours;
-//        }
-//        if (diffMinutes < 10) {
-//            fm = "" + diffMinutes;
-////            fm = "0" + diffMinutes;
-//        } else {
-        fm = "" + diffMinutes;
-//        }
-        if (diffHours > 0)
-            val = fh + " " + getString(R.string.h) + " و " + fm + " " + getString(R.string.m);
-        else
-            val = fm + " " + getString(R.string.m);
-
-        return val;
-    }
 
     private String convTime(String time) {
-        String intime[] = time.split(":");
+        String[] intime = time.split(":");
         int hour = Integer.parseInt(intime[0]);
         int minutes = Integer.parseInt(intime[1]);
-        String disTime;
-        String h;
-        String m;
-//        if (hour < 12) {
-//            if (hour < 10) {
-//                h = "0" + hour;
-//            } else {
-//                h = "" + hour;
-//            }
-//            if (minutes < 10) {
-//                m = "0" + minutes;
-//            } else {
-//                m = "" + minutes;
-//            }
-//            disTime = h + ":" + m + " " + getString(R.string.AM);
-//        } else  {
-//            hour = hour - 12;
-//            if (hour < 10) {
-//                h = "0" + hour;
-//            } else {
-//                h = "" + hour;
-//            }
-//            if (minutes < 10) {
-//                m = "0" + minutes;
-//            } else {
-//                m = "" + minutes;
-//            }
-        //            disTime = h + ":" + m + " " + getString(R.string.PM);
-
         if (minutes == 60) {
             minutes = 0;
             hour++;
@@ -706,51 +570,32 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
         String timeHHMM;
         if (hour < 10) {
             if (minutes < 10) {
-                timeHHMM = "" + String.valueOf(hour) + ":0" + String.valueOf(minutes);
+                timeHHMM = "" + hour + ":0" + minutes;
             } else {
-                timeHHMM = "" + String.valueOf(hour) + ":" + String.valueOf(minutes);
+                timeHHMM = "" + hour + ":" + minutes;
             }
-            return timeHHMM;//+ "ص";
+            return timeHHMM;
         } else if (hour > 12) {
             hour = hour - 12;
             if (minutes < 10) {
-                timeHHMM = "" + String.valueOf(hour) + ":0" + String.valueOf(minutes);
+                timeHHMM = "" + hour + ":0" + minutes;
             } else {
-                timeHHMM = "" + String.valueOf(hour) + ":" + String.valueOf(minutes);
+                timeHHMM = "" + hour + ":" + minutes;
             }
-            return timeHHMM;//+ "م";
+            return timeHHMM;
         } else {
             if (minutes < 10) {
-                timeHHMM = String.valueOf(hour) + ":0" + String.valueOf(minutes);
+                timeHHMM = hour + ":0" + minutes;
             } else {
-                timeHHMM = String.valueOf(hour) + ":" + String.valueOf(minutes);
+                timeHHMM = hour + ":" + minutes;
             }
             if (hour == 12) {
-                return timeHHMM;// + "م";
+                return timeHHMM;
             }
-            return timeHHMM;// + "ص";
+            return timeHHMM;
         }
-
-//        return timeHHMM;
-        //  return time;
     }
 
-    private String getIqama(String time) {
-//       time=time.replace("ص","").replace("م","");
-        String intime[] = time.split(":");
-        int hour = Integer.parseInt(intime[0]);
-        int minutes = Integer.parseInt(intime[1]);
-        int h = hour;
-        long m = minutes + Long.parseLong("00");//getIqamaTime()
-
-        if (m > 59) {
-            m = m - 60;
-            h++;
-        }
-        String Iqama = h + ":" + m + ":00";
-        // Log.e("pray + iqama = ", time + " -- " + Iqama);
-        return Iqama;
-    }
 
     private void clearAllStyles() {
         fajrTitle.setTextColor(Color.parseColor("#ffffff"));
@@ -758,48 +603,37 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
         fajrTime.setTextColor(Color.parseColor("#ffffff"));
         fajrTime.setBackgroundResource(0);
         llFajer.setBackgroundResource(0);
-//        setTextSize(fajrTitle);
-//        setTextSize(fajrTime);
 
         sunriseTime.setTextColor(Color.parseColor("#ffffff"));
         sunriseTime.setBackgroundColor(0);
         llSun.setBackgroundResource(0);
         shroqTitle.setTextColor(Color.parseColor("#ffffff"));
         shroqTitle.setBackgroundResource(0);
-//        setTextSize(sunriseTime);
-//        setTextSize(shroqTitle);
 
         duhrTitle.setTextColor(Color.parseColor("#ffffff"));
         duhrTitle.setBackgroundColor(0);
         dhuhrTime.setTextColor(Color.parseColor("#ffffff"));
         dhuhrTime.setBackgroundResource(0);
         llDuhr.setBackgroundResource(0);
-//        setTextSize(dhuhrTime);
-//        setTextSize(duhrTitle);
 
         asrTitle.setTextColor(Color.parseColor("#ffffff"));
         asrTitle.setBackgroundColor(0);
         asrTime.setTextColor(Color.parseColor("#ffffff"));
         asrTime.setBackgroundResource(0);
         llAsr.setBackgroundResource(0);
-//        setTextSize(asrTime);
-//        setTextSize(asrTitle);
+
 
         maghribTitle.setTextColor(Color.parseColor("#ffffff"));
         maghribTitle.setBackgroundColor(0);
         maghribTime.setTextColor(Color.parseColor("#ffffff"));
         maghribTime.setBackgroundResource(0);
         llMagrib.setBackgroundResource(0);
-//        setTextSize(maghribTitle);
-//        setTextSize(maghribTime);
 
         ishaTitle.setTextColor(Color.parseColor("#ffffff"));
         ishaTitle.setBackgroundColor(0);
         ishaTime.setTextColor(Color.parseColor("#ffffff"));
         ishaTime.setBackgroundResource(0);
         llIsha.setBackgroundResource(0);
-//        setTextSize(ishaTitle);
-//        setTextSize(ishaTime);
     }
 
     private void setTextColor(TextView textView) {
@@ -820,22 +654,20 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
             city = DBO.getCityById(cityId);
             settings = DBO.getSettings();
             DBO.close();
-            Log.e("//// ", "" + sp.getInt("cityId", 1));
             lat1 = sp.getInt("lat1", city.getLat1());
             lat2 = sp.getInt("lat2", city.getLat2());
             long1 = sp.getInt("long1", city.getLon1());
             long2 = sp.getInt("long2", city.getLon2());
 
-//            Calendar today = Calendar.getInstance();
             int hour = today.get(Calendar.HOUR_OF_DAY);
             int minute = today.get(Calendar.MINUTE);
             String timeNow = hour + ":" + minute + ":00";
-            Date d = new SimpleDateFormat("HH:mm:ss", new Locale("en")).parse(timeNow);
+            Date d = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH).parse(timeNow);
             Calendar cnow = Calendar.getInstance();
             cnow.setTime(d);
             Date now = cnow.getTime();
             String t5 = cisha + ":00";
-            Date time5 = new SimpleDateFormat("HH:mm:ss").parse(t5);
+            Date time5 = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH).parse(t5);
             Calendar c5 = Calendar.getInstance();
             c5.setTime(time5);
             if (now.after(c5.getTime())) {
@@ -843,30 +675,25 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
                 Calendar c = Calendar.getInstance();
                 c.setTime(dt);
                 c.add(Calendar.DATE, 1);
-                dt = c.getTime();
                 day = c.get(Calendar.DAY_OF_MONTH);
                 month = c.get(Calendar.MONTH) + 1;
                 year = c.get(Calendar.YEAR);
             }
-        } catch (ParseException e0) {
+        } catch (ParseException ignored) {
         }
         Hijri_Cal_Tools.calculation((double) lat1, (double) lat2, (double) long1, (double) long2,
                 year, month, day);
-        Log.e("///init()", lat1 + "," + lat2 + "," + long1 + "," + long2 + "," + year + "," +
-                month + "," + day);
+
         cfajr = Hijri_Cal_Tools.getFajer();
         csunrise = Hijri_Cal_Tools.getSunRise();
         cdhohr = Hijri_Cal_Tools.getDhuhur();
         casr = Hijri_Cal_Tools.getAsar();
         cmaghrib = Hijri_Cal_Tools.getMagrib();
         cisha = Hijri_Cal_Tools.getIshaa();
-        String[] prayTimes = {cfajr, csunrise, cdhohr, casr, cmaghrib, cisha};
-        return prayTimes;
+        return new String[]{cfajr, csunrise, cdhohr, casr, cmaghrib, cisha};
     }
 
     public void getPrayerTimes() {
-//        Toast.makeText(activity,sp.getInt("cityId",1)+"", Toast.LENGTH_SHORT).show();
-        Context context;
         try {
             prayTimes = calculate();
             if (prayTimes.length > 0) {
@@ -897,7 +724,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
                     spedit.putString("iqsun", settings.getAlShrouqEkamaTime() + ":00").commit();
                 else
                     spedit.putString("iqsun", Utils.getIqama(csunrise, mosquSettings[1])).commit();
-//                spedit.putString("iqsun", csunrise).commit();
                 if (isDhuhrEkamaIsTime)
                     spedit.putString("iqduh", settings.getDhuhrEkamaTime() + ":00").commit();
                 else
@@ -923,79 +749,11 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
                 icasr = sp.getString("iqasr", "");
                 icmaghrib = sp.getString("iqmagrib", "");
                 icisha = sp.getString("iqisha", "");
-//                Log.i("****", cdhohr);
             }
             gv.setPrayTimes(cfajr, csunrise, cdhohr, casr, cmaghrib, cisha);
-//            checkNextPray();
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public void checkNextPray() {
-        Calendar today = Calendar.getInstance();
-        int hour = today.get(Calendar.HOUR_OF_DAY);
-        int minute = today.get(Calendar.MINUTE);
-        try {
-            String t1 = cfajr + ":00";
-            Date time1 = new SimpleDateFormat("HH:mm:ss").parse(t1);
-            Calendar c1 = Calendar.getInstance();
-            c1.setTime(time1);
-
-            String t2 = cdhohr + ":00";
-            Date time2 = new SimpleDateFormat("HH:mm:ss").parse(t2);
-            Calendar c2 = Calendar.getInstance();
-            c2.setTime(time2);
-            String t3 = casr + ":00";
-            Date time3 = new SimpleDateFormat("HH:mm:ss").parse(t3);
-            Calendar c3 = Calendar.getInstance();
-            c3.setTime(time3);
-            String t4 = cmaghrib + ":00";
-            Date time4 = new SimpleDateFormat("HH:mm:ss").parse(t4);
-            Calendar c4 = Calendar.getInstance();
-            c4.setTime(time4);
-            String t5 = cisha + ":00";
-            Date time5 = new SimpleDateFormat("HH:mm:ss").parse(t5);
-            Calendar c5 = Calendar.getInstance();
-            c5.setTime(time5);
-
-            String timeNow = hour + ":" + minute + ":00";
-            Date d = new SimpleDateFormat("HH:mm:ss", new Locale("en")).parse(timeNow);
-            Calendar cnow = Calendar.getInstance();
-            cnow.setTime(d);
-            Date now = cnow.getTime();
-
-            if (now.before(c1.getTime())) {
-                nextPray = "fajr";
-                spedit.putString("next_adan", "fajr").commit();
-                spedit.putString("phoneAlert", Utils.setPhoneAlert(icfajr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
-            } else if (now.after(c1.getTime()) && now.before(c2.getTime())) {
-                nextPray = "dhuhr";
-                spedit.putString("phoneAlert", Utils.setPhoneAlert(icdhohr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
-                spedit.putString("next_adan", "dhuhr").commit();
-            } else if (now.after(c2.getTime()) && now.before(c3.getTime())) {
-                nextPray = "asr";
-                spedit.putString("next_adan", "asr").commit();
-                spedit.putString("phoneAlert", Utils.setPhoneAlert(icasr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
-
-            } else if (now.after(c3.getTime()) && now.before(c4.getTime())) {
-                nextPray = "magrib";
-                spedit.putString("phoneAlert", Utils.setPhoneAlert(icmaghrib, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
-                spedit.putString("next_adan", "magrib").commit();
-            } else if (now.after(c4.getTime()) && now.before(c5.getTime())) {
-                nextPray = "isha";
-                spedit.putString("phoneAlert", Utils.setPhoneAlert(icisha, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
-                spedit.putString("next_adan", "isha").commit();
-            } else if (now.after(c5.getTime())) {
-                spedit.putString("phoneAlert", Utils.setPhoneAlert(icfajr, settings.getPhoneShowAlertsBeforEkama() + "")).commit();
-                nextPray = "fajr";
-                spedit.putString("next_adan", "fajr").commit();
-            }
-            gv.setNextPray(nextPray);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 
     private void isStreaming() {
@@ -1020,7 +778,7 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
                     == PackageManager.PERMISSION_GRANTED) {
 
                 if (isStreaming && Utils.isOnline(activity)) {
-                    saveDir = new File(Environment.getExternalStorageDirectory(), "AlMhrab");
+                    File saveDir = new File(Environment.getExternalStorageDirectory(), "AlMhrab");
                     saveDir.mkdirs();
                     recPath = saveDir.getAbsolutePath() + "/AlMhrab_" + sp.getInt("masjedId", -1)
                             + "_" + Utils.getFormattedCurrentDate() + ".mp4";
@@ -1028,16 +786,15 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
                     stopChronometer();
                     mChronometer.setBase(SystemClock.elapsedRealtime());
                     mChronometer.start();
-//                      mPublisher.setVideoBitRate(720);
                     mPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
                     mPublisher.startRecord(recPath);
                 }
             } else {
                 finish();
-                Toast.makeText(this, "يجب السماح باستخدام الكاميرا", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.allowCameraPermissions), Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
-            Toast.makeText(this, "لا يوجد كاميرا متصلة", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.noCameraConnected), Toast.LENGTH_LONG).show();
             e.printStackTrace();
             finish();
         }
@@ -1052,7 +809,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
                 timer.purge();
             }
             mCameraView.stopCamera();
-//            mPublisher.pauseRecord();
         } catch (Exception e) {
             e.printStackTrace();
             finish();
@@ -1077,17 +833,11 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
                 stopChronometer();
                 MainActivity.isOpenSermon = true;
                 Log.i("recPath: ", recPath);
-//                DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
-//                DateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
-//                Date date = df.parse(khotab.getDateKhotab());
-//                String DateKhotab = sdf.format(date);
 
                 Intent intent = new Intent(BROADCAST);
                 Bundle extras = new Bundle();
                 extras.putBoolean("isKhotba", false);
                 extras.putString("recPath", recPath);
-//                extras.putInt("IdKhotab", khotab.getId());
-//                extras.putString("DateKhotab", DateKhotab);
                 intent.putExtras(extras);
                 sendBroadcast(intent);
             }
@@ -1096,26 +846,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
             finish();
         }
     }
-
-//    private void checkTime() {
-//        DateHigri hd = new DateHigri();
-//        date1.setText(Utils.writeIslamicDate1(this, hd));
-//        DateFormat timeNow = new SimpleDateFormat("hh:mmss", new Locale("en"));
-//        DateFormat ampm = new SimpleDateFormat("a", new Locale("ar"));
-//        amPm.setText(ampm.format(Calendar.getInstance().getTime()));
-//        Calendar c = Calendar.getInstance();
-//        String timeText = timeNow.format(c.getTime());
-//        SpannableString string = new SpannableString(timeText);
-//        string.setSpan(new RelativeSizeSpan((0.5f)), 5, 7, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-//        time.setText(string);
-//        final Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                checkTime();
-//            }
-//        }, 1000);
-//    }
 
     private void stopStreaming() {
         mPublisher.stopPublish();
@@ -1134,7 +864,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
             if (mPublisher != null) {
                 List<Size> sizes = mPublisher.getSupportedPictureSizes(getResources().getConfiguration().orientation);
                 Size resolution = sizes.get(0);
-//                mPublisher.setVideoOutputResolution(resolution.width, resolution.height, this.getResources().getConfiguration().orientation);
                 mPublisher.setVideoOutputResolution(480, 640, this.getResources().getConfiguration().orientation);
             }
         } catch (Exception e) {
@@ -1149,7 +878,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
                 @Override
                 public void run() {
                     Log.i("////*: ", "[" + msg + "]");
-//                    Toast.makeText(activity, "[" + msg + "]", Toast.LENGTH_LONG).show();
                 }
             });
         } catch (Exception e) {
@@ -1157,10 +885,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
         }
     }
 
-
-    /*
-     * EncoderHandler implementation
-     * */
 
     @Override
     public void onNetworkWeak() {
@@ -1178,10 +902,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
     }
 
 
-    /*
-     * RecordHandler implementation
-     * */
-
     @Override
     public void onRecordPause() {
 
@@ -1194,18 +914,11 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
 
     @Override
     public void onRecordStarted(String s) {
-//        Toast.makeText(activity, "[" + s + "]", Toast.LENGTH_LONG).show();
 
     }
 
     @Override
     public void onRecordFinished(String s) {
-//        try {
-//            Toast.makeText(activity, "[" + s + "]", Toast.LENGTH_LONG).show();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            finish();
-//        }
     }
 
     @Override
@@ -1218,9 +931,6 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
         handleException(e);
     }
 
-    /*
-     * RTMPListener implementation
-     * */
 
     @Override
     public void onRtmpConnecting(String s) {
@@ -1305,12 +1015,10 @@ public class ViewEmamActivity extends AppCompatActivity implements RtmpHandler.R
 
     private void handleException(Exception e) {
         try {
-//            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             Log.i("streaming: ", e.getMessage());
             stopStreaming();
             stopChronometer();
         } catch (Exception e1) {
-            // Ignore
             e.printStackTrace();
         }
     }

@@ -19,9 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-/**
- * Created by hp on 9/26/2017.
- */
 
 public class CustomDateTimePicker implements View.OnClickListener {
     private DatePicker datePicker;
@@ -30,7 +27,8 @@ public class CustomDateTimePicker implements View.OnClickListener {
 
     private final int SET_DATE = 100, SET_TIME = 101, SET = 102, CANCEL = 103;
 
-    private Button btn_setDate, btn_setTime, btn_set, btn_cancel;
+    private Button btn_setDate;
+    private Button btn_setTime;
 
     private Calendar calendar_date = null;
 
@@ -40,7 +38,7 @@ public class CustomDateTimePicker implements View.OnClickListener {
 
     private Dialog dialog;
 
-    private boolean is24HourView = true, isAutoDismiss = true;
+    private boolean is24HourView = true;
 
     private int selectedHour, selectedMinute=0;
 
@@ -62,7 +60,7 @@ public class CustomDateTimePicker implements View.OnClickListener {
         dialog.setContentView(dialogView);
     }
 
-    public View getDateTimePickerLayout() {
+    private View getDateTimePickerLayout() {
         LinearLayout.LayoutParams linear_match_wrap = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
@@ -86,20 +84,17 @@ public class CustomDateTimePicker implements View.OnClickListener {
         linear_child.setOrientation(LinearLayout.VERTICAL);
 
         LinearLayout linear_top = new LinearLayout(activity);
-//        linear_match_wrap.bottomMargin = 8;
         linear_top.setLayoutParams(linear_match_wrap);
         btn_setDate = new Button(activity);
         btn_setDate.setLayoutParams(button_params);
-        btn_setDate.setText("التاريخ");
+        btn_setDate.setText(R.string.date);
         btn_setDate.setId(SET_DATE);
-//        btn_setDate.setBackgroundColor(R.color.colorPrimaryDark);
         btn_setDate.setOnClickListener(this);
 
         btn_setTime = new Button(activity);
         btn_setTime.setLayoutParams(button_params);
-        btn_setTime.setText("الوقت");
+        btn_setTime.setText(R.string.time);
         btn_setTime.setId(SET_TIME);
-//        btn_setTime.setBackgroundColor(R.color.colorPrimaryDark);
         btn_setTime.setOnClickListener(this);
 
         linear_top.addView(btn_setDate);
@@ -125,18 +120,16 @@ public class CustomDateTimePicker implements View.OnClickListener {
         linear_match_wrap.topMargin = 8;
         linear_bottom.setLayoutParams(linear_match_wrap);
 
-        btn_set = new Button(activity);
+        Button btn_set = new Button(activity);
         btn_set.setLayoutParams(button_params);
-        btn_set.setText("ضبط");
+        btn_set.setText(R.string.set);
         btn_set.setId(SET);
         btn_set.setOnClickListener(this);
-//        btn_set.setBackgroundColor(R.color.colorPrimaryDark);
-        btn_cancel = new Button(activity);
+        Button btn_cancel = new Button(activity);
         btn_cancel.setLayoutParams(button_params);
-        btn_cancel.setText("إلغاء");
+        btn_cancel.setText(R.string.cancel);
         btn_cancel.setId(CANCEL);
         btn_cancel.setOnClickListener(this);
-//        btn_cancel.setBackgroundColor(R.color.colorPrimaryDark);
 
         linear_bottom.addView(btn_set);
         linear_bottom.addView(btn_cancel);
@@ -154,9 +147,6 @@ public class CustomDateTimePicker implements View.OnClickListener {
         if (!dialog.isShowing()) {
             if (calendar_date == null)
                 calendar_date = Calendar.getInstance();
-
-//            selectedHour = calendar_date.get(Calendar.HOUR_OF_DAY);
-//            selectedMinute = calendar_date.get(Calendar.MINUTE);
             selectedHour =0;
             selectedMinute =00;
             timePicker.setIs24HourView(is24HourView);
@@ -173,14 +163,6 @@ public class CustomDateTimePicker implements View.OnClickListener {
         }
     }
 
-    public void setAutoDismiss(boolean isAutoDismiss) {
-        this.isAutoDismiss = isAutoDismiss;
-    }
-
-    public void dismissDialog() {
-        if (!dialog.isShowing())
-            dialog.dismiss();
-    }
 
     public void setDate(Calendar calendar) {
         if (calendar != null)
@@ -191,54 +173,6 @@ public class CustomDateTimePicker implements View.OnClickListener {
         if (date != null) {
             calendar_date = Calendar.getInstance();
             calendar_date.setTime(date);
-        }
-    }
-
-    public void setDate(int year, int month, int day) {
-        if (month < 12 && month >= 0 && day < 32 && day >= 0 && year > 100
-                && year < 3000) {
-            calendar_date = Calendar.getInstance();
-            calendar_date.set(year, month, day);
-        }
-
-    }
-
-    public void setTimeIn24HourFormat(int hourIn24Format, int minute) {
-        if (hourIn24Format < 24 && hourIn24Format >= 0 && minute >= 0
-                && minute < 60) {
-            if (calendar_date == null)
-                calendar_date = Calendar.getInstance();
-
-            calendar_date.set(calendar_date.get(Calendar.YEAR),
-                    calendar_date.get(Calendar.MONTH),
-                    calendar_date.get(Calendar.DAY_OF_MONTH), hourIn24Format,
-                    minute);
-
-            is24HourView = true;
-        }
-    }
-
-    public void setTimeIn12HourFormat(int hourIn12Format, int minute,
-                                      boolean isAM) {
-        if (hourIn12Format < 13 && hourIn12Format > 0 && minute >= 0
-                && minute < 60) {
-            if (hourIn12Format == 12)
-                hourIn12Format = 0;
-
-            int hourIn24Format = hourIn12Format;
-
-            if (!isAM)
-                hourIn24Format += 12;
-
-            if (calendar_date == null)
-                calendar_date = Calendar.getInstance();
-
-            calendar_date.set(calendar_date.get(Calendar.YEAR),
-                    calendar_date.get(Calendar.MONTH),
-                    calendar_date.get(Calendar.DAY_OF_MONTH), hourIn24Format,
-                    minute);
-
-            is24HourView = false;
         }
     }
 
@@ -258,6 +192,7 @@ public class CustomDateTimePicker implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        boolean isAutoDismiss = true;
         switch (v.getId()) {
             case SET_DATE:
                 btn_setTime.setEnabled(true);
@@ -307,37 +242,6 @@ public class CustomDateTimePicker implements View.OnClickListener {
                     dialog.dismiss();
                 break;
         }
-    }
-
-    /**
-     * @param date
-     *            date in String
-     * @param fromFormat
-     *            format of your <b>date</b> eg: if your date is 2011-07-07
-     *            09:09:09 then your format will be <b>yyyy-MM-dd hh:mm:ss</b>
-     * @param toFormat
-     *            format to which you want to convert your <b>date</b> eg: if
-     *            required format is 31 July 2011 then the toFormat should be
-     *            <b>d MMMM yyyy</b>
-     * @return formatted date
-     */
-    public static String convertDate(String date, String fromFormat,
-                                     String toFormat) {
-        try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(fromFormat);
-            Date d = simpleDateFormat.parse(date);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(d);
-
-            simpleDateFormat = new SimpleDateFormat(toFormat);
-            simpleDateFormat.setCalendar(calendar);
-            date = simpleDateFormat.format(calendar.getTime());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return date;
     }
 
     private String getMonthFullName(int monthNumber) {
@@ -408,10 +312,4 @@ public class CustomDateTimePicker implements View.OnClickListener {
         is24HourView = true;
     }
 
-    public static String pad(int integerToPad) {
-        if (integerToPad >= 10 || integerToPad < 0)
-            return String.valueOf(integerToPad);
-        else
-            return "0" + String.valueOf(integerToPad);
-    }
 }

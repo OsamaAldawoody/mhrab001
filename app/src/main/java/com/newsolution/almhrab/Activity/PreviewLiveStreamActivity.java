@@ -2,36 +2,25 @@ package com.newsolution.almhrab.Activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.AppCompatTextView;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.RelativeSizeSpan;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Chronometer;
@@ -42,16 +31,11 @@ import android.widget.VideoView;
 
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
-import com.newsolution.almhrab.AppConstants.AppConst;
-import com.newsolution.almhrab.AppConstants.Constants;
 import com.newsolution.almhrab.AppConstants.DateHigri;
 import com.newsolution.almhrab.AppConstants.DeveloperKey;
 import com.newsolution.almhrab.Helpar.Utils;
-import com.newsolution.almhrab.HorizontalMarqueeTextView;
-import com.newsolution.almhrab.Interface.OnLoadedFinished;
 import com.newsolution.almhrab.Model.Khotab;
 import com.newsolution.almhrab.R;
-import com.newsolution.almhrab.WebServices.WS;
 import com.streamaxia.android.CameraPreview;
 import com.streamaxia.android.StreamaxiaPublisher;
 import com.streamaxia.android.handlers.EncoderHandler;
@@ -62,14 +46,12 @@ import com.streamaxia.android.utils.Size;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -77,7 +59,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-//import android.lib.widget.verticalmarqueetextview.VerticalMarqueeTextView;
 
 public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity implements RtmpHandler.RtmpListener, RecordHandler.RecordListener,
         EncoderHandler.EncodeListener {
@@ -85,7 +66,6 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
     private final String TAG = PreviewLiveStreamActivity.class.getSimpleName();
 
     public static String streamaxiaStreamName = "AlMhrab_";
-    public final static int bitrate = 500;
     public final static int width = 720;
     public final static int height = 1280;
 
@@ -97,40 +77,19 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
     private StreamaxiaPublisher mPublisher;
     public static String droidkufiBold = "fonts/droid_kufi_bold.ttf";
     public static String droidkufi = "fonts/droidkufi_regular.ttf";
-    private Typeface font;
-    private Typeface fontDroidkufi;
     public static String roboto = "fonts/roboto.ttf";
-    private Typeface fontRoboto;
-    public static String comfort = "fonts/comfort.ttf";//comfort
-    private Typeface fontComfort;
-    public static String arial = "fonts/ariblk.ttf";//comfort
-    private Typeface fontArial;
-    public static String bangla_mn_bold = "fonts/bangla_mn_bold.ttf";//comfort
-    public static String sansBold = "fonts/neosans_black.otf";//comfort
-    private Typeface fontBangla_mn_bold;
-    private Typeface fontSansBold;
+    public static String bangla_mn_bold = "fonts/bangla_mn_bold.ttf";
 
 
-    private TextView tvUrdText;
-    private TextView tvEngText;
     private TextView tvTitle;
-    private TextView tvName;
     private Activity activity;
     TextView date1, time, amPm;
-    private static String recPath;//= Environment.getExternalStorageDirectory().getPath() + "/" +Utils.getDateTime()+".mp4";
-    private File saveDir;
     private SharedPreferences sp;
     private VideoView vvVideo;
     private Khotab khotab;
     private RelativeLayout rlLivingStream;
-    private Handler timerHandler = new Handler();
-    private Runnable timerRun;
     private CountDownTimer countDownTimer;
-    private boolean showLive = true;
-    public static final String BROADCAST = Constants.PACKAGE_NAME + ".Activity.android.action.broadcast";
-    private Uri uriYouTube;
     private YouTubePlayerView youtube_view;
-    private HorizontalMarqueeTextView tvTra1, tvTra2;
     private WebView wvEngText;
     private WebView wvUrdText;
 
@@ -142,16 +101,15 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_friday);
         activity = this;
-        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
+        sp = getSharedPreferences(Utils.PREFS, MODE_PRIVATE);
         khotab = (Khotab) getIntent().getSerializableExtra("khotba");
 
         ButterKnife.bind(this);
 
-        saveDir = new File(Environment.getExternalStorageDirectory(), "AlMhrab");
+        File saveDir = new File(Environment.getExternalStorageDirectory(), "AlMhrab");
         saveDir.mkdirs();
-        recPath = saveDir.getAbsolutePath() + "/AlMhrab_" + sp.getInt("masjedId", -1)//+ "_" + khotab.getTitle()
-                + "_" + Utils.getFormattedCurrentDate() + ".mp4";
-        streamaxiaStreamName = streamaxiaStreamName + sp.getInt("masjedId", -1) + "";
+
+         streamaxiaStreamName = streamaxiaStreamName + sp.getInt("masjedId", -1) + "";
         mPublisher = new StreamaxiaPublisher(mCameraView, this);
         mCameraView.setScalingMode(ScalingMode.TRIM);
         try {
@@ -166,22 +124,20 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
 
         setStreamerDefaultValues();
 
-        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
-        font = Typeface.createFromAsset(getAssets(), droidkufiBold);
-        fontArial = Typeface.createFromAsset(getAssets(), arial);
-        fontRoboto = Typeface.createFromAsset(getAssets(), roboto);
-        fontDroidkufi = Typeface.createFromAsset(getAssets(), droidkufi);
-        fontBangla_mn_bold = Typeface.createFromAsset(getAssets(), bangla_mn_bold);
-        fontSansBold = Typeface.createFromAsset(getAssets(), sansBold);
+        sp = getSharedPreferences(Utils.PREFS, MODE_PRIVATE);
+        Typeface font = Typeface.createFromAsset(getAssets(), droidkufiBold);
+        Typeface fontRoboto = Typeface.createFromAsset(getAssets(), roboto);
+        Typeface fontDroidkufi = Typeface.createFromAsset(getAssets(), droidkufi);
+        Typeface fontBangla_mn_bold = Typeface.createFromAsset(getAssets(), bangla_mn_bold);
 
         rlLivingStream = (RelativeLayout) findViewById(R.id.rlLivingStream);
         vvVideo = (VideoView) findViewById(R.id.vvAdsVideo);
         youtube_view = (YouTubePlayerView) findViewById(R.id.youtube_view);
         youtube_view.initialize(DeveloperKey.DEVELOPER_KEY, this);
-        tvUrdText = (TextView) findViewById(R.id.tvUrdText);
-        tvEngText = (TextView) findViewById(R.id.tvEngText);
+        TextView tvUrdText = (TextView) findViewById(R.id.tvUrdText);
+        TextView tvEngText = (TextView) findViewById(R.id.tvEngText);
         tvTitle = (TextView) findViewById(R.id.tvTitle);
-        tvName = (TextView) findViewById(R.id.tvName);
+        TextView tvName = (TextView) findViewById(R.id.tvName);
         date1 = (TextView) findViewById(R.id.dateToday);
         time = (TextView) findViewById(R.id.Time);
         amPm = (TextView) findViewById(R.id.amPm);
@@ -200,28 +156,12 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
         mChronometer.setVisibility(View.GONE);
         checkTime();
         fillData();
-//        isStreaming();
     }
 
-    private void isStreaming() {
-        WS.isStreaming(activity, khotab.getTimeExpected(), new OnLoadedFinished() {
-            @Override
-            public void onSuccess(String response) {
-
-            }
-
-            @Override
-            public void onFail(String error) {
-
-            }
-        });
-    }
 
     private void startKhotbaTimer() {
         long khotbaPeriod = (khotab.getTimeExpected()) * 60 * 1000;
-        Log.i("khotbaPeriod: ", khotbaPeriod + "");
         countDownTimer = new CountDownTimer(khotbaPeriod, 1000) {
-
             public void onTick(long millisUntilFinished) {
             }
 
@@ -244,32 +184,7 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
         if (khotbaTitle.endsWith(" - "))
             khotbaTitle.substring(0, khotbaTitle.length() - 2);
         tvTitle.setText(khotbaTitle);
-//        if (sp.getBoolean("IsDeaf", false)) {
-//            if (!khotab.getUrlVideoDeaf().equals("null")) {
-//                youtube_view.setVisibility(View.VISIBLE);
-//                rlLivingStream.setVisibility(View.GONE);
-//                showLive = false;
-//            } else {
-//                showLive = true;
-//                vvVideo.setVisibility(View.GONE);
-//                youtube_view.setVisibility(View.GONE);
-//                rlLivingStream.setVisibility(View.VISIBLE);
-//            }
-//        } else {
-//            showLive = true;
-//            vvVideo.setVisibility(View.GONE);
-//            youtube_view.setVisibility(View.GONE);
-//            rlLivingStream.setVisibility(View.VISIBLE);
-//        }
-//        vvVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//            @Override
-//            public void onCompletion(MediaPlayer mediaPlayer) {
-//                vvVideo.setVisibility(View.GONE);
-//                youtube_view.setVisibility(View.GONE);
-//                rlLivingStream.setVisibility(View.VISIBLE);
-//            }
-//        });
-        showLive = true;
+        boolean showLive = true;
         vvVideo.setVisibility(View.GONE);
         youtube_view.setVisibility(View.GONE);
         rlLivingStream.setVisibility(View.VISIBLE);
@@ -282,8 +197,6 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
         final String body1 =(khotab.getBody1().equals("null"))?"": khotab.getBody1();
         final String body2 =(khotab.getBody2().equals("null"))?"": khotab.getBody2();
         int speed = khotab.getTranslationSpeed();
-//        Log.i("//body1: ", khotab.getBody1() + " //*");
-//        Log.i("//speed: ", speed + "//*");
         WebSettings settings1 = wvUrdText.getSettings();
         WebSettings settings = wvEngText.getSettings();
         settings1.setDefaultTextEncodingName("utf-8");
@@ -297,11 +210,8 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
         wv.setBackgroundColor(Color.TRANSPARENT);
 
         String fontSize = getResources().getDimensionPixelSize(R.dimen.translateFont) + "px";
-//        String htmlS = "<html><head><style type='text/css'>@font-face {font-family: 'droid_kufi_bold';src: url('file:///android_asset/fonts/bangla_mn_bold.ttf');} body {font-family: droid_kufi_bold;background-color: transparent;border: 0px;margin: 0px;padding-bottom: 8px; font-size: " + fontSize + ";color: #ffffff;}</style></head><body><marquee behavior=\"scroll\" direction=\"" + dir + "\" scrollamount=\"" + speed + "\">&nbsp;&nbsp;&nbsp;" + body + "</a>&nbsp;&nbsp;&nbsp;&nbsp;</marquee></body></html>";
         String htmlS = "<html><head><style type='text/css'>@font-face {font-family: 'droid_kufi_bold';src: url('file:///android_asset/fonts/droid_kufi_bold.ttf');} body {font-family: droid_kufi_bold;background-color: transparent;border: 0px;margin: 0px;padding-bottom: 8px; font-size: " + fontSize + ";color: #ffffff;}</style></head><body><marquee behavior=\"scroll\" direction=\"" + dir + "\" scrollamount=\"" + speed + "\">&nbsp;&nbsp;&nbsp;" + body + "</a>&nbsp;&nbsp;&nbsp;&nbsp;</marquee></body></html>";
-//        String htmlS = "<html><FONT style=font-size:" + fontSize + "; padding-bottom:10px; color='#ffffff' FACE='courier'><marquee behavior='scroll' direction='"+dir+"' scrollamount="+speed+">" + body + "</marquee></FONT></html>";
         wv.loadData(htmlS, "text/html; charset=utf-8", "utf-8");
-//        wv.loadData(htmlS, "text/html", "UTF-8"); // Set focus to the textview
     }
 
 
@@ -310,20 +220,12 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
         super.onResume();
         try {
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
-                    == PackageManager.PERMISSION_GRANTED) {
-//                stopStreaming();
-//                stopChronometer();
-//                mChronometer.setBase(SystemClock.elapsedRealtime());
-//                mChronometer.start();
-//                mPublisher.setVideoBitRate(720);
-//                mPublisher.startPublish("rtmp://rtmp.streamaxia.com/streamaxia/" + streamaxiaStreamName);
-//                mPublisher.startRecord(recPath);
-            } else {
+                    == PackageManager.PERMISSION_DENIED) {
                 finish();
-                Toast.makeText(this, "يجب السماح باستخدام الكاميرا", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.allowCameraPermissions), Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
-            Toast.makeText(this, "لا يوجد كاميرا متصلة", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.noCameraConnected, Toast.LENGTH_LONG).show();
             e.printStackTrace();
             finish();
         }
@@ -334,7 +236,6 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
         try {
             super.onPause();
             mCameraView.stopCamera();
-//            mPublisher.pauseRecord();
         } catch (Exception e) {
             e.printStackTrace();
             finish();
@@ -345,23 +246,8 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
     protected void onDestroy() {
         super.onDestroy();
         try {
-//            mPublisher.stopPublish();
-//            mPublisher.stopRecord();
             if (countDownTimer != null) countDownTimer.cancel();
             MainActivity.isOpenSermon = true;
-//            Log.i("recPath: ", recPath);
-//            DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
-//            DateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
-//            Date date = df.parse(khotab.getDateKhotab());
-//            String DateKhotab = sdf.format(date);
-
-//            Intent intent = new Intent(BROADCAST);
-//            Bundle extras = new Bundle();
-//            extras.putString("recPath", recPath);
-//            extras.putInt("IdKhotab", khotab.getId());
-//            extras.putString("DateKhotab", DateKhotab);
-//            intent.putExtras(extras);
-//            sendBroadcast(intent);
         } catch (Exception e) {
             e.printStackTrace();
             finish();
@@ -371,7 +257,7 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
     private void checkTime() {
         DateHigri hd = new DateHigri();
         date1.setText(Utils.writeIslamicDate1(this, hd));
-        DateFormat timeNow = new SimpleDateFormat("hh:mmss", new Locale("en"));
+        DateFormat timeNow = new SimpleDateFormat("hh:mmss", Locale.ENGLISH);
         DateFormat ampm = new SimpleDateFormat("a", new Locale("ar"));
         amPm.setText(ampm.format(Calendar.getInstance().getTime()));
         Calendar c = Calendar.getInstance();
@@ -388,10 +274,6 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
         }, 1000);
     }
 
-    private void stopStreaming() {
-        mPublisher.stopPublish();
-        mPublisher.stopRecord();
-    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -405,7 +287,6 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
             if (mPublisher != null) {
                 List<Size> sizes = mPublisher.getSupportedPictureSizes(getResources().getConfiguration().orientation);
                 Size resolution = sizes.get(0);
-//                mPublisher.setVideoOutputResolution(resolution.width, resolution.height, this.getResources().getConfiguration().orientation);
                 mPublisher.setVideoOutputResolution(480, 640, this.getResources().getConfiguration().orientation);
             }
         } catch (Exception e) {
@@ -429,9 +310,6 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
     }
 
 
-    /*
-    * EncoderHandler implementation
-    * */
 
     @Override
     public void onNetworkWeak() {
@@ -465,18 +343,11 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
 
     @Override
     public void onRecordStarted(String s) {
-//        Toast.makeText(activity, "[" + s + "]", Toast.LENGTH_LONG).show();
 
     }
 
     @Override
     public void onRecordFinished(String s) {
-//        try {
-//            Toast.makeText(activity, "[" + s + "]", Toast.LENGTH_LONG).show();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            finish();
-//        }
     }
 
     @Override
@@ -488,10 +359,6 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
     public void onRecordIOException(IOException e) {
         handleException(e);
     }
-
-    /*
-    * RTMPListener implementation
-    * */
 
     @Override
     public void onRtmpConnecting(String s) {
@@ -569,10 +436,6 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
 
     }
 
-    private void stopChronometer() {
-        mChronometer.setBase(SystemClock.elapsedRealtime());
-        mChronometer.stop();
-    }
 
     private void handleException(Exception e) {
         try {
@@ -581,7 +444,6 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
             mPublisher.stopPublish();
             mPublisher.stopRecord();
         } catch (Exception e1) {
-            // Ignore
             e.printStackTrace();
         }
     }
@@ -594,14 +456,12 @@ public class PreviewLiveStreamActivity extends YouTubeFailureRecoveryActivity im
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, final YouTubePlayer player,
                                         boolean wasRestored) {
-        Log.i("Kh: ", khotab.getUrlVideoDeaf());
         if (sp.getBoolean("IsDeaf", false)) {
             if (!khotab.getUrlVideoDeaf().equals("null")) {
                 if (khotab.getUrlVideoDeaf().contains("youtube") || khotab.getUrlVideoDeaf().contains("youtu.be")) {
                     player.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
                         @Override
                         public void onLoading() {
-
                         }
 
                         @Override

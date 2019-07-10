@@ -1,31 +1,28 @@
 package com.newsolution.almhrab.Activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.newsolution.almhrab.Adapters.NewsAdapter;
-import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.DBOperations;
 import com.newsolution.almhrab.DateTimePicker.CustomDateTimePicker;
 import com.newsolution.almhrab.Helpar.Utils;
@@ -47,18 +44,14 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class NewsActivity extends Activity {
     Activity activity;
     private RecyclerView rv_ads;
-    private ImageView iv_addAds;
     NewsAdapter newsAdapter;
     ArrayList<News> adsArrayList;
     private DBOperations DBO;
     private ImageView iv_back;
     private int id;
-    private LinearLayout parentPanel;
     private SharedPreferences sp;
     private SharedPreferences.Editor spedit;
-    private Button btn_add, btn_cancel;
     private EditText ed_end, ed_start, ed_sort, ed_newsText;
-    private TextView tv_tittle;
     private Dialog dialog;
     private ProgressDialog pd;
 
@@ -71,7 +64,7 @@ public class NewsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/neosansarabic.ttf")//battar  droidkufi_regular droid_sans_arabic neosansarabic //mcs_shafa_normal
+                .setDefaultFontPath("fonts/neosansarabic.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
         activity = this;
@@ -79,13 +72,12 @@ public class NewsActivity extends Activity {
         setContentView(R.layout.activity_news);
         DBO = new DBOperations(this);
         DBO.createDatabase();
-        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
+        sp = getSharedPreferences(Utils.PREFS, MODE_PRIVATE);
         spedit = sp.edit();
-        tv_tittle = (TextView) findViewById(R.id.tv_tittle);
+
+        TextView tv_tittle = (TextView) findViewById(R.id.tv_tittle);
         tv_tittle.setText(getString(R.string.adv));
-        rv_ads = (RecyclerView) findViewById(R.id.rv_ads);
-        iv_addAds = (ImageView) findViewById(R.id.iv_addAds);
-//        iv_addAds.setVisibility(View.GONE);
+        ImageView iv_addAds = (ImageView) findViewById(R.id.iv_addAds);
         iv_back = (ImageView) findViewById(R.id.iv_back);
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,19 +85,21 @@ public class NewsActivity extends Activity {
                 finish();
             }
         });
+
         iv_addAds.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //  addAdv();
                 addNewsDialog(null);
             }
         });
+
+        rv_ads = (RecyclerView) findViewById(R.id.rv_ads);
         rv_ads.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
+
         DBO.open();
         adsArrayList = DBO.getNews();
-        Log.i("+++ads", adsArrayList.size() + "  ");
         DBO.close();
         rv_ads.setLayoutManager(llm);
         setAdapter(adsArrayList);
@@ -122,7 +116,6 @@ public class NewsActivity extends Activity {
             @Override
             public void onItemClick(View view, int position) {
                 addNewsDialog(list.get(position));
-//                editAdvDialog(position);
             }
         });
         rv_ads.setAdapter(newsAdapter);
@@ -132,9 +125,13 @@ public class NewsActivity extends Activity {
     private void setColor() {
         try {
             Window window = activity.getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(activity, R.color.back_text));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(ContextCompat.getColor(activity, R.color.back_text));
+            }
         } catch (NoSuchMethodError ex) {
             ex.printStackTrace();
         }
@@ -149,9 +146,6 @@ public class NewsActivity extends Activity {
             WS.addUpdateNews(activity, object, new OnLoadedFinished() {
                 @Override
                 public void onSuccess(String response) {
-//                    Utils.showCustomToast(activity, activity.getString(R.string.success_add));
-//                    addToLocalDB(object);
-//                    if (dialog.isShowing()) dialog.dismiss();
                     getNews(action);
                 }
 
@@ -246,7 +240,7 @@ public class NewsActivity extends Activity {
             } else {
                 Utils.showCustomToast(activity, getString(R.string.no_internet));
             }
-        }else {
+        } else {
             DBO.open();
             DBO.delAds(adsArrayList.get(pos).getId());
             adsArrayList.remove(pos);
@@ -256,18 +250,16 @@ public class NewsActivity extends Activity {
     }
 
     private void addNewsDialog(final News objectNews) {
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss",Locale.US);
-        final SimpleDateFormat spf = new SimpleDateFormat("yyyy/MM/dd HH:mm",Locale.US);
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
+        final SimpleDateFormat spf = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.US);
 
-        View view = getLayoutInflater().inflate(R.layout.add_edit_ads, null);
-        parentPanel = (LinearLayout) view.findViewById(R.id.mainLayout);
+        @SuppressLint("InflateParams") View view = getLayoutInflater().inflate(R.layout.add_edit_ads, null);
         ed_newsText = (EditText) view.findViewById(R.id.ed_newsText);
         ed_end = (EditText) view.findViewById(R.id.ed_end);
         ed_start = (EditText) view.findViewById(R.id.ed_start);
         ed_sort = (EditText) view.findViewById(R.id.ed_sort);
-        btn_add = (Button) view.findViewById(R.id.btn_add);
-        btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
-        // tv_tittle=(TextView)view.findViewById(R.id.tv_tittle);
+        Button btn_add = (Button) view.findViewById(R.id.btn_add);
+        Button btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
         dialog = new Dialog(this);
 
         dialog.setTitle(getString(R.string.add_adv));
@@ -275,7 +267,7 @@ public class NewsActivity extends Activity {
             btn_add.setText(getString(R.string.add));
         } else {
             btn_add.setText(getString(R.string.edit_adv));
-            ed_sort.setText(objectNews.getSort() + "");
+            ed_sort.setText(String.valueOf(objectNews.getSort()));
             String endDate = objectNews.getToDate();
             String startDate = objectNews.getFromDate();
             String start = startDate;
@@ -300,7 +292,6 @@ public class NewsActivity extends Activity {
             public void onClick(View view) {
                 Utils.hideSoftKeyboard(activity);
                 showDateTimePicker(ed_start);
-//                showDatePicker(ed_start);
             }
         });
         ed_end.setOnClickListener(new View.OnClickListener() {
@@ -308,7 +299,6 @@ public class NewsActivity extends Activity {
             public void onClick(View view) {
                 Utils.hideSoftKeyboard(activity);
                 showDateTimePicker(ed_end);
-//                showDatePicker(ed_end);
             }
         });
         btn_add.setOnClickListener(new View.OnClickListener() {
@@ -336,8 +326,9 @@ public class NewsActivity extends Activity {
                     int id = Utils.random9();
                     DBO.open();
                     if (sp.getInt("priority", 0) == 1) {
-                        id =0;
-                    }else {   if (DBO.getNewsById(id)) {
+                        id = 0;
+                    } else {
+                        if (DBO.getNewsById(id)) {
                             id = Utils.random9();
                         }
                     }
@@ -377,7 +368,6 @@ public class NewsActivity extends Activity {
                         if (pd.isShowing()) pd.dismiss();
 
                     }
-//                    dialog.dismiss();
                 }
             }
         });
@@ -393,7 +383,7 @@ public class NewsActivity extends Activity {
 
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         Window window = dialog.getWindow();
-        lp.copyFrom(window.getAttributes());
+        lp.copyFrom((window).getAttributes());
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         window.setAttributes(lp);
@@ -401,6 +391,7 @@ public class NewsActivity extends Activity {
 
     public void showDateTimePicker(final EditText editText) {
         CustomDateTimePicker custom = new CustomDateTimePicker(this, new CustomDateTimePicker.ICustomDateTimeListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onSet(Dialog dialog, Calendar calendarSelected,
                               Date dateSelected, int year, String monthFullName,
@@ -421,24 +412,5 @@ public class NewsActivity extends Activity {
         custom.set24HourFormat(false);
         custom.setDate(Calendar.getInstance());
         custom.showDialog();
-    }
-
-    public void showDatePicker(final EditText v) {
-        final Calendar c = Calendar.getInstance(new Locale("en"));
-        int mYear = c.get(Calendar.YEAR);
-        int mMonth = c.get(Calendar.MONTH);
-        int mDay = c.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog datePickerDialog = new DatePickerDialog(activity,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year,
-                                          int monthOfYear, int dayOfMonth) {
-                        String Date = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
-//                        String Date = getMonthForInt((monthOfYear )) + "-" + String.valueOf(year)+ "-" +dayOfMonth ;//31-DEC-15
-                        v.setText(Date);
-
-                    }
-                }, mYear, mMonth, mDay);
-        datePickerDialog.show();
     }
 }

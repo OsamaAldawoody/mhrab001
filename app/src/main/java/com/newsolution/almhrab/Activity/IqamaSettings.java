@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.annotation.IdRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -23,9 +24,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TimePicker;
 
-import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.DBOperations;
-import com.newsolution.almhrab.GlobalVars;
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Interface.OnLoadedFinished;
 import com.newsolution.almhrab.Model.OptionSiteClass;
@@ -56,27 +55,33 @@ public class IqamaSettings extends AppCompatActivity implements View.OnClickList
     private Button btnSave;
     Activity activity;
     private ImageView iv_back;
-    String[] mosquSettings;
     private DBOperations DBO;
     private SharedPreferences sp;
-    private GlobalVars gv;
     private SharedPreferences.Editor spedit;
     private int iqSh, iqfajer, iqdhor, iqaser, iqmagrib, iqisha;
     private String iqShT, iqfajerT, iqdhorT, iqaserT, iqmagribT, iqishaT;
     private int fajrAzkar, fajrAzkarTimer, dhuhrAzkar, dhuhrAzkarTimer, aserAzkar, aserAzkarTimer, magribAzkar, magribAzkarTimer, ishaAzkar, ishaAzkarTimer;
-    private LinearLayout llSRelative, llfRelative, lldRelative, llARelative, llmRelative, llIRelative,
-            llSConstant, llfConstant, lldConstant, llAConstant, llmConstant, llIConstant, parentPanel,
-            ll_iqama_soundF, ll_adan_soundF, ll_iqama_soundD, ll_adan_soundD, ll_iqama_soundA, ll_adan_soundA,
-            ll_iqama_soundM, ll_adan_soundM, ll_iqama_soundI, ll_adan_soundI;
+    private LinearLayout llSRelative;
+    private LinearLayout llfRelative;
+    private LinearLayout lldRelative;
+    private LinearLayout llARelative;
+    private LinearLayout llmRelative;
+    private LinearLayout llIRelative;
+    private LinearLayout llSConstant;
+    private LinearLayout llfConstant;
+    private LinearLayout lldConstant;
+    private LinearLayout llAConstant;
+    private LinearLayout llmConstant;
+    private LinearLayout llIConstant;
     CheckBox cb_IqamaSoundF, cb_soundF, cb_IqamaSoundD, cb_soundD, cb_IqamaSoundM, cb_soundM, cb_IqamaSoundA, cb_soundA, cb_IqamaSoundI, cb_soundI;
     RadioButton rbSRelative, rbfRelative, rbdRelative, rbARelative, rbmRelative, rbIRelative, rbSConstant, rbfConstant, rbdConstant, rbAConstant, rbmConstant, rbIConstant;
     private boolean iqamaSoundOnF, iqamaSoundOnD, iqamaSoundOnA, iqamaSoundOnM, iqamaSoundOnI, soundOnF, soundOnD, soundOnA,
             soundOnM, soundOnI;
-    private boolean iqamaVoiceI, athanVoiceI, iqamaVoiceM, athanVoiceM, iqamaVoiceA, athanVoiceA, iqamaVoiceD, athanVoiceD,
-            iqamaVoiceF, athanVoiceF;
     OptionSiteClass settings;
     private boolean isAlShrouqEkamaIsTime, isFajrEkamaIsTime, isDhuhrEkamaIsTime, ishaEkamaIsTime, isMagribEkamaIsTime, isAsrEkamaIsTime;
-    private RadioGroup rg_isha, rg_magrib, rg_aser, rg_sh, rg_duhr, rg_fajer;
+
+    public IqamaSettings() {
+    }
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -87,7 +92,7 @@ public class IqamaSettings extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/neosansarabic.ttf")//battar  droidkufi_regular droid_sans_arabic neosansarabic //mcs_shafa_normal
+                .setDefaultFontPath("fonts/neosansarabic.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
         activity = this;
@@ -95,8 +100,7 @@ public class IqamaSettings extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_iqama_settings);
 
         DBO = new DBOperations(this);
-        gv = (GlobalVars) getApplicationContext();
-        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
+        sp = getSharedPreferences(Utils.PREFS, MODE_PRIVATE);
         spedit = sp.edit();
         DBO.open();
         settings = DBO.getSettings();
@@ -151,16 +155,16 @@ public class IqamaSettings extends AppCompatActivity implements View.OnClickList
         isMagribEkamaIsTime = settings.isMagribEkamaIsTime();
         ishaEkamaIsTime = settings.ishaEkamaIsTime();
 
-        iqamaVoiceF = settings.isStatusEkamaVoiceF();
-        athanVoiceF = settings.isStatusAthanVoiceF();
-        iqamaVoiceD = settings.isStatusEkamaVoiceD();
-        athanVoiceD = settings.isStatusAthanVoiceD();
-        iqamaVoiceA = settings.isStatusEkamaVoiceA();
-        athanVoiceA = settings.isStatusAthanVoiceA();
-        iqamaVoiceM = settings.isStatusEkamaVoiceM();
-        athanVoiceM = settings.isStatusAthanVoiceM();
-        iqamaVoiceI = settings.isStatusEkamaVoiceI();
-        athanVoiceI = settings.isStatusAthanVoiceI();
+        boolean iqamaVoiceF = settings.isStatusEkamaVoiceF();
+        boolean athanVoiceF = settings.isStatusAthanVoiceF();
+        boolean iqamaVoiceD = settings.isStatusEkamaVoiceD();
+        boolean athanVoiceD = settings.isStatusAthanVoiceD();
+        boolean iqamaVoiceA = settings.isStatusEkamaVoiceA();
+        boolean athanVoiceA = settings.isStatusAthanVoiceA();
+        boolean iqamaVoiceM = settings.isStatusEkamaVoiceM();
+        boolean athanVoiceM = settings.isStatusAthanVoiceM();
+        boolean iqamaVoiceI = settings.isStatusEkamaVoiceI();
+        boolean athanVoiceI = settings.isStatusAthanVoiceI();
 
         spedit.putBoolean("notif_onF", athanVoiceF).commit();
         spedit.putBoolean("notif_onD", athanVoiceD).commit();
@@ -197,16 +201,16 @@ public class IqamaSettings extends AppCompatActivity implements View.OnClickList
         btnSave = (Button) findViewById(R.id.btn_save);
         iv_back = (ImageView) findViewById(R.id.iv_back);
 
-        ll_adan_soundF = (LinearLayout) findViewById(R.id.ll_adan_soundF);
-        ll_iqama_soundF = (LinearLayout) findViewById(R.id.ll_iqama_soundF);
-        ll_adan_soundD = (LinearLayout) findViewById(R.id.ll_adan_soundD);
-        ll_iqama_soundD = (LinearLayout) findViewById(R.id.ll_iqama_soundD);
-        ll_adan_soundA = (LinearLayout) findViewById(R.id.ll_adan_soundA);
-        ll_iqama_soundA = (LinearLayout) findViewById(R.id.ll_iqama_soundA);
-        ll_adan_soundM = (LinearLayout) findViewById(R.id.ll_adan_soundM);
-        ll_iqama_soundM = (LinearLayout) findViewById(R.id.ll_iqama_soundM);
-        ll_adan_soundI = (LinearLayout) findViewById(R.id.ll_adan_soundI);
-        ll_iqama_soundI = (LinearLayout) findViewById(R.id.ll_iqama_soundI);
+        LinearLayout ll_adan_soundF = (LinearLayout) findViewById(R.id.ll_adan_soundF);
+        LinearLayout ll_iqama_soundF = (LinearLayout) findViewById(R.id.ll_iqama_soundF);
+        LinearLayout ll_adan_soundD = (LinearLayout) findViewById(R.id.ll_adan_soundD);
+        LinearLayout ll_iqama_soundD = (LinearLayout) findViewById(R.id.ll_iqama_soundD);
+        LinearLayout ll_adan_soundA = (LinearLayout) findViewById(R.id.ll_adan_soundA);
+        LinearLayout ll_iqama_soundA = (LinearLayout) findViewById(R.id.ll_iqama_soundA);
+        LinearLayout ll_adan_soundM = (LinearLayout) findViewById(R.id.ll_adan_soundM);
+        LinearLayout ll_iqama_soundM = (LinearLayout) findViewById(R.id.ll_iqama_soundM);
+        LinearLayout ll_adan_soundI = (LinearLayout) findViewById(R.id.ll_adan_soundI);
+        LinearLayout ll_iqama_soundI = (LinearLayout) findViewById(R.id.ll_iqama_soundI);
 
         llfConstant = (LinearLayout) findViewById(R.id.llfConstant);
         llSConstant = (LinearLayout) findViewById(R.id.llSConstant);
@@ -229,12 +233,12 @@ public class IqamaSettings extends AppCompatActivity implements View.OnClickList
         rbmConstant = (RadioButton) findViewById(R.id.rbmConstant);
         rbIConstant = (RadioButton) findViewById(R.id.rbIConstant);
 
-        rg_fajer = (RadioGroup) findViewById(R.id.rg_fajer);
-        rg_sh = (RadioGroup) findViewById(R.id.rg_sh);
-        rg_duhr = (RadioGroup) findViewById(R.id.rg_duhr);
-        rg_aser = (RadioGroup) findViewById(R.id.rg_aser);
-        rg_magrib = (RadioGroup) findViewById(R.id.rg_magrib);
-        rg_isha = (RadioGroup) findViewById(R.id.rg_isha);
+        RadioGroup rg_fajer = (RadioGroup) findViewById(R.id.rg_fajer);
+        RadioGroup rg_sh = (RadioGroup) findViewById(R.id.rg_sh);
+        RadioGroup rg_duhr = (RadioGroup) findViewById(R.id.rg_duhr);
+        RadioGroup rg_aser = (RadioGroup) findViewById(R.id.rg_aser);
+        RadioGroup rg_magrib = (RadioGroup) findViewById(R.id.rg_magrib);
+        RadioGroup rg_isha = (RadioGroup) findViewById(R.id.rg_isha);
         rbfRelative = (RadioButton) findViewById(R.id.rbfRelative);
         rbSRelative = (RadioButton) findViewById(R.id.rbSRelative);
         rbdRelative = (RadioButton) findViewById(R.id.rbdRelative);
@@ -628,18 +632,7 @@ public class IqamaSettings extends AppCompatActivity implements View.OnClickList
                 showPicker(edIshaIq);
             }
         });
-//        rbfRelative.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//                if (compoundButton.isChecked()) {
-//                    llfRelative.setVisibility(View.VISIBLE);
-//                    llfConstant.setVisibility(View.GONE);
-//                } else {
-//                    llfRelative.setVisibility(View.GONE);
-//                    llfConstant.setVisibility(View.VISIBLE);
-//                }
-//            }
-//        });
+
     }
 
     private void showPicker(final EditText editText) {
@@ -660,39 +653,38 @@ public class IqamaSettings extends AppCompatActivity implements View.OnClickList
                 editText.setText(hr + ":" + min);
             }
         }, hour, minute, false);//Yes 24 hour time
-//        mTimePicker.setTitle("حدد وقت");
         mTimePicker.show();
 
     }
 
     private void fillData() {
-        edFajer.setText(iqfajer + "");
-        ed_fajerIq.setText(iqfajerT + "");
-        edFajerِAzkarP.setText(fajrAzkar + "");
-        edFajerِAzkarApp.setText(fajrAzkarTimer + "");
+        edFajer.setText(String.valueOf(iqfajer));
+        ed_fajerIq.setText(String.valueOf(iqfajerT));
+        edFajerِAzkarP.setText(String.valueOf(fajrAzkar));
+        edFajerِAzkarApp.setText(String.valueOf(fajrAzkarTimer));
 
-        edShroq.setText(iqSh + "");
-        edShroqIq.setText(iqShT + "");
+        edShroq.setText(String.valueOf(iqSh));
+        edShroqIq.setText(String.valueOf(iqShT));
 
-        edDuhr.setText(iqdhor + "");
-        edDuhrIq.setText(iqdhorT + "");
-        edDuhrAzkarP.setText(dhuhrAzkar + "");
-        edDuhrِAzkarApp.setText(dhuhrAzkarTimer + "");
+        edDuhr.setText(String.valueOf(iqdhor));
+        edDuhrIq.setText(String.valueOf(iqdhorT));
+        edDuhrAzkarP.setText(String.valueOf(dhuhrAzkar));
+        edDuhrِAzkarApp.setText(String.valueOf(dhuhrAzkarTimer));
 
-        edAser.setText(iqaser + "");
-        edAserIq.setText(iqaserT + "");
-        edAserAzkarP.setText(aserAzkar + "");
-        edAserAzkarApp.setText(aserAzkarTimer + "");
+        edAser.setText(String.valueOf(iqaser));
+        edAserIq.setText(String.valueOf(iqaserT));
+        edAserAzkarP.setText(String.valueOf(aserAzkar));
+        edAserAzkarApp.setText(String.valueOf(aserAzkarTimer));
 
-        edMagrib.setText(iqmagrib + "");
-        edMagribIq.setText(iqmagribT + "");
-        edMagribAzkarP.setText(magribAzkar + "");
-        edMagribAzkarApp.setText(magribAzkarTimer + "");
+        edMagrib.setText(String.valueOf(iqmagrib));
+        edMagribIq.setText(String.valueOf(iqmagribT));
+        edMagribAzkarP.setText(String.valueOf(magribAzkar));
+        edMagribAzkarApp.setText(String.valueOf(magribAzkarTimer));
 
-        edIsha.setText(iqisha + "");
-        edIshaIq.setText(iqishaT + "");
-        edIshaAzkarP.setText(ishaAzkar + "");
-        edIshaAzkarApp.setText(ishaAzkarTimer + "");
+        edIsha.setText(String.valueOf(iqisha));
+        edIshaIq.setText(String.valueOf(iqishaT));
+        edIshaAzkarP.setText(String.valueOf(ishaAzkar));
+        edIshaAzkarApp.setText(String.valueOf(ishaAzkarTimer));
         if (sp.getBoolean("notif_onF", true)) {
             cb_soundF.setChecked(true);
             soundOnF = true;
@@ -835,29 +827,28 @@ public class IqamaSettings extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         if (v == btnSave) {
-            // Handle clicks for btnSave
             if (rbfConstant.isChecked() && TextUtils.isEmpty(ed_fajerIq.getText().toString().trim())) {
-                Utils.showCustomToast(activity, "يجب تحديد موعد إقامة الفجر");
+                Utils.showCustomToast(activity, getString(R.string.chooseFajerIqama));
                 return;
             }
             if (rbSConstant.isChecked() && TextUtils.isEmpty(edShroqIq.getText().toString().trim())) {
-                Utils.showCustomToast(activity, "يجب تحديد موعد إقامة الشروق/الضحى");
+                Utils.showCustomToast(activity, getString(R.string.chooseSunriseIqama));
                 return;
             }
             if (rbdConstant.isChecked() && TextUtils.isEmpty(edDuhrIq.getText().toString().trim())) {
-                Utils.showCustomToast(activity, "يجب تحديد موعد إقامة الظهر");
+                Utils.showCustomToast(activity, getString(R.string.chooseDuhrIqama));
                 return;
             }
             if (rbAConstant.isChecked() && TextUtils.isEmpty(edAserIq.getText().toString().trim())) {
-                Utils.showCustomToast(activity, "يجب تحديد موعد إقامة العصر");
+                Utils.showCustomToast(activity, getString(R.string.chooseAsrIqama));
                 return;
             }
             if (rbmConstant.isChecked() && TextUtils.isEmpty(edMagribIq.getText().toString().trim())) {
-                Utils.showCustomToast(activity, "يجب تحديد موعد إقامة المغرب");
+                Utils.showCustomToast(activity, getString(R.string.chooseMaghribIqama));
                 return;
             }
             if (rbIConstant.isChecked() && TextUtils.isEmpty(edIshaIq.getText().toString().trim())) {
-                Utils.showCustomToast(activity, "يجب تحديد موعد إقامة العشاء");
+                Utils.showCustomToast(activity, getString(R.string.chooseIshaIqama));
                 return;
             }
             settings.setFajrEkamaIsTime(rbfConstant.isChecked());
@@ -933,7 +924,6 @@ public class IqamaSettings extends AppCompatActivity implements View.OnClickList
             }
         } else if (v == iv_back) {
             onBackPressed();
-            // Handle clicks for btnSave
         }
     }
 
@@ -942,13 +932,7 @@ public class IqamaSettings extends AppCompatActivity implements View.OnClickList
         pd.setMessage("جاري الحفظ...");
         pd.show();
         pd.setCanceledOnTouchOutside(false);
-//        int id = sp.getInt("masjedId", -1);
-//        String GUID = sp.getString("masjedGUID", "");
-//        String DeviceNo = sp.getString(AppConst.DeviceNo, "123456789");
-//        Map<String, String> params = new HashMap<>();
-//        params.put("IdSubscribe", id + "");
-//        params.put("GUID", GUID);
-//        params.put("DeviceNo", DeviceNo);
+
         WS.UpdateSettings(activity, settings, new OnLoadedFinished() {
             @Override
             public void onSuccess(String response) {
@@ -975,9 +959,13 @@ public class IqamaSettings extends AppCompatActivity implements View.OnClickList
     private void setColor() {
         try {
             Window window = activity.getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(activity, R.color.back_text));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(ContextCompat.getColor(activity, R.color.back_text));
+            }
         } catch (NoSuchMethodError ex) {
             ex.printStackTrace();
         }

@@ -4,10 +4,10 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -18,10 +18,8 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.newsolution.almhrab.AppConstants.AppConst;
+
 import com.newsolution.almhrab.AppConstants.DBOperations;
 import com.newsolution.almhrab.GlobalVars;
 import com.newsolution.almhrab.Helpar.Utils;
@@ -34,36 +32,24 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class NotificationSettings extends AppCompatActivity implements View.OnClickListener {
-    private Toolbar toolBar;
     private ImageView ivBack;
-    private TextView tvTittle;
     private LinearLayout llCloseNotifSound;
     private CheckBox cbCloseNotifSound;
-    private TextView tvCloseNotifSound;
-    private TextView tvCloseN;
-    private LinearLayout llCloseNotifScreen;
     private View view;
     private CheckBox cbCloseNotifScreen;
-    private TextView tvCloseNotifScreen;
-    private TextView tvCloseSN;
     private EditText edNotifTimer;
-    private LinearLayout llNotifTextPeriod;
-    private TextView notifTextPeriod;
     private EditText edArNotif;
     private EditText edEnNotif;
-    private TextView textView2;
     private EditText edUrNotif;
     private Button btnSave;
-    private RelativeLayout mainLayout;
     private Activity activity;
     private DBOperations DBO;
     private SharedPreferences sp;
-    private GlobalVars gv;
     private SharedPreferences.Editor spedit;
     private OptionSiteClass settings;
-    private boolean isPhoneStatusAlerts, isPhoneStatusVoice;
     private int notifTimer;
     private String urNotif, enNotif, arNotif;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -73,7 +59,7 @@ public class NotificationSettings extends AppCompatActivity implements View.OnCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/neosansarabic.ttf")//battar  droidkufi_regular droid_sans_arabic neosansarabic //mcs_shafa_normal
+                .setDefaultFontPath("fonts/neosansarabic.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
         activity = this;
@@ -81,14 +67,12 @@ public class NotificationSettings extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.activity_notification_settings);
 
         DBO = new DBOperations(this);
-        gv = (GlobalVars) getApplicationContext();
-        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
+        GlobalVars gv = (GlobalVars) getApplicationContext();
+        sp = getSharedPreferences(Utils.PREFS, MODE_PRIVATE);
         spedit = sp.edit();
         DBO.open();
         settings = DBO.getSettings();
         DBO.close();
-        isPhoneStatusVoice = settings.isPhoneStatusVoice();
-        isPhoneStatusAlerts = settings.isPhoneStatusAlerts();
         notifTimer = settings.getPhoneShowAlertsBeforEkama();
         arNotif = settings.getPhoneAlertsArabic();
         enNotif = settings.getPhoneAlertsEnglish();
@@ -99,26 +83,15 @@ public class NotificationSettings extends AppCompatActivity implements View.OnCl
     }
 
     private void findViews() {
-        mainLayout = (RelativeLayout) findViewById(R.id.mainLayout);
-//        Utils.applyFont(activity,mainLayout);
-        toolBar = (Toolbar) findViewById(R.id.tool_bar);
         ivBack = (ImageView) findViewById(R.id.iv_back);
-        tvTittle = (TextView) findViewById(R.id.tv_tittle);
         llCloseNotifSound = (LinearLayout) findViewById(R.id.ll_closeNotifSound);
         cbCloseNotifSound = (CheckBox) findViewById(R.id.cb_closeNotifSound);
-        tvCloseNotifSound = (TextView) findViewById(R.id.tv_closeNotifSound);
-        tvCloseN = (TextView) findViewById(R.id.tvCloseN);
-        view = (View) findViewById(R.id.view);
-        llCloseNotifScreen = (LinearLayout) findViewById(R.id.ll_closeNotifScreen);
+        view = findViewById(R.id.view);
+        LinearLayout llCloseNotifScreen = (LinearLayout) findViewById(R.id.ll_closeNotifScreen);
         cbCloseNotifScreen = (CheckBox) findViewById(R.id.cb_closeNotifScreen);
-        tvCloseNotifScreen = (TextView) findViewById(R.id.tv_closeNotifScreen);
-        tvCloseSN = (TextView) findViewById(R.id.tvCloseSN);
         edNotifTimer = (EditText) findViewById(R.id.ed_notifTimer);
-        llNotifTextPeriod = (LinearLayout) findViewById(R.id.ll_notifTextPeriod);
-        notifTextPeriod = (TextView) findViewById(R.id.notifTextPeriod);
         edArNotif = (EditText) findViewById(R.id.ed_arNotif);
         edEnNotif = (EditText) findViewById(R.id.ed_enNotif);
-        textView2 = (TextView) findViewById(R.id.textView2);
         edUrNotif = (EditText) findViewById(R.id.ed_urNotif);
         btnSave = (Button) findViewById(R.id.btn_save);
 
@@ -152,7 +125,6 @@ public class NotificationSettings extends AppCompatActivity implements View.OnCl
         llCloseNotifScreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Boolean on = true;
                 if (cbCloseNotifScreen.isChecked()) {
                     spedit.putBoolean("close_screen", false).commit();
                     spedit.putBoolean("close_voice", false).commit();
@@ -172,7 +144,7 @@ public class NotificationSettings extends AppCompatActivity implements View.OnCl
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (cbCloseNotifScreen.isChecked()) {
-                   spedit.putBoolean("close_screen", true).commit();
+                    spedit.putBoolean("close_screen", true).commit();
                     view.setVisibility(View.VISIBLE);
                     llCloseNotifSound.setVisibility(View.VISIBLE);
                 } else {
@@ -190,7 +162,7 @@ public class NotificationSettings extends AppCompatActivity implements View.OnCl
     }
 
     private void fillData() {
-        edNotifTimer.setText(notifTimer + "");
+        edNotifTimer.setText(String.valueOf(notifTimer));
         edUrNotif.setText(urNotif);
         edArNotif.setText(arNotif);
         edEnNotif.setText(enNotif);
@@ -230,19 +202,18 @@ public class NotificationSettings extends AppCompatActivity implements View.OnCl
                 } else {
                     Utils.showCustomToast(activity, getString(R.string.no_internet));
                 }
-            }else {
+            } else {
                 DBO.insertSettings(settings);
                 Utils.showCustomToast(activity, getString(R.string.success_edit));
             }
         } else if (v == ivBack) {
             onBackPressed();
-            // Handle clicks for btnSave
         }
     }
 
     private void saveChanges() {
         final ProgressDialog pd = new ProgressDialog(activity);
-        pd.setMessage("جاري الحفظ...");
+        pd.setMessage(getString(R.string.saving));
         pd.show();
         pd.setCanceledOnTouchOutside(false);
 
@@ -272,10 +243,15 @@ public class NotificationSettings extends AppCompatActivity implements View.OnCl
     private void setColor() {
         try {
             Window window = activity.getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(activity, R.color.back_text));
-        }catch (NoSuchMethodError ex){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(ContextCompat.getColor(activity, R.color.back_text));
+            }
+        } catch (NoSuchMethodError ex) {
             ex.printStackTrace();
-        } }
+        }
+    }
 }

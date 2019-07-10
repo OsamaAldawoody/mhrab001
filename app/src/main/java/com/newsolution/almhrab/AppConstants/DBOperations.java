@@ -4,16 +4,15 @@ package com.newsolution.almhrab.AppConstants;
  * Created by Amal on 12/8/2015.
  */
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
 import android.util.Log;
 
+import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Model.Ads;
 import com.newsolution.almhrab.Model.AdsPeriods;
 import com.newsolution.almhrab.Model.Azkar;
@@ -31,20 +30,14 @@ public class DBOperations {
     private final Context mContext;
     private SQLiteDatabase mDb;
     private DataBaseHelper mDbHelper;
-    SharedPreferences sp;
-    SharedPreferences.Editor spedit;
+    private SharedPreferences sp;
+    private SharedPreferences.Editor spedit;
     private ArrayList<City> _cities;
-    public String cfajr, csunrise, cdhohr, casr, cmaghrib, cisha;
-    private ArrayList<News> adses;
-    private ArrayList<Azkar> azkars;
 
-    // GlobalData globalData;
     public DBOperations(Context context) {
         this.mContext = context;
         mDbHelper = new DataBaseHelper(mContext);
-        sp = mContext.getSharedPreferences(AppConst.PREFS, mContext.MODE_PRIVATE);
-        spedit = sp.edit();
-        //globalData=(GlobalData)mContext.getApplicationContext();
+        sp = mContext.getSharedPreferences(Utils.PREFS, mContext.MODE_PRIVATE);
     }
 
     public DBOperations createDatabase() throws SQLException {
@@ -76,7 +69,7 @@ public class DBOperations {
     public ArrayList<City> getAllCity() {
         _cities = new ArrayList<>();
         String selectQuery = "SELECT * FROM City where isDeleted=0";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
@@ -91,8 +84,6 @@ public class DBOperations {
                 String NameEn = cursor.getString(cursor.getColumnIndex("NameEn"));
                 String updatedAt = cursor.getString(cursor.getColumnIndex("updatedAt"));
                 _cities.add(new City(id, name, NameEn, lon1, lon2, lat1, lat2, updatedAt, isDeleted));
-//                Log.i("city ID", "" + cursor.getInt(0));
-//                Log.i("city name", "" + cursor.getString(1));
             } while (cursor.moveToNext());
         }
         return _cities;
@@ -117,7 +108,7 @@ public class DBOperations {
         db.close();
     }
 
-    public boolean addCity(SQLiteDatabase db, City object) {
+    private boolean addCity(SQLiteDatabase db, City object) {
         ContentValues values = new ContentValues();
         db.delete("City", "id=" + object.getId(), null);
         values.put("id", object.getId());
@@ -136,7 +127,7 @@ public class DBOperations {
     public ArrayList<City> searchCity(String city) {
         _cities = new ArrayList<>();
         String selectQuery = "SELECT * FROM City where Name like '%" + city + "%' or NameEn like '%" + city + "%'";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
@@ -160,7 +151,7 @@ public class DBOperations {
     public City getCityById(int cityId) {
         City cities = new City();
         String selectQuery = "SELECT * FROM City where id = " + cityId + "";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
@@ -188,36 +179,6 @@ public class DBOperations {
         return cities;
     }
 
-    public String[] getPrayTimes(int day, int month, int cityId) {
-        String selectQuery = "SELECT * FROM prayerDays where dayId=" + day + " and monthId=" + month + " and cityId=" + cityId + "";
-        Log.d("DB Quert", selectQuery);
-        Cursor CR = mDb.rawQuery(selectQuery, null);
-        Log.d("DBOperations", "" + CR.getCount());
-        if (CR.moveToFirst()) {
-            cfajr = CR.getString(4);
-            csunrise = CR.getString(5);
-            cdhohr = CR.getString(6);
-            casr = CR.getString(7);
-            cmaghrib = CR.getString(8);
-            cisha = CR.getString(9);
-            Log.i("DB", "" + cfajr);
-
-        }
-        String[] prayTimes = {cfajr, csunrise, cdhohr, casr, cmaghrib, cisha};
-        return prayTimes;
-
-    }
-
-    public Cursor getPrayTimes(Activity s, DBOperations db, int day, int month, int cityId) {
-        Log.d("DBOperations", "table PrayTimes data reader");
-        open();
-        String selectQuery = "SELECT * FROM prayerDays where dayId=" + day + " and monthId=" + month + " and cityId=" + cityId + "";
-        Cursor CR = mDb.rawQuery(selectQuery, null);
-        // Toast.makeText(s," "+selectQuery+"  curser:" +CR.getCount(),Toast.LENGTH_LONG).show();
-
-        return CR;
-    }
-
     public ArrayList<String> getAzkar(int prayIndex) {
         ArrayList<String> azkars = new ArrayList<>();
         String selectQuery = null;
@@ -231,13 +192,12 @@ public class DBOperations {
             selectQuery = "SELECT * FROM azkar WHERE Magrib=1 ORDER BY sort ASC ";
         if (prayIndex == 5)
             selectQuery = "SELECT * FROM azkar WHERE Isha=1 ORDER BY sort ASC ";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
             do {
                 String text = cursor.getString(cursor.getColumnIndex("TextAzakar"));
-                //+ " (" + cursor.getInt(cursor.getColumnIndex("Count")) + ")";
                 azkars.add(text);
             } while (cursor.moveToNext());
         }
@@ -245,23 +205,21 @@ public class DBOperations {
     }
 
     public ArrayList<Azkar> getAzkar() {
-        azkars = new ArrayList<>();
+        ArrayList<Azkar> azkars = new ArrayList<>();
         String selectQuery = "SELECT * FROM azkar ORDER BY sort ASC ";
-//        Log.i("Quert", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
-//        Log.i("dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
             do {
                 Azkar object = new Azkar();
                 object.setId(cursor.getInt(cursor.getColumnIndex("Id")));
                 object.setTextAzakar(cursor.getString(cursor.getColumnIndex("TextAzakar")));
                 object.setUpdatedAt(cursor.getString(cursor.getColumnIndex("UpdatedAt")));
-                object.setDeleted(cursor.getInt(cursor.getColumnIndex("isDeleted")) == 1 ? true : false);
-                object.setFajr(cursor.getInt(cursor.getColumnIndex("Fajr")) == 1 ? true : false);
-                object.setDhuhr(cursor.getInt(cursor.getColumnIndex("Dhuhr")) == 1 ? true : false);
-                object.setAsr(cursor.getInt(cursor.getColumnIndex("Asr")) == 1 ? true : false);
-                object.setMagrib(cursor.getInt(cursor.getColumnIndex("Magrib")) == 1 ? true : false);
-                object.setIsha(cursor.getInt(cursor.getColumnIndex("Isha")) == 1 ? true : false);
+                object.setDeleted(cursor.getInt(cursor.getColumnIndex("isDeleted")) == 1);
+                object.setFajr(cursor.getInt(cursor.getColumnIndex("Fajr")) == 1);
+                object.setDhuhr(cursor.getInt(cursor.getColumnIndex("Dhuhr")) == 1);
+                object.setAsr(cursor.getInt(cursor.getColumnIndex("Asr")) == 1);
+                object.setMagrib(cursor.getInt(cursor.getColumnIndex("Magrib")) == 1);
+                object.setIsha(cursor.getInt(cursor.getColumnIndex("Isha")) == 1);
                 object.setSort(cursor.getInt(cursor.getColumnIndex("sort")));
                 object.setCount(cursor.getInt(cursor.getColumnIndex("Count")));
                 object.setSort(cursor.getInt(cursor.getColumnIndex("sort")));
@@ -272,9 +230,9 @@ public class DBOperations {
     }
 
     public ArrayList<News> getNews() {
-        adses = new ArrayList<>();
+        ArrayList<News> adses = new ArrayList<>();
         String selectQuery = "SELECT * FROM News  ORDER BY sort ASC";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
@@ -296,7 +254,7 @@ public class DBOperations {
     public boolean getNewsById(int Id) {
         boolean isExist = false;
         String selectQuery = "SELECT Id FROM News WHERE Id=" + Id + "";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
@@ -308,7 +266,7 @@ public class DBOperations {
     public boolean getAzkarById(int Id) {
         boolean isExist = false;
         String selectQuery = "SELECT Id FROM azkar WHERE Id=" + Id + "";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
@@ -319,7 +277,7 @@ public class DBOperations {
 
     public void delAds(int id) {
         Log.d("DBOperations", "table profile data eraser");
-        // open();
+
         mDb.execSQL("DELETE  FROM News where Id=" + id + "");
         Log.i("DBOperations", "DELETE  FROM News where Id=" + id + "");
 
@@ -327,7 +285,7 @@ public class DBOperations {
 
     public void delAzkar(int id) {
         Log.d("DBOperations", "table profile data eraser");
-        // open();
+
         mDb.execSQL("DELETE  FROM azkar where Id=" + id + "");
         Log.i("DBOperations", "DELETE  FROM News where Id=" + id + "");
 
@@ -337,8 +295,7 @@ public class DBOperations {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         db.enableWriteAheadLogging();
         db.beginTransaction();
-//        if (a!=null)
-//            db.delete("azkar","",null);
+
         int count = 0;
         int len = a.size();
         //Delete services
@@ -379,7 +336,7 @@ public class DBOperations {
         db.close();
     }
 
-    public boolean addAzkar(SQLiteDatabase db, Azkar object) {
+    private boolean addAzkar(SQLiteDatabase db, Azkar object) {
         ContentValues values = new ContentValues();
         db.delete("azkar", "Id=" + object.getId(), null);
         values.put("Id", object.getId());
@@ -394,9 +351,7 @@ public class DBOperations {
         values.put("sort", object.getSort());
         values.put("Count", object.getCount());
 
-        //db.insert("Service_Provider", null, values);
         long rowid = db.insert("azkar", null, values);
-        // db.close();
         return rowid != -1;
     }
 
@@ -445,7 +400,7 @@ public class DBOperations {
         db.close();
     }
 
-    public boolean addNews(SQLiteDatabase db, News object) {
+    private boolean addNews(SQLiteDatabase db, News object) {
         ContentValues values = new ContentValues();
         db.delete("News", "Id=" + object.getId(), null);
         values.put("Id", object.getId());
@@ -467,7 +422,6 @@ public class DBOperations {
             db.delete("Khotab", "", null);
         int count = 0;
         int len = a.size();
-        //Delete services
         for (int i = 0; i < len; i++) {
             Khotab current = a.get(i);
             if (current.getIsDeleted() == 0) {
@@ -482,7 +436,7 @@ public class DBOperations {
         db.close();
     }
 
-    public boolean addKhotab(SQLiteDatabase db, Khotab object) {
+    private boolean addKhotab(SQLiteDatabase db, Khotab object) {
         ContentValues values = new ContentValues();
         db.delete("Khotab", "Id=" + object.getId(), null);
         values.put("Id", object.getId());
@@ -503,9 +457,7 @@ public class DBOperations {
         values.put("TranslationSpeed", object.getTranslationSpeed());
         values.put("Direction1RTL", object.isDirection1RTL()?1:0);
         values.put("Direction2RTL", object.isDirection2RTL()?1:0);
-        //db.insert("Service_Provider", null, values);
         long rowid = db.insert("Khotab", null, values);
-        // db.close();
         return rowid != -1;
     }
 
@@ -540,18 +492,7 @@ public class DBOperations {
         return object;
     }
 
-    //    public void updateNews(News news) {
-//        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-//        db.enableWriteAheadLogging();
-//        db.beginTransaction();
-//        Log.d("DBOperations", "table profile data eraser");
-//        // open();
-//        mDb.execSQL("update ads set adsText ='" + adsText + "' where id='" + id + "'");
-//        Log.i("DBOperations", "update ads set adsText ='" + adsText + "' where id='" + id + "'");
-//        db.setTransactionSuccessful();
-//        db.endTransaction();
-//        db.close();
-//    }
+
     public ArrayList<String> getNews(String date) {
         ArrayList<String> newsList = new ArrayList<String>();
         String selectQuery = "SELECT * FROM News where FromDate <='" + date + "' and ToDate >='" + date
@@ -564,14 +505,6 @@ public class DBOperations {
                 String TextAds = cursor.getString(cursor.getColumnIndex("TextAds"));
                 newsList.add("  " + TextAds + " ");
                 Log.d("Sync:TextAds: ", TextAds);
-//                News object = new News();
-//                object.setId(cursor.getInt(cursor.getColumnIndex("Id")));
-//                object.setTextAds(cursor.getString(cursor.getColumnIndex("TextAds")));
-//                object.setUpdatedAt(cursor.getString(cursor.getColumnIndex("UpdatedAt")));
-//                object.setFromDate(cursor.getString(cursor.getColumnIndex("FromDate")));
-//                object.setToDate(cursor.getString(cursor.getColumnIndex("ToDate")));
-//                object.setDeleted(cursor.getInt(cursor.getColumnIndex("isDeleted"))==1?true:false);
-//                object.setSort(cursor.getInt(cursor.getColumnIndex("sort")));
                 Log.i("dataBase TextAds", "" + TextAds);
             } while (cursor.moveToNext());
         }
@@ -653,7 +586,7 @@ public class DBOperations {
     public OptionSiteClass getSettings() {
         OptionSiteClass object = new OptionSiteClass();
         String selectQuery = "SELECT * FROM Settings";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("Qu dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
@@ -717,7 +650,7 @@ public class DBOperations {
     public boolean ifSettingsExists() {
         boolean isExist = false;
         String selectQuery = "SELECT * FROM Settings";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("Qu dataBase", "" + cursor.getCount());
         if (cursor.getCount() > 0) {
@@ -733,7 +666,6 @@ public class DBOperations {
         db.beginTransaction();
         int count = 0;
         ContentValues values = new ContentValues();
-//        values.put("id", object.getId());
         values.put("MasjedID", object.getMasjedID());
         values.put("Type", object.getType());
         values.put("Title", object.getTitle());
@@ -751,36 +683,11 @@ public class DBOperations {
         return (int) rowId;
     }
 
-    //    public void updateAds(Ads object) {
-//        long rowId = 0;
-//        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-//        db.enableWriteAheadLogging();
-//        db.beginTransaction();
-//        int count = 0;
-//        ContentValues values = new ContentValues();
-////        values.put("id", object.getId());
-//        values.put("MasjedID", object.getMasjedID());
-//        values.put("Type", object.getType());
-//        values.put("Title", object.getTitle());
-//        values.put("Text", object.getText());
-//        values.put("Image", object.getImage());
-//        values.put("Video", object.getVideo());
-//        values.put("StartDate", object.getStartDate());
-//        values.put("EndDate", object.getEndDate());
-//
-//        db.update("Advertisement", values, "id=" + object.getId(), null);
-//        Log.d("Sync service", "# of set inserted in Advertisement: " + count);
-//        db.setTransactionSuccessful();
-//        db.endTransaction();
-//        db.close();
-////        return (int) rowId;
-//    }
     public boolean updateAds(Ads object) {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         db.enableWriteAheadLogging();
         db.beginTransaction();
         ContentValues values = new ContentValues();
-//        values.put("id", object.getId());
         values.put("MasjedID", object.getMasjedID());
         values.put("Type", object.getType());
         values.put("Title", object.getTitle());
@@ -802,11 +709,9 @@ public class DBOperations {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         db.enableWriteAheadLogging();
         db.beginTransaction();
-//        if (a!=null)
-//            db.delete("azkar","",null);
+
         int count = 0;
         int len = a.size();
-        //Delete services
         for (int i = 0; i < len; i++) {
             AdsPeriods current = a.get(i);
             AddAdsPeriod(db, current);
@@ -820,7 +725,7 @@ public class DBOperations {
         db.close();
     }
 
-    public boolean AddAdsPeriod(SQLiteDatabase db, AdsPeriods object) {
+    private boolean AddAdsPeriod(SQLiteDatabase db, AdsPeriods object) {
         ContentValues values = new ContentValues();
         values.put("AdvId", object.getAdvId());
         values.put("StartTime", object.getStartTime());
@@ -828,38 +733,14 @@ public class DBOperations {
         values.put("day", object.getDay());
         values.put("StartDate", object.getStartDate());
         values.put("EndDate", object.getEndDate());
-        //db.insert("Service_Provider", null, values);
         long rowid = db.insert("AdsPeriods", null, values);
-        // db.close();
         return rowid != -1;
-    }
-
-    public Ads getAds(int masjedID) {
-        Ads object = new Ads();
-        String selectQuery = "SELECT * FROM Advertisement WHERE MasjedID=" + masjedID + " LIMIT 1";
-        Log.i("Quert", selectQuery);
-        Cursor cursor = mDb.rawQuery(selectQuery, null);
-        Log.i("Qu dataBase", "" + cursor.getCount());
-        if (cursor.moveToFirst()) {
-            do {
-                object.setId(cursor.getInt(cursor.getColumnIndex("id")));
-                object.setMasjedID(cursor.getInt(cursor.getColumnIndex("MasjedID")));
-                object.setType(cursor.getInt(cursor.getColumnIndex("Type")));
-                object.setTitle(cursor.getString(cursor.getColumnIndex("Title")));
-                object.setText(cursor.getString(cursor.getColumnIndex("Text")));
-                object.setImage(cursor.getString(cursor.getColumnIndex("Image")));
-                object.setVideo(cursor.getString(cursor.getColumnIndex("Video")));
-                object.setStartDate(cursor.getString(cursor.getColumnIndex("StartDate")));
-                object.setEndDate(cursor.getString(cursor.getColumnIndex("EndDate")));
-            } while (cursor.moveToNext());
-        } else object = null;
-        return object;
     }
 
     public ArrayList<AdsPeriods> getAdvPeriods(int advId) {
         ArrayList<AdsPeriods> list = new ArrayList<>();
         String selectQuery = "SELECT * FROM AdsPeriods WHERE AdvId=" + advId + "";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("Qu dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
@@ -883,23 +764,12 @@ public class DBOperations {
         String selectQuery = "SELECT day FROM AdsPeriods WHERE AdvId=" + advId
                 + " and  strftime('%H:%M',StartTime)=strftime('%H:%M','" + StartTime + "') "
                 + " and strftime('%H:%M',EndTime)=strftime('%H:%M','" + EndTime + "') ORDER By day ASC";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("Qu dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
             do {
                 day = cursor.getInt(cursor.getColumnIndex("day")) + "," + day;
-//                int AdvId=cursor.getInt(cursor.getColumnIndex("AdvId"));
-//                Log.i("//list days: ", day+ "");
-//                AdsPeriods object = new AdsPeriods();
-//                object.setId(cursor.getInt(cursor.getColumnIndex("id")));
-//                object.setAdvId(cursor.getInt(cursor.getColumnIndex("AdvId")));
-//                object.setStartTime(cursor.getString(cursor.getColumnIndex("StartTime")));
-//                object.setEndTime(cursor.getString(cursor.getColumnIndex("EndTime")));
-//                object.setStartDate(cursor.getString(cursor.getColumnIndex("StartDate")));
-//                object.setEndDate(cursor.getString(cursor.getColumnIndex("EndDate")));
-//                object.setDay(cursor.getInt(cursor.getColumnIndex("day")));
-//                list.add(object);
             } while (cursor.moveToNext());
         }
         return day;
@@ -913,23 +783,12 @@ public class DBOperations {
                 + " and  strftime('%Y-%m-%d',StartDate)= strftime('%Y-%m-%d','" + adsPeriods.getStartDate() + "') "
                 + " and strftime('%Y-%m-%d',EndDate) =strftime('%Y-%m-%d','" + adsPeriods.getEndDate() + "') "
                 + " and day=" + adsPeriods.getDay() + "";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("Qu dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
             do {
                 id = cursor.getInt(cursor.getColumnIndex("id"));
-//                int AdvId=cursor.getInt(cursor.getColumnIndex("AdvId"));
-//                Log.i("//list days: ", day+ "");
-//                AdsPeriods object = new AdsPeriods();
-//                object.setId(cursor.getInt(cursor.getColumnIndex("id")));
-//                object.setAdvId(cursor.getInt(cursor.getColumnIndex("AdvId")));
-//                object.setStartTime(cursor.getString(cursor.getColumnIndex("StartTime")));
-//                object.setEndTime(cursor.getString(cursor.getColumnIndex("EndTime")));
-//                object.setStartDate(cursor.getString(cursor.getColumnIndex("StartDate")));
-//                object.setEndDate(cursor.getString(cursor.getColumnIndex("EndDate")));
-//                object.setDay(cursor.getInt(cursor.getColumnIndex("day")));
-//                list.add(object);
             } while (cursor.moveToNext());
         }
         return id;
@@ -940,7 +799,7 @@ public class DBOperations {
         String selectQuery = "SELECT id FROM AdsPeriods WHERE AdvId=" + advId
                 + " and  strftime('%H:%M',StartTime)=strftime('%H:%M','" + StartTime + "') "
                 + " and strftime('%H:%M',EndTime)=strftime('%H:%M','" + EndTime + "') ORDER By day ASC";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("Qu dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
@@ -953,11 +812,6 @@ public class DBOperations {
 
     public ArrayList<Ads> getAdsByDate(int masjedID, String date,String  time,int day) {
         ArrayList<Ads> adses = new ArrayList<>();
-//        String selectQuery = "SELECT * FROM Advertisement WHERE MasjedID=" + masjedID
-//                + " AND (strftime('%Y-%m-%d','" + date + "') between "
-//                +"strftime('%Y-%m-%d', Advertisement.StartDate) "
-//                +"and strftime('%Y-%m-%d', Advertisement.EndDate)"
-//                +" ORDER BY strftime('%Y-%m-%d', Advertisement.StartDate) DESC";
         String selectQuery = "select * from Advertisement left join  AdsPeriods"
                 + " on (Advertisement.id = AdsPeriods.AdvId)"
                 + " where Advertisement.MasjedID=" + masjedID
@@ -965,9 +819,8 @@ public class DBOperations {
                 + " between strftime('%Y-%m-%d', AdsPeriods.StartDate) and strftime('%Y-%m-%d', AdsPeriods.EndDate))"
                 + " and  (AdsPeriods.day =" + day + ")"
                 + " and ( strftime('%H:%M', AdsPeriods.StartTime) =  strftime('%H:%M','" + time + "')) LIMIT 1";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
-//        Log.i("Qu dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
             do {
                 Ads object = new Ads();
@@ -991,7 +844,7 @@ public class DBOperations {
     public ArrayList<Ads> getAdsList(int masjedID) {
         ArrayList<Ads> adsList = new ArrayList<>();
         String selectQuery = "SELECT * FROM Advertisement WHERE MasjedID=" + masjedID + "";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("Qu dataBase", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
@@ -1011,85 +864,6 @@ public class DBOperations {
             } while (cursor.moveToNext());
         }
         ;
-        return adsList;
-    }
-
-    //    public ArrayList<Ads> getAdsListByDay(int masjedID, Ads ads) {
-//        ArrayList<Ads> adsList = new ArrayList<>();
-//// MasjedID=" + masjedID + " AND
-//        String selectQuery = "SELECT * FROM Advertisement WHERE ";
-//        if (ads.isSaturday())
-//            selectQuery = selectQuery + " Saturday=1 OR";
-//        if (ads.isSunday())
-//            selectQuery = selectQuery + " Sunday=1 OR";
-//        if (ads.isMonday())
-//            selectQuery = selectQuery + "  Monday=1 OR";
-//        if (ads.isTuesday())
-//            selectQuery = selectQuery + "  Tuesday=1 OR";
-//        if (ads.isWednesday())
-//            selectQuery = selectQuery + "  Wednesday=1 OR";
-//        if (ads.isThursday())
-//            selectQuery = selectQuery + "  Thursday=1 OR";
-//        if (ads.isFriday())
-//            selectQuery = selectQuery + "  Friday=1";
-//        if (selectQuery.endsWith("OR"))
-//            selectQuery = selectQuery.substring(0, selectQuery.length() - 2);
-//        Log.i("Quert", selectQuery);
-//        Cursor cursor = mDb.rawQuery(selectQuery, null);
-//        Log.i("Qu dataBase", "" + cursor.getCount());
-//        if (cursor.moveToFirst()) {
-//            do {
-//                Ads object = new Ads();
-//                object.setId(cursor.getInt(cursor.getColumnIndex("id")));
-//                object.setMasjedID(cursor.getInt(cursor.getColumnIndex("MasjedID")));
-//                object.setType(cursor.getInt(cursor.getColumnIndex("Type")));
-//                object.setTitle(cursor.getString(cursor.getColumnIndex("Title")));
-//                object.setText(cursor.getString(cursor.getColumnIndex("Text")));
-//                object.setImage(cursor.getString(cursor.getColumnIndex("Image")));
-//                object.setVideo(cursor.getString(cursor.getColumnIndex("Video")));
-//                object.setStartTime(cursor.getString(cursor.getColumnIndex("StartTime")));
-//                object.setEndTime(cursor.getString(cursor.getColumnIndex("EndTime")));
-//                object.setSaturday(cursor.getInt(cursor.getColumnIndex("Saturday")) == 1 ? true : false);
-//                object.setSunday(cursor.getInt(cursor.getColumnIndex("Sunday")) == 1 ? true : false);
-//                object.setMonday(cursor.getInt(cursor.getColumnIndex("Monday")) == 1 ? true : false);
-//                object.setTuesday(cursor.getInt(cursor.getColumnIndex("Tuesday")) == 1 ? true : false);
-//                object.setWednesday(cursor.getInt(cursor.getColumnIndex("Wednesday")) == 1 ? true : false);
-//                object.setThursday(cursor.getInt(cursor.getColumnIndex("Thursday")) == 1 ? true : false);
-//                object.setFriday(cursor.getInt(cursor.getColumnIndex("Friday")) == 1 ? true : false);
-//                adsList.add(object);
-//                Log.i("Qu dataBase", "" + object.getTitle() + " :" + object.isSaturday() + ":" + object.isSunday() + ": " + object.isMonday() +
-//                        ":" + object.isTuesday() + " :" + object.isWednesday() + ":" + object.isThursday() + ":" + object.isFriday());
-//            } while (cursor.moveToNext());
-//        }
-//        return adsList;
-//    }
-    public ArrayList<AdsPeriods> getAdsListByDay(int masjedId, AdsPeriods ads) {
-        ArrayList<AdsPeriods> adsList = new ArrayList<>();
-// MasjedID=" + masjedID + " AND
-        String selectQuery = "select * from Advertisement left join" +
-                "AdsPeriods on Advertisement.id =AdsPeriods.AdvId" +
-                " where Advertisement.MasjedID=" + masjedId +
-                " and (('" + ads.getStartDate() + "' between AdsPeriods.StartDate and AdsPeriods.EndDate )" +
-                "  or( '" + ads.getEndDate() + "' between AdsPeriods.StartDate and AdsPeriods.EndDate) )" +
-                " and AdsPeriods.day =" + ads.getDay() +
-                " and  (('" + ads.getStartTime() + "' between AdsPeriods.StartTime and AdsPeriods.EndTime ) " +
-                " or( '" + ads.getEndTime() + "' between AdsPeriods.StartTime and AdsPeriods.EndTime) )";
-
-        Log.i("Quert", selectQuery);
-        Cursor cursor = mDb.rawQuery(selectQuery, null);
-        Log.i("Qu dataBase", "" + cursor.getCount());
-        if (cursor.getCount() > 0 && cursor.moveToFirst()) {
-            do {
-                AdsPeriods object = new AdsPeriods();
-                object.setId(cursor.getInt(cursor.getColumnIndex("id")));
-                object.setAdvId(cursor.getInt(cursor.getColumnIndex("AdvId")));
-                object.setDay(cursor.getInt(cursor.getColumnIndex("day")));
-                object.setStartTime(cursor.getString(cursor.getColumnIndex("StartTime")));
-                object.setEndTime(cursor.getString(cursor.getColumnIndex("EndTime")));
-                adsList.add(object);
-                Log.i("Qu dataBase", "" + object.getAdvId() + " : " + object.getDay());
-            } while (cursor.moveToNext());
-        }
         return adsList;
     }
 
@@ -1113,7 +887,7 @@ public class DBOperations {
                 " or ( strftime('%H:%M','" + startTime + "') between strftime('%H:%M', AdsPeriods.StartTime) and strftime('%H:%M', AdsPeriods.EndTime))\n" +
                 " or (  strftime('%H:%M','" + endTime + "') between strftime('%H:%M', AdsPeriods.StartTime) and strftime('%H:%M', AdsPeriods.EndTime))\n" +
                 " )";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("Qu dataBase", "" + cursor.getCount());
         if (cursor.getCount() > 0 && cursor.moveToFirst()) {
@@ -1153,7 +927,7 @@ public class DBOperations {
                 " ) and AdsPeriods.id not in " + "( SELECT id FROM AdsPeriods WHERE AdvId=" + lastObject.getAdvId()
                 + " and  strftime('%H:%M', AdsPeriods.StartTime)=strftime('%H:%M','" + lastObject.getStartTime() + "')"
                 + " and  strftime('%H:%M', AdsPeriods.EndTime)=strftime('%H:%M','" + lastObject.getEndTime() + "')" + ")";
-        Log.i("Quert", selectQuery);
+        Log.i("Query", selectQuery);
         Cursor cursor = mDb.rawQuery(selectQuery, null);
         Log.i("Qu dataBase", "" + cursor.getCount());
         if (cursor.getCount() > 0 && cursor.moveToFirst()) {
@@ -1173,7 +947,6 @@ public class DBOperations {
 
     public void delAdvertisement(int id, int MasjedID) {
         Log.d("DBOperations", "table profile data eraser");
-        // open();
         mDb.execSQL("DELETE  FROM Advertisement where id=" + id + " AND MasjedID=" + MasjedID + "");
         mDb.execSQL("DELETE  FROM AdsPeriods where AdvId=" + id + "");
         Log.i("DBOperations", "DELETE  FROM Advertisement where id=" + id + " AND MasjedID=" + MasjedID + "");
@@ -1182,7 +955,7 @@ public class DBOperations {
 
     public void delAdsPeriods(int id) {
         Log.d("DBOperations", "table profile data eraser");
-        // open();
+
         mDb.execSQL("DELETE  FROM AdsPeriods where AdvId=" + id + "");
         Log.i("DBOperations", "DELETE  FROM AdsPeriods where AdvId=" + id + "");
 
@@ -1190,8 +963,6 @@ public class DBOperations {
 
     public void delAdvPeriod(int advId, AdsPeriods lastObject) {
         Log.d("DBOperations", "table profile data eraser");
-        // open();
-//        mDb.execSQL("DELETE  FROM Advertisement where id=" + id + " AND MasjedID=" + MasjedID + "");
         mDb.execSQL("DELETE  FROM AdsPeriods where AdvId=" + advId + " and id in "
                 + "( SELECT id FROM AdsPeriods WHERE AdvId=" + lastObject.getAdvId() + " and  StartTime='"
                 + lastObject.getStartTime() + "' and EndTime='" + lastObject.getEndTime() + "')");
@@ -1203,8 +974,6 @@ public class DBOperations {
 
     public void delAdvPeriods(AdsPeriods adv) {
         Log.d("DBOperations", "table profile data eraser");
-        // open();
-//        mDb.execSQL("DELETE  FROM Advertisement where id=" + id + " AND MasjedID=" + MasjedID + "");
         mDb.execSQL("DELETE  FROM AdsPeriods  WHERE AdvId=" + adv.getAdvId() + " and  StartTime='"
                 + adv.getStartTime() + "' and EndTime='" + adv.getEndTime() + "'");
         Log.i("DBOperations", "DELETE  FROM AdsPeriods  WHERE AdvId=" + adv.getAdvId() + " and  StartTime='"

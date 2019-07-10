@@ -7,23 +7,23 @@ import java.io.Serializable;
  */
 
 public class Khotab implements Serializable{
-    public int Id; // رقم الخطبة ، لا يتكرر
+    private int Id; // رقم الخطبة ، لا يتكرر
     public String Title; // عنوان الخطبة بالعربي ،،، ،، لازم يكون في نص ، يعني لازم يرجع الك
-    public String Body;// نص الخطبة بالعربي ،، لازم يكون في نص ، يعني لازم يرجع الك
-    public String DateKhotab; // تاريخ الخطبة ،، غالبا يكون تاريخ ايام جمعة فقط
-    public String UpdatedAt; // اخر تحديث
-    public int isDeleted; // هل هو محذوف :: نعم يعني محذوف
+    private String Body;// نص الخطبة بالعربي ،، لازم يكون في نص ، يعني لازم يرجع الك
+    private String DateKhotab; // تاريخ الخطبة ،، غالبا يكون تاريخ ايام جمعة فقط
+    private String UpdatedAt; // اخر تحديث
+    private int isDeleted; // هل هو محذوف :: نعم يعني محذوف
     public String Description; // الوصف ،، زيادة ،، غير اجبارية
-    public String Title1;// عنوان الترجمة الاولى  اللغة الاولى
-    public String Body1; // ترجمة الخطبة للغة الاولى
-    public String Title2; // ترجمة العنوان للغة التانية
-    public String Body2; // ترجمة نص الخطبة للغة التانية
-    public String UrlVideoDeaf; // رابط فيديو لغة الاشارة ،، اذا موجود بكون في فيديو ، واذا فاضي اذا لا يحتوي على لغة اشارة
-    public int TimeExpected;// وقت الخطبة المقدر ،، الوقت بالدقائق ،،، يستخدم ل زمن اظهار الترجمة على الشاشة وزمن تسجيل الخطبة من بعد الاذان ب 2 دقيقة مثلا
-    public int isException;
-    public int TranslationSpeed;
-    public boolean Direction1RTL;
-    public boolean Direction2RTL;
+    private String Title1;// عنوان الترجمة الاولى  اللغة الاولى
+    private String Body1; // ترجمة الخطبة للغة الاولى
+    private String Title2; // ترجمة العنوان للغة التانية
+    private String Body2; // ترجمة نص الخطبة للغة التانية
+    private String UrlVideoDeaf; // رابط فيديو لغة الاشارة ،، اذا موجود بكون في فيديو ، واذا فاضي اذا لا يحتوي على لغة اشارة
+    private int TimeExpected;// وقت الخطبة المقدر ،، الوقت بالدقائق ،،، يستخدم ل زمن اظهار الترجمة على الشاشة وزمن تسجيل الخطبة من بعد الاذان ب 2 دقيقة مثلا
+    private int isException;
+    private int TranslationSpeed;
+    private boolean Direction1RTL;
+    private boolean Direction2RTL;
 
 
     public Khotab(){}

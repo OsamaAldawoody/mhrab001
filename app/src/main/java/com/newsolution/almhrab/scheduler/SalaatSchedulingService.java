@@ -6,21 +6,16 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
-import android.util.Log;
 
 
 import com.newsolution.almhrab.Activity.MainActivity;
-import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.Constants;
 import com.newsolution.almhrab.Helpar.PlaySound;
+import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.R;
 
 import java.util.Calendar;
@@ -54,8 +49,7 @@ public class SalaatSchedulingService extends IntentService implements Constants,
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        // BEGIN_INCLUDE(service_onhandle)
-        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
+        sp = getSharedPreferences(Utils.PREFS, MODE_PRIVATE);
         spedit = sp.edit();
         int action = intent.getIntExtra(EXTRA_ACTION, -1);
         Calendar now = Calendar.getInstance(TimeZone.getDefault());
@@ -70,10 +64,8 @@ public class SalaatSchedulingService extends IntentService implements Constants,
                 sendNotification(String.format(formatString, prayerName, now), prayerName);
             else {
                 if (TextUtils.isEmpty(sp.getString("uriAthan", ""))) {
-//                    spedit.putString("sound", "talib").commit();
                     PlaySound.play(getBaseContext(), "talib");
                 } else {
-                    Log.i("****", sp.getString("uriAthan", "") + " **-");
                     PlaySound.playSDCard(getBaseContext(), sp.getString("uriAthan", ""), "talib");
                 }
                 try {
@@ -87,12 +79,9 @@ public class SalaatSchedulingService extends IntentService implements Constants,
             if (!isAlarmEnabledForPrayer)
                 sendNotification(String.format(formatString, prayerName, now), prayerName);
             else {
-//                sp.edit().putString("uriIqama", "").commit();
                 if (TextUtils.isEmpty(sp.getString("uriIqama", ""))) {
-//                    spedit.putString("sound", "iqama").commit();
                     PlaySound.play(getBaseContext(), "iqama");
                 } else {
-//                    spedit.putString("sound", "iqama").commit();
                     PlaySound.playSDCard(getBaseContext(), sp.getString("uriIqama", ""), "iqama");
                 }
                 try {
@@ -110,7 +99,6 @@ public class SalaatSchedulingService extends IntentService implements Constants,
                         PlaySound.play(getBaseContext(), "phone");
                     } else {
                         PlaySound.playSDCard(getBaseContext(), sp.getString("uriPhone", ""), "phone");
-//                        PlaySound.playSDCard(getBaseContext(), "content://com.android.providers.media.documents/document/audio%3A4557", "phone");
                     }
                     try {
                         mp.setOnCompletionListener(this);
@@ -121,7 +109,6 @@ public class SalaatSchedulingService extends IntentService implements Constants,
                 }
             }
         }
-//        Log.i("****:action= ",action+" sound:"+sp.getString("sound"," ll"));
 
         // Release the wake lock provided by the BroadcastReceiver.
         SalaatAlarmReceiver.completeWakefulIntent(intent);
@@ -142,7 +129,6 @@ public class SalaatSchedulingService extends IntentService implements Constants,
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle(getString(R.string.app_name))
                         .setAutoCancel(true)
-                        // .setVibrate(pattern)
                         .setStyle(new NotificationCompat.BigTextStyle().bigText(msg))
                         .setContentText(msg)
                         .setAutoCancel(true);
@@ -151,23 +137,6 @@ public class SalaatSchedulingService extends IntentService implements Constants,
         mBuilder.setSound(sound);
         mBuilder.setContentIntent(contentIntent);
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
-//        try {
-//            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-//            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-//            r.play();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        try {
-//            Uri path = Uri.parse("android.resource://"+getPackageName()+"/raw/sound.mp3");
-//            RingtoneManager.setActualDefaultRingtoneUri(getApplicationContext(),
-//                    RingtoneManager.TYPE_NOTIFICATION, path);
-//            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), path);
-//            r.play();
-//        }
-//        catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
     @Override

@@ -272,17 +272,17 @@ public class OptionSiteClass {
         DateHijri = dateHijri;
     }
 
-    public boolean FajrEkamaIsTime;
-    public boolean DhuhrEkamaIsTime;
-    public boolean AsrEkamaIsTime;
-    public boolean MagribEkamaIsTime;
-    public boolean IshaEkamaIsTime;
+    private boolean FajrEkamaIsTime;
+    private boolean DhuhrEkamaIsTime;
+    private boolean AsrEkamaIsTime;
+    private boolean MagribEkamaIsTime;
+    private boolean IshaEkamaIsTime;
 
-    public String FajrEkamaTime;
-    public String DhuhrEkamaTime;
-    public String AsrEkamaTime;
-    public String MagribEkamaTime;
-    public String IshaEkamaTime;
+    private String FajrEkamaTime;
+    private String DhuhrEkamaTime;
+    private String AsrEkamaTime;
+    private String MagribEkamaTime;
+    private String IshaEkamaTime;
 
     public boolean isFajrEkamaIsTime() {
         return FajrEkamaIsTime;
@@ -388,63 +388,64 @@ public class OptionSiteClass {
         AlShrouqEkamaIsTime = alShrouqEkamaIsTime;
     }
 
-    public String AlShrouqEkamaTime;
-    public boolean AlShrouqEkamaIsTime;
 
-    public int AsrAzkar;
+    private int AsrAzkar;
 
-    public int AsrAzkarTimer;
+    private int AsrEkama;
+    private int AsrAzkarTimer;
 
-    public int MagribEkama;
+    private int MagribEkama;
 
-    public int MagribAzkar;
+    private int MagribAzkar;
 
-    public int MagribAzkarTimer;
+    private int MagribAzkarTimer;
 
-    public int IshaEkama;
+    private int IshaEkama;
 
-    public int IshaAzkar;
+    private int IshaAzkar;
 
-    public int IshaAzkarTimer;
-
-
-    public boolean StatusAthanVoiceF;
-    public boolean StatusEkamaVoiceF;
-    public boolean StatusAthanVoiceD;
-    public boolean StatusEkamaVoiceD;
-    public boolean StatusAthanVoiceA;
-    public boolean StatusEkamaVoiceA;
-    public boolean StatusAthanVoiceM;
-    public boolean StatusEkamaVoiceM;
-    public boolean StatusAthanVoiceI;
-    public boolean StatusEkamaVoiceI;
-    public int FajrEkama;
-    public int FajrAzkar;
-    public int FajrAzkarTimer;
+    private int IshaAzkarTimer;
 
 
-    public int DhuhrEkama;
-    public int DhuhrAzkar;
-    public int DhuhrAzkarTimer;
+    private boolean StatusAthanVoiceF;
+    private boolean StatusEkamaVoiceF;
+    private boolean StatusAthanVoiceD;
+    private boolean StatusEkamaVoiceD;
+    private boolean StatusAthanVoiceA;
+    private boolean StatusEkamaVoiceA;
+    private boolean StatusAthanVoiceM;
+    private boolean StatusEkamaVoiceM;
+    private boolean StatusAthanVoiceI;
+    private boolean StatusEkamaVoiceI;
+    private int FajrEkama;
+    private int FajrAzkar;
+    private int FajrAzkarTimer;
 
-    public int AsrEkama;
-    public int AlShrouqEkama;
+
+    private int DhuhrEkama;
+    private int DhuhrAzkar;
+    private int DhuhrAzkarTimer;
+
+
+    private int AlShrouqEkama;
+    private String AlShrouqEkamaTime;
+    private boolean AlShrouqEkamaIsTime;
 
     /// <summary>
     /// حالة التنبيهات المرئية لإغلاق الهاتف
     /// </summary>
-    public boolean PhoneStatusAlerts;
+    private boolean PhoneStatusAlerts;
     /// <summary>
     /// اظهار التنبيهات قبل إقامة الصلاة بـ ثانية
     /// </summary>
-    public int PhoneShowAlertsBeforEkama;
-    public String PhoneAlertsArabic;
-    public String PhoneAlertsEnglish;
-    public String PhoneAlertsUrdu;
-    public boolean PhoneStatusVoice;
-    public int DateHijri;
-    public int CloseScreenAfterIsha;
-    public int RunScreenBeforeFajr;
+    private int PhoneShowAlertsBeforEkama;
+    private String PhoneAlertsArabic;
+    private String PhoneAlertsEnglish;
+    private String PhoneAlertsUrdu;
+    private boolean PhoneStatusVoice;
+    private int DateHijri;
+    private int CloseScreenAfterIsha;
+    private int RunScreenBeforeFajr;
 
     public int getCloseScreenAfterIsha() {
         return CloseScreenAfterIsha;

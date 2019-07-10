@@ -4,17 +4,17 @@ package com.newsolution.almhrab.Model;
  * Created by hp on 8/7/2016.
  */
 public class Azkar {
-    public int Id;
-    public String TextAzakar; // الاذكار
-    public String UpdatedAt; // اخر تحديث
-    public boolean isDeleted; // محدوف
+    private int Id;
+    private String TextAzakar; // الاذكار
+    private String UpdatedAt; // اخر تحديث
+    private boolean isDeleted; // محدوف
     public int sort; // ترتيب
-    public boolean Fajr; // فجر
-    public boolean Dhuhr;// ظهر
-    public boolean Asr;// عصر
-    public boolean Magrib; // مغرب
-    public boolean Isha; // عشاء
-    public int Count; // تكرار ،، مبدئيا مالهاش اي قيمة
+    private boolean Fajr; // فجر
+    private boolean Dhuhr;// ظهر
+    private boolean Asr;// عصر
+    private boolean Magrib; // مغرب
+    private boolean Isha; // عشاء
+    private int Count; // تكرار ،، مبدئيا مالهاش اي قيمة
 
     public int getId() {
         return Id;

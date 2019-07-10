@@ -2,12 +2,12 @@ package com.newsolution.almhrab.Activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,14 +17,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.newsolution.almhrab.Adapters.AdsAdapter;
-import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.AppConstants.DBOperations;
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Model.Ads;
@@ -38,20 +34,10 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class AdsActivity extends AppCompatActivity {
     Activity activity;
     private RecyclerView rv_ads;
-    private ImageView iv_addAds;
     AdsAdapter adsAdapter;
     ArrayList<Ads> adsArrayList;
     private DBOperations DBO;
-    private ImageView iv_back;
-    private int id;
-    private LinearLayout parentPanel;
     private SharedPreferences sp;
-    private SharedPreferences.Editor spedit;
-    private Button btn_add, btn_cancel;
-    private EditText ed_end, ed_start, ed_sort, ed_newsText;
-    private TextView tv_tittle;
-    private Dialog dialog;
-    private ProgressDialog pd;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -62,21 +48,23 @@ public class AdsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/neosansarabic.ttf")//battar  droidkufi_regular droid_sans_arabic neosansarabic //mcs_shafa_normal
+                .setDefaultFontPath("fonts/neosansarabic.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
         activity = this;
-        setColor();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setColor();
+        }
         setContentView(R.layout.activity_ads);
         DBO = new DBOperations(this);
         DBO.createDatabase();
-        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
-        spedit = sp.edit();
-        tv_tittle = (TextView) findViewById(R.id.tv_tittle);
+        sp = getSharedPreferences(Utils.PREFS, MODE_PRIVATE);
+        SharedPreferences.Editor spedit = sp.edit();
+        TextView tv_tittle = (TextView) findViewById(R.id.tv_tittle);
         tv_tittle.setText(getString(R.string.advertisement));
         rv_ads = (RecyclerView) findViewById(R.id.rv_ads);
-        iv_addAds = (ImageView) findViewById(R.id.iv_addAds);
-        iv_back = (ImageView) findViewById(R.id.iv_back);
+        ImageView iv_addAds = (ImageView) findViewById(R.id.iv_addAds);
+        ImageView iv_back = (ImageView) findViewById(R.id.iv_back);
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -121,7 +109,6 @@ public class AdsActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 editAds(list.get(position));
-//                showAds(list.get(position));
             }
 
             @Override
@@ -138,8 +125,6 @@ public class AdsActivity extends AppCompatActivity {
         intent.setAction("view");
         intent.putExtra("ads", ads);
         startActivity(intent);
-//        Utils.showCustomToast(activity, "click");
-
     }
 
     private void editAds(Ads ads) {
@@ -180,6 +165,7 @@ public class AdsActivity extends AppCompatActivity {
         DBO.close();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setColor() {
         try {
             Window window = activity.getWindow();

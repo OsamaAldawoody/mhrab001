@@ -1,22 +1,21 @@
 package com.newsolution.almhrab.Model;
 
-import com.newsolution.almhrab.AppConstants.Constants;
 
 /**
  * Created by hp on 9/7/2017.
  */
 
 public class Users {
-    int Id;
-    String FullName;
+    private int Id;
+    private String FullName;
 
-    String UserName ;
-    String Mobile ;
-    String Email ;
-    String GUID ;
-    int IdCity ;
-    String MyName;
-    String img;
+    private String UserName ;
+    private  String Mobile ;
+    private String Email ;
+    private  String GUID ;
+    private  int IdCity ;
+    private   String MyName;
+    private   String img;
     public Users(int id,String FullName,String UserName,String Mobile,String Email,String GUID,int IdCity,String MyName,String img){
         this.Id=id;
         this.FullName=FullName;

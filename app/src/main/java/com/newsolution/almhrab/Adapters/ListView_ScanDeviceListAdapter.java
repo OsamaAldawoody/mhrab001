@@ -1,5 +1,6 @@
 package com.newsolution.almhrab.Adapters;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -30,10 +31,9 @@ import java.util.Date;
 import java.util.List;
 
 public class ListView_ScanDeviceListAdapter extends BaseAdapter {
-    public int OpenIntentType = 0;
+    private int OpenIntentType = 0;
     public String SearchKey = "";
     public int SortType = 0;
-    private Activity _Activity;
     private LayoutInflater _Inflater;
     public List<BLE> items;
 
@@ -74,29 +74,29 @@ public class ListView_ScanDeviceListAdapter extends BaseAdapter {
     }
 
     public final class ViewHolder {
-        public ImageView btnDetail;
-        public ImageView imgBattery;
-        public ImageView imgRssi;
-        public LinearLayout layoutEddystone;
-        public LinearLayout layoutIbeacon;
-        public LinearLayout layoutTemperature;
-        public TextView txtBattery;
-        public TextView txtDistance;
-        public TextView txtHumidity;
-        public TextView txtMacAddress;
-        public TextView txtMajor;
-        public TextView txtMinor;
-        public TextView txtName;
-        public TextView txtProtocol;
-        public TextView txtRSSI;
-        public TextView txtSN;
-        public TextView txtTemperature;
-        public TextView txtUUID;
+        ImageView btnDetail;
+         ImageView imgBattery;
+         ImageView imgRssi;
+         LinearLayout layoutEddystone;
+         LinearLayout layoutIbeacon;
+         LinearLayout layoutTemperature;
+         TextView txtBattery;
+         TextView txtDistance;
+         TextView txtHumidity;
+         TextView txtMacAddress;
+         TextView txtMajor;
+         TextView txtMinor;
+         TextView txtName;
+         TextView txtProtocol;
+         TextView txtRSSI;
+         TextView txtSN;
+         TextView txtTemperature;
+         TextView txtUUID;
         public TextView txtUrl;
     }
 
     public ListView_ScanDeviceListAdapter(Activity activity, int openIntentType) {
-        this._Activity = activity;
+        Activity _Activity = activity;
         this.items = new ArrayList();
         this._Inflater = activity.getLayoutInflater();
         this.OpenIntentType = openIntentType;
@@ -114,6 +114,7 @@ public class ListView_ScanDeviceListAdapter extends BaseAdapter {
         return (long) position;
     }
 
+    @SuppressLint("SetTextI18n")
     public View getView(int position, View view, ViewGroup parent) {
         try {
             ViewHolder holder;
@@ -150,9 +151,9 @@ public class ListView_ScanDeviceListAdapter extends BaseAdapter {
             }
             int battery = d.Battery;
             sn = d.SN;
-            holder.layoutTemperature.setVisibility(0);
-            holder.layoutIbeacon.setVisibility(8);
-            holder.layoutEddystone.setVisibility(8);
+            holder.layoutTemperature.setVisibility(View.VISIBLE);
+            holder.layoutIbeacon.setVisibility(View.GONE);
+            holder.layoutEddystone.setVisibility(View.GONE);
             int rssi = ble.RSSI;
             holder.txtRSSI.setText("rssi:" + rssi + " dBm");
             holder.txtDistance.setText("" + MeasuringDistance.calculateAccuracy(-60, (double) rssi) + "m  " + -60 + "");
@@ -208,12 +209,12 @@ public class ListView_ScanDeviceListAdapter extends BaseAdapter {
             }
             if (battery >= 0) {
                 holder.txtBattery.setText("" + battery + "%");
-                holder.imgBattery.setVisibility(0);
-                holder.txtBattery.setVisibility(0);
+                holder.imgBattery.setVisibility(View.VISIBLE);
+                holder.txtBattery.setVisibility(View.VISIBLE);
             } else {
                 holder.txtBattery.setText("--");
-                holder.imgBattery.setVisibility(8);
-                holder.txtBattery.setVisibility(8);
+                holder.imgBattery.setVisibility(View.GONE);
+                holder.txtBattery.setVisibility(View.GONE);
             }
             holder.txtTemperature.setText("-- ");
             if (d.Temperature != -1000.0d) {
@@ -234,34 +235,7 @@ public class ListView_ScanDeviceListAdapter extends BaseAdapter {
                 holder.txtTemperature.setTextColor(Color.parseColor("#808080"));
                 holder.txtBattery.setTextColor(Color.parseColor("#808080"));
             }
-//            view.setOnClickListener(new OnClickListener() {
-//                public void onClick(View v) {
-//                    ListView_ScanDeviceListAdapter.this._Activity.finish();
-//                    try {
-//                        Bundle bundle;
-//                        if (ListView_ScanDeviceListAdapter.this.OpenIntentType == 1) {
-//                            Intent openSyncIntent = new Intent(ListView_ScanDeviceListAdapter.this._Activity, SyncActivity.class);
-//                            bundle = new Bundle();
-//                            bundle.putString("SN", d.SN);
-//                            openSyncIntent.putExtras(bundle);
-//                            ListView_ScanDeviceListAdapter.this._Activity.startActivity(openSyncIntent);
-//                        } else if (ListView_ScanDeviceListAdapter.this.OpenIntentType == 2) {
-//                            Intent openConfigIntent = new Intent(ListView_ScanDeviceListAdapter.this._Activity, ConfigActivity.class);
-//                            bundle = new Bundle();
-//                            bundle.putString("SN", d.SN);
-//                            openConfigIntent.putExtras(bundle);
-//                            ListView_ScanDeviceListAdapter.this._Activity.startActivity(openConfigIntent);
-//                        } else if (ListView_ScanDeviceListAdapter.this.OpenIntentType == 3) {
-//                            Intent openDeivceIntent = new Intent(ListView_ScanDeviceListAdapter.this._Activity, DeviceNoConnectActivity.class);
-//                            bundle = new Bundle();
-//                            bundle.putString("SN", d.SN);
-//                            openDeivceIntent.putExtras(bundle);
-//                            ListView_ScanDeviceListAdapter.this._Activity.startActivity(openDeivceIntent);
-//                        }
-//                    } catch (Exception e) {
-//                    }
-//                }
-//            });
+
             return view;
 
         } catch (Exception ex) {

@@ -2,6 +2,7 @@
 
 buildscript {
     repositories {
+        google()
         jcenter()
         maven {
             url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
@@ -17,7 +18,12 @@ buildscript {
 
 allprojects {
     repositories {
+        google()
         jcenter()
+        mavenCentral()
+        maven {
+            url "https://maven.google.com" // Google's Maven repository
+        }
     }
 }
 

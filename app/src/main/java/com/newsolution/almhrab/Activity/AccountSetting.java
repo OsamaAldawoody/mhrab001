@@ -11,8 +11,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -21,10 +21,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -40,7 +38,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.newsolution.almhrab.AppConstants.AppConst;
 import com.newsolution.almhrab.Helpar.Utils;
 import com.newsolution.almhrab.Interface.OnFetched;
 import com.newsolution.almhrab.Model.Users;
@@ -50,7 +47,6 @@ import com.newsolution.almhrab.WebServices.WS;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,19 +64,15 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
     private ImageView ivMasjedLogo;
     private ProgressBar progress;
     private Activity activity;
-    private LinearLayout ll_accountImage;
     private LinearLayout ll_changePassword;
     private RelativeLayout ll_password;
     private String image_str = "";
     private Uri selectedImage = null;
     private String oldPW;
     private EditText tvMasjedName;
-    private ImageView iv_back, showHide;
+    private ImageView showHide;
     private EditText tvOldPW, tvNewPW, tvConfirmPW;
-    private Button btnSaveEdit;
     private int REQUEST_PERMISSIONS = 100;
-    private byte[] byte_arr = null;
-    private Bitmap yourbitmap = null;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -91,30 +83,35 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/neosansarabic.ttf")//battar  droidkufi_regular droid_sans_arabic neosansarabic //mcs_shafa_normal
+                .setDefaultFontPath("fonts/neosansarabic.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
         activity = this;
         setColor();
         setContentView(R.layout.activity_account_setting);
-        sp = getSharedPreferences(AppConst.PREFS, MODE_PRIVATE);
+        sp = getSharedPreferences(Utils.PREFS, MODE_PRIVATE);
         spedit = sp.edit();
         oldPW = sp.getString("masjedPW", "");
-        btnSaveEdit = (Button) findViewById(R.id.btnSaveEdit);
+
+        Button btnSaveEdit = (Button) findViewById(R.id.btnSaveEdit);
         tvMasjedName = (EditText) findViewById(R.id.tvHintAccountName);
         tvOldPW = (EditText) findViewById(R.id.tvOldPW);
         tvNewPW = (EditText) findViewById(R.id.tvNewPW);
         tvConfirmPW = (EditText) findViewById(R.id.tvConfirmPW);
-        iv_back = (ImageView) findViewById(R.id.iv_back);
+        ImageView iv_back = (ImageView) findViewById(R.id.iv_back);
         showHide = (ImageView) findViewById(R.id.showHide);
         progress = (ProgressBar) findViewById(R.id.progress);
         ivMasjedLogo = (ImageView) findViewById(R.id.ivMasjedLogo);
+        LinearLayout ll_accountImage = (LinearLayout) findViewById(R.id.ll_accountImage);
+        ll_password = (RelativeLayout) findViewById(R.id.ll_password);
+        ll_changePassword = (LinearLayout) findViewById(R.id.ll_changePassword);
+
+
         if (!TextUtils.isEmpty(sp.getString("masjedImg", "")))
             Glide.with(activity).load(Uri.parse(sp.getString("masjedImg", "")))
                     .override(100, 100).listener(new RequestListener<Uri, GlideDrawable>() {
                 @Override
                 public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
-                    Log.i("exce: ", e.getMessage());
                     progress.setVisibility(View.GONE);
                     ivMasjedLogo.setImageResource(R.drawable.ic_mosque);
                     return false;
@@ -126,12 +123,9 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
                     return false;
                 }
             }).into(ivMasjedLogo);
+
         tvMasjedName.setText(sp.getString("masjedName", ""));
 
-        ll_password = (RelativeLayout) findViewById(R.id.ll_password);
-        ll_changePassword = (LinearLayout) findViewById(R.id.ll_changePassword);
-//        ll_changePassword.setVisibility(View.VISIBLE);
-//        showHide.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
         if (sp.getInt("priority", 0) == 1) {
             ll_password.setVisibility(View.VISIBLE);
         } else {
@@ -139,7 +133,7 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
             ll_changePassword.setVisibility(View.GONE);
             showHide.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
         }
-        ll_accountImage = (LinearLayout) findViewById(R.id.ll_accountImage);
+
         ll_accountImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -149,6 +143,7 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
                         REQUEST_PERMISSIONS);
             }
         });
+
         ll_password.setOnClickListener(this);
         showHide.setOnClickListener(this);
         iv_back.setOnClickListener(new View.OnClickListener() {
@@ -175,10 +170,7 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
                     tvOldPW.setError("أدخل كلمة المرور الحالية");
                     return;
                 }
-//                if (!TextUtils.isEmpty(oldPassWord) && !TextUtils.isEmpty(newPassWord) && !newPassWord.equals(oldPassWord)) {
-//                    tvNewPW.setError("كلمتا المرور غير متطابقتين");
-//                    return;
-//                }
+
                 if (!TextUtils.isEmpty(newPassWord) && !newPassWord.equals(confirmNewPW)) {
                     tvConfirmPW.setError("كلمتا المرور غير متطابقتين");
                     return;
@@ -208,7 +200,7 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
     }
 
 
-    protected final void askForPermissions(String[] permissions, int requestCode) {
+    private void askForPermissions(String[] permissions, int requestCode) {
         List<String> permissionsToRequest = new ArrayList<>();
         for (String permission : permissions) {
             if (ActivityCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
@@ -251,33 +243,28 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-
     private void selectImage() {
-//        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//        startActivityForResult(intent, RESULT_LOAD_IMAGE);
         try {
             Intent i = new Intent();
             i.setType("image/*");
             i.setAction(Intent.ACTION_PICK);
-            startActivityForResult(Intent.createChooser(i, "اختر صورة"), RESULT_LOAD_IMAGE);
+            startActivityForResult(Intent.createChooser(i, getString(R.string.chooseImage)), RESULT_LOAD_IMAGE);
         } catch (Exception r) {
             r.printStackTrace();
-            Utils.showCustomToast(activity, " لا يوجد مجلد صور على الجهاز");
+            Utils.showCustomToast(activity, getString(R.string.NoImages));
         }
     }
 
-    public void updateAccount() {
+    private void updateAccount() {
         final ProgressDialog pd = new ProgressDialog(activity);
         pd.setMessage(getString(R.string.wait));
         pd.show();
         pd.setCanceledOnTouchOutside(false);
-//        SubscribeEditProfile(int IdSubscribe, string GUID,
-//                string DeviceNo, string OldPass = "", string NewPass = "",
-//                string MyName = "", int IdCity = 0, String ImgSubscribe = null)
+
         final String newPW = tvNewPW.getText().toString().trim();
         int id = sp.getInt("masjedId", -1);
         String GUID = sp.getString("masjedGUID", "");
-        String DeviceNo = sp.getString(AppConst.DeviceNo, "");
+        String DeviceNo = sp.getString(Utils.DeviceNo, "");
         Map<String, String> param = new HashMap<>();
         param.put("IdSubscribe", id + "");
         param.put("GUID", GUID);
@@ -317,9 +304,7 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
                 selectedImage = data.getData();
                 Glide.with(activity).load(selectedImage + "").into(ivMasjedLogo);
                 String selectedImagePath = getRealPathFromURI(selectedImage);
-//               Log.i("////// path", selectedImagePath);
                 image_str = makePictureToBase64(checkImg(selectedImagePath), ivMasjedLogo);
-               // generateNoteOnSD(activity, "imgstr", image_str);
             } catch (Exception e) {
                 Utils.showCustomToast(activity, "حدث خطأ اختر صورة أخرى");
                 e.printStackTrace();
@@ -346,7 +331,7 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
         return newPath;
     }
 
-    public Bitmap getResizedBitmap(String path, float widthRatio, float heightRatio) {
+    private Bitmap getResizedBitmap(String path, float widthRatio, float heightRatio) {
         float scale = 1;
 
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -407,15 +392,13 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
         return path;
     }
 
-    public static File getTempStoreDirectory(Context context) {
+    private static File getTempStoreDirectory(Context context) {
         File root = new File(Environment.getExternalStorageDirectory(), "Notes");
         return context.getExternalFilesDir("temp").getAbsoluteFile();
     }
 
-    public String makePictureToBase64(String image_path, ImageView image) {
-//        Bitmap bitmap = BitmapFactory.decodeFile(image_path);
+    private String makePictureToBase64(String image_path, ImageView image) {
         Bitmap bitmap = ShrinkBitmap(image_path, 300, 300);
-//        Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         String type = "";
         if (image_path.endsWith("jpg")) {
@@ -428,32 +411,7 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
             Toast.makeText(activity, "make_sure_extension", Toast.LENGTH_LONG).show();
 
         byte[] byteArrayImage = baos.toByteArray();
-//image.setImageBitmap(bitmap);
         return type + Base64.encodeToString(byteArrayImage, Base64.NO_WRAP);
-    }
-
-    public void generateNoteOnSD(Context context, String sFileName, String sBody) {
-        try {
-            File root = new File(Environment.getExternalStorageDirectory(), "Notes");
-            if (!root.exists()) {
-                root.mkdirs();
-            }
-            File gpxfile = new File(root, sFileName);
-            FileWriter writer = new FileWriter(gpxfile);
-            writer.append(sBody);
-            writer.flush();
-            writer.close();
-//            Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static Bitmap rotateImage(Bitmap source, float angle) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
-                matrix, true);
     }
 
     private String getRealPathFromURI(Uri contentURI) {
@@ -473,7 +431,7 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
         return result;
     }
 
-    public static Bitmap ShrinkBitmap(String file, int width, int height) {
+    private static Bitmap ShrinkBitmap(String file, int width, int height) {
 
         BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
         bmpFactoryOptions.inJustDecodeBounds = true;
@@ -513,7 +471,9 @@ public class AccountSetting extends AppCompatActivity implements View.OnClickLis
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(activity, R.color.back_text));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.setStatusBarColor(ContextCompat.getColor(activity, R.color.back_text));
+            }
         } catch (NoSuchMethodError ex) {
             ex.printStackTrace();
         }

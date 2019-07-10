@@ -6,15 +6,18 @@ import java.io.Serializable;
  * Created by hp on 8/4/2016.
  */
 public class Ads implements Serializable {
-    int id;
-    int MasjedID;
-    int Type;
-    String Title;
-    String Text;
-    String Image;
-    String Video;
-    String StartDate;
-    String EndDate;
+    private int id;
+    private int MasjedID;
+    private int Type;
+    private String Title;
+    private String Text;
+    private String Image;
+    private String Video;
+    private String StartDate;
+    private String EndDate;
+
+    private  String StartTime;
+    private String EndTime;
 
     public String getStartTime() {
         return StartTime;
@@ -31,9 +34,6 @@ public class Ads implements Serializable {
     public void setEndTime(String endTime) {
         EndTime = endTime;
     }
-
-    String StartTime;
-    String EndTime;
 
     public Ads() {
     }

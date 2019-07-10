@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import com.newsolution.almhrab.AppConstants.AppConst;
+import com.newsolution.almhrab.Helpar.Utils;
 
 
 /**
@@ -24,7 +24,7 @@ public class SalaatBootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-        sp = context.getSharedPreferences(AppConst.PREFS, context.MODE_PRIVATE);
+        sp = context.getSharedPreferences(Utils.PREFS, context.MODE_PRIVATE);
         spedit = sp.edit();
         if (action.equals("android.intent.action.BOOT_COMPLETED")) {
                 salaatAlarm.setAlarm(context);

@@ -16,7 +16,7 @@ import java.util.Map;
 public class MyRequests extends StringRequest {
     private Map<String, String> params;
 
-    public MyRequests(int method, String url, Response.Listener<String> listener, Response.ErrorListener errorListener
+    MyRequests(int method, String url, Response.Listener<String> listener, Response.ErrorListener errorListener
             , Map<String, String> params) {
         super(method, url, listener, errorListener);
         this.params = params;
@@ -26,13 +26,6 @@ public class MyRequests extends StringRequest {
     protected Map<String, String> getParams() throws AuthFailureError {
         return params;
     }
-//    @Override
-//    public Map<String, String> getHeaders() throws AuthFailureError {
-//        Map<String, String> params = new HashMap<String, String>();
-////        params.put("Content-Type", "application/x-www-form-urlencoded");
-//        params.put("Content-Type", "pplication/json");
-//        return params;
-//    }
 
     @Override
     protected Response<String> parseNetworkResponse(NetworkResponse response) {

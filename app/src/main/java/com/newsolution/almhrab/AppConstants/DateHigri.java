@@ -1,6 +1,5 @@
 package com.newsolution.almhrab.AppConstants;
 
-import com.newsolution.almhrab.R;
 
 import java.util.Calendar;
 
@@ -11,7 +10,7 @@ public class DateHigri {
         return ((n % m) + m) % m;
     }
 
-    public static double[] kuwaiticalendar(int hijriDiff, boolean adjust) {
+    private static double[] kuwaiticalendar(int hijriDiff, boolean adjust) {
         Calendar today = Calendar.getInstance();
         int adj=0;
         if(adjust){
@@ -104,55 +103,12 @@ public class DateHigri {
         return myRes;
     }
 
-
-
-
     public static int date1() {
-        String[] wdNames = {"الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس",
-                "الجمعة", "السبت"};
         boolean dayTest=true;
-        Calendar today = Calendar.getInstance();
-        double day = today.get(Calendar.DAY_OF_MONTH);
         double[] iDate = kuwaiticalendar(0,dayTest);
         int outputIslamicDate = (int) iDate[4];
         return outputIslamicDate;
     }
-    static int date2() {
-        String[] MonthNames = {"يناير", "فبراير", "مارس",
-                "أبريل", "مايو", "يونيو", "يوليو",
-                "أغسطس", "سبمتمبر", "أكتوبر", "نوفمبر", "ديسمبر"};
-        boolean dayTest=true;
-        Calendar today = Calendar.getInstance();
-        double  month = today.get(Calendar.MONTH);
-        int outputIslamicDate =  (int) month;
-        return outputIslamicDate;
-    }
-    public static String date3() {
-        boolean dayTest=true;
-        Calendar today = Calendar.getInstance();
-        double[] iDate = kuwaiticalendar(0,dayTest);
-        double  year = today.get(Calendar.YEAR);
-        String outputIslamicDate = (int)iDate[5]  + " " +  (int)year ;
-        return outputIslamicDate;
-    }
-    public static int date4() {
-        String[] iMonthNames = {"محرم", "صفر", "ربيع الأول",
-                "ربيع الآخر", "جمادى الأولى", "جمادة الآخرة", "رجب",
-                "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"};
-        boolean dayTest=true;
-        Calendar today = Calendar.getInstance();
-        double[] iDate = kuwaiticalendar(0,dayTest);
-        int outputIslamicDate = (int) iDate[6];
-        return outputIslamicDate;
-    }
-    public static String date5() {
-        boolean dayTest=true;
-        Calendar today = Calendar.getInstance();
-        double[] iDate = kuwaiticalendar(0,dayTest);
-        String outputIslamicDate = (int)iDate[7] + "";
-        return outputIslamicDate;
-    }
-
 
 
 
